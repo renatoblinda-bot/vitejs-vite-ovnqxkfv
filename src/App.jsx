@@ -296,30 +296,30 @@ export default function BiofeedbackScore() {
   const H = ({id,children}) => <div id={id}>{children}</div>;
 
   return (
-    <div style={{minHeight:"100vh",background:"#0c0c0f",color:"#e8e6e1",fontFamily:"'DM Mono','Courier New',monospace"}}>
+    <div style={{minHeight:"100vh",background:"#0c0c0f",color:"#e8e6e1",fontFamily:"'DM Mono','Courier New',monospace",fontSize:"14px"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:#0c0c0f} ::-webkit-scrollbar-thumb{background:#2a2a30;border-radius:2px}
-        .opt-btn{background:transparent;border:1px solid #2a2a30;color:#888;padding:7px 12px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:11px;transition:all .15s;white-space:nowrap}
+        .opt-btn{background:transparent;border:1px solid #2a2a30;color:#aaa;padding:9px 14px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px;transition:all .15s;white-space:nowrap}
         .opt-btn:hover{border-color:#444;color:#ccc} .opt-btn.selected{font-weight:500;color:#0c0c0f}
-        .tab-btn{background:transparent;border:none;color:#555;font-family:inherit;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:10px 16px;border-bottom:2px solid transparent;transition:all .15s}
-        .tab-btn.active{color:#e8e6e1;border-bottom-color:#e8e6e1} .tab-btn:hover:not(.active){color:#999}
-        .save-btn{background:#e8e6e1;color:#0c0c0f;border:none;padding:12px 28px;font-family:inherit;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;font-weight:500;transition:opacity .15s}
+        .tab-btn{background:transparent;border:none;color:#777;font-family:inherit;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:10px 16px;border-bottom:2px solid transparent;transition:all .15s}
+        .tab-btn.active{color:#ffffff;border-bottom-color:#e8e6e1} .tab-btn:hover:not(.active){color:#999}
+        .save-btn{background:#e8e6e1;color:#0c0c0f;border:none;padding:14px 32px;font-family:inherit;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;font-weight:500;transition:opacity .15s}
         .save-btn:disabled{opacity:.25;cursor:not-allowed} .save-btn:hover:not(:disabled){opacity:.85}
-        .ghost-btn{background:transparent;border:1px solid #2a2a30;color:#666;padding:6px 14px;font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s}
+        .ghost-btn{background:transparent;border:1px solid #3a3a40;color:#888;padding:8px 16px;font-family:inherit;font-size:12px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s}
         .ghost-btn:hover{border-color:#555;color:#aaa}
-        input,textarea,select{background:#15151a;border:1px solid #2a2a30;color:#e8e6e1;font-family:inherit;font-size:12px;padding:9px 12px;border-radius:4px;outline:none;transition:border-color .15s}
+        input,textarea,select{background:#15151a;border:1px solid #3a3a40;color:#e8e6e1;font-family:inherit;font-size:13px;padding:10px 14px;border-radius:4px;outline:none;transition:border-color .15s}
         input:focus,textarea:focus,select:focus{border-color:#555}
         .weight-input{background:#15151a;border:1px solid #2a2a30;color:#e8e6e1;font-family:inherit;font-size:12px;padding:4px 8px;border-radius:3px;outline:none;width:52px;text-align:center}
         .del-btn{background:transparent;border:none;color:#2a2a30;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:3px;transition:color .15s}
         .del-btn:hover{color:#ef4444}
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
         .modal-box{background:#12121a;border:1px solid #2a2a35;border-radius:10px;max-width:540px;width:100%;max-height:88vh;overflow-y:auto;padding:28px 24px}
-        .close-btn{background:transparent;border:1px solid #2a2a30;color:#666;padding:8px 20px;font-family:inherit;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s;margin-top:20px}
+        .close-btn{background:transparent;border:1px solid #3a3a40;color:#888;padding:10px 24px;font-family:inherit;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s;margin-top:20px}
         .close-btn:hover{border-color:#555;color:#aaa}
         .card{background:#10101a;border:1px solid #1a1a20;border-radius:6px;padding:14px 16px;margin-bottom:8px}
-        .section-title{font-size:10px;color:#444;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+        .section-title{font-size:12px;color:#666;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
         .horm-btn{background:transparent;border:1px solid #2a2a30;color:#888;padding:8px 16px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:11px;transition:all .15s}
         .horm-btn.yes{background:#7c3aed;border-color:#7c3aed;color:#fff}
         .horm-btn.no{background:#2a2a30;border-color:#2a2a30;color:#aaa}
@@ -330,15 +330,15 @@ export default function BiofeedbackScore() {
       {modal && (
         <div className="modal-overlay" onClick={()=>{setModal(null);setView("history");}}>
           <div className="modal-box" onClick={e=>e.stopPropagation()}>
-            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:".08em",marginBottom:4}}>RESUMO DA SEMANA</div>
-            <div style={{fontSize:10,color:"#444",marginBottom:16}}>{modal.week}</div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".08em",marginBottom:6}}>RESUMO DA SEMANA</div>
+            <div style={{fontSize:13,color:"#666",marginBottom:18}}>{modal.week}</div>
 
             {/* Score biofeedback */}
             <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:16,padding:"14px 16px",background:"#0c0c0f",borderRadius:6}}>
               <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:getScoreInfo(modal.score).color,lineHeight:1}}>{modal.score}</div>
               <div>
-                <div style={{fontSize:12,color:getScoreInfo(modal.score).color,marginBottom:4}}>{getScoreInfo(modal.score).label}</div>
-                <div style={{fontSize:11,color:"#555"}}>{getScoreInfo(modal.score).readinessDesc}</div>
+                <div style={{fontSize:14,color:getScoreInfo(modal.score).color,marginBottom:6}}>{getScoreInfo(modal.score).label}</div>
+                <div style={{fontSize:13,color:"#777"}}>{getScoreInfo(modal.score).readinessDesc}</div>
               </div>
             </div>
 
@@ -346,8 +346,8 @@ export default function BiofeedbackScore() {
             {modal.hormonalScore && (
               <div style={{padding:"12px 16px",background:"#0c0c0f",borderRadius:6,marginBottom:16,borderLeft:`3px solid ${modal.hormonalScore.color}`}}>
                 <div style={{fontSize:10,color:"#555",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Score Hormonal</div>
-                <div style={{fontSize:13,color:modal.hormonalScore.color,marginBottom:6}}>{modal.hormonalScore.label}</div>
-                <div style={{fontSize:11,color:"#666",lineHeight:1.6}}>{modal.hormonalScore.suggestion}</div>
+                <div style={{fontSize:15,color:modal.hormonalScore.color,marginBottom:8}}>{modal.hormonalScore.label}</div>
+                <div style={{fontSize:13,color:"#888",lineHeight:1.7}}>{modal.hormonalScore.suggestion}</div>
                 <div style={{display:"flex",gap:16,marginTop:10}}>
                   <div style={{fontSize:10,color:"#ef4444"}}>E2 alto: {modal.hormonalScore.highScore}%</div>
                   <div style={{fontSize:10,color:"#f97316"}}>E2 baixo: {modal.hormonalScore.lowScore}%</div>
@@ -355,7 +355,7 @@ export default function BiofeedbackScore() {
               </div>
             )}
 
-            <div style={{fontSize:11,color:"#555",fontStyle:"italic",marginBottom:16,paddingLeft:12,borderLeft:"2px solid #1e1e25"}}>{modal.report}</div>
+            <div style={{fontSize:13,color:"#777",fontStyle:"italic",marginBottom:16,paddingLeft:12,borderLeft:"2px solid #2a2a35"}}>{modal.report}</div>
 
             {modal.suggestions.length > 0 ? (
               <>
@@ -364,8 +364,8 @@ export default function BiofeedbackScore() {
                   <div key={i} style={{display:"flex",gap:12,marginBottom:10,padding:"12px 14px",background:"#0c0c0f",borderRadius:6,borderLeft:`2px solid ${s.priority?"#ef4444":"#2a2a45"}`}}>
                     <span style={{fontSize:16,flexShrink:0}}>{s.icon}</span>
                     <div>
-                      <div style={{fontSize:10,color:s.priority?"#ef4444":"#555",textTransform:"uppercase",letterSpacing:".08em",marginBottom:3}}>{s.area}</div>
-                      <div style={{fontSize:12,color:"#aaa",lineHeight:1.6}}>{s.text}</div>
+                      <div style={{fontSize:11,color:s.priority?"#ef4444":"#777",textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{s.area}</div>
+                      <div style={{fontSize:13,color:"#bbb",lineHeight:1.7}}>{s.text}</div>
                     </div>
                   </div>
                 ))}
@@ -384,8 +384,8 @@ export default function BiofeedbackScore() {
       {/* ── Header ── */}
       <div style={{borderBottom:"1px solid #1e1e25",padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#0c0c0f",zIndex:10,flexWrap:"wrap",gap:8}}>
         <div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:".08em"}}>BIOFEEDBACK SCORE</div>
-          <div style={{fontSize:9,color:"#333",letterSpacing:".1em",textTransform:"uppercase"}}>Jewett · Israetel · Helms · Krieger</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".08em"}}>BIOFEEDBACK SCORE</div>
+          <div style={{fontSize:11,color:"#555",letterSpacing:".08em",textTransform:"uppercase"}}>Jewett · Israetel · Helms · Krieger</div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <div style={{display:"flex"}}>
@@ -420,18 +420,18 @@ export default function BiofeedbackScore() {
                 <>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                     <div style={{width:8,height:8,borderRadius:"50%",background:scoreInfo.readiness==="verde"?"#22c55e":scoreInfo.readiness==="amarelo"?"#eab308":"#ef4444"}}/>
-                    <div style={{fontSize:12,color:scoreInfo.readiness==="verde"?"#22c55e":scoreInfo.readiness==="amarelo"?"#eab308":"#ef4444"}}>{scoreInfo.readinessLabel}</div>
+                    <div style={{fontSize:14,color:scoreInfo.readiness==="verde"?"#22c55e":scoreInfo.readiness==="amarelo"?"#eab308":"#ef4444"}}>{scoreInfo.readinessLabel}</div>
                   </div>
-                  <div style={{fontSize:11,color:"#555",marginBottom:8}}>{scoreInfo.readinessDesc}</div>
+                  <div style={{fontSize:13,color:"#777",marginBottom:8}}>{scoreInfo.readinessDesc}</div>
                   {bottlenecks.map((b,i)=>(
                     <div key={i} style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
                       <span style={{fontSize:10,color:"#444"}}>{i+1}.</span>
-                      <span style={{fontSize:11,color:b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"#888"}}>{b.cat.icon} {b.cat.label}</span>
+                      <span style={{fontSize:13,color:b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"#888"}}>{b.cat.icon} {b.cat.label}</span>
                     </div>
                   ))}
                 </>
               ) : (
-                <div style={{color:"#333",fontSize:12}}>Preencha os critérios para calcular o score.<br/><span style={{fontSize:11,color:"#252530"}}>{totalAnswered}/7 preenchidos</span></div>
+                <div style={{color:"#333",fontSize:14}}>Preencha os critérios para calcular o score.<br/><span style={{fontSize:11,color:"#252530"}}>{totalAnswered}/7 preenchidos</span></div>
               )}
             </div>
           </div>
@@ -455,7 +455,7 @@ export default function BiofeedbackScore() {
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {CATEGORIES.map(cat=>(
                   <div key={cat.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
-                    <span style={{fontSize:11,color:"#888"}}>{cat.icon} {cat.label}</span>
+                    <span style={{fontSize:13,color:"#aaa"}}>{cat.icon} {cat.label}</span>
                     <input type="number" className="weight-input" min={0} max={50} value={weights[cat.id]} onChange={e=>handleWeightChange(cat.id,e.target.value)}/>
                   </div>
                 ))}
@@ -469,10 +469,10 @@ export default function BiofeedbackScore() {
               <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:8}}>
                 <span style={{fontSize:15}}>{cat.icon}</span>
                 <div>
-                  <div style={{fontSize:11,letterSpacing:".08em",textTransform:"uppercase",color:scores[cat.id]?cat.options.find(o=>o.value===scores[cat.id])?.color:"#ccc",fontWeight:500}}>
+                  <div style={{fontSize:13,letterSpacing:".06em",textTransform:"uppercase",color:scores[cat.id]?cat.options.find(o=>o.value===scores[cat.id])?.color:"#ddd",fontWeight:500}}>
                     {cat.label}<span style={{fontSize:9,color:"#2a2a35",marginLeft:8,textTransform:"none",letterSpacing:0,fontWeight:400}}>peso {weights[cat.id]}%</span>
                   </div>
-                  <div style={{fontSize:10,color:"#444",marginTop:2}}>{cat.description}</div>
+                  <div style={{fontSize:12,color:"#666",marginTop:4}}>{cat.description}</div>
                 </div>
               </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
@@ -490,7 +490,7 @@ export default function BiofeedbackScore() {
           {/* Performance Anchor Sets */}
           <div className="card">
             <div className="section-title">⚡ Performance Anchor Sets</div>
-            <div style={{fontSize:10,color:"#333",marginBottom:10}}>Registre exercício principal + carga + reps para comparar semana a semana</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:12}}>Registre exercício principal + carga + reps para comparar semana a semana</div>
             {anchors.map((a,i)=>(
               <div key={i} className="anchor-row">
                 <input type="text" placeholder="Exercício (ex: Supino)" value={a.exercise} onChange={e=>{const n=[...anchors];n[i]={...n[i],exercise:e.target.value};setAnchors(n);}}/>
@@ -516,7 +516,7 @@ export default function BiofeedbackScore() {
               if (comparisons.length === 0) return null;
               return (
                 <div style={{marginTop:12,padding:"10px 12px",background:"#0c0c0f",borderRadius:4}}>
-                  <div style={{fontSize:10,color:"#444",letterSpacing:".08em",textTransform:"uppercase",marginBottom:8}}>vs semana anterior</div>
+                  <div style={{fontSize:12,color:"#666",letterSpacing:".06em",textTransform:"uppercase",marginBottom:8}}>vs semana anterior</div>
                   {comparisons.map((c,i)=>(
                     <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                       <span style={{fontSize:11,color:"#666",flex:1}}>{c.exercise}</span>
@@ -537,7 +537,7 @@ export default function BiofeedbackScore() {
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {MACRO_FIELDS.map(f=>(
                 <div key={f.id} style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <label style={{fontSize:10,color:"#555"}}>{f.label} ({f.unit})</label>
+                  <label style={{fontSize:12,color:"#777"}}>{f.label} ({f.unit})</label>
                   <input type="number" step="1" placeholder={f.placeholder} value={macros[f.id]||""} onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
@@ -548,7 +548,7 @@ export default function BiofeedbackScore() {
           <div className="card">
             <div className="section-title">🫙 Saúde intestinal</div>
             <div style={{marginBottom:12}}>
-              <div style={{fontSize:10,color:"#555",marginBottom:6}}>Frequência diária</div>
+              <div style={{fontSize:13,color:"#777",marginBottom:8}}>Frequência diária</div>
               <div style={{display:"flex",gap:6}}>
                 {GUT_FREQ.map(f=>(
                   <button key={f.value} className={`opt-btn ${gut.frequency===f.value?"selected":""}`}
@@ -560,7 +560,7 @@ export default function BiofeedbackScore() {
               </div>
             </div>
             <div>
-              <div style={{fontSize:10,color:"#555",marginBottom:6}}>Consistência das fezes</div>
+              <div style={{fontSize:13,color:"#777",marginBottom:8}}>Consistência das fezes</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                 {GUT_CONSISTENCY.map(opt=>(
                   <button key={opt.value} className={`opt-btn ${gut.consistency===opt.value?"selected":""}`}
@@ -579,7 +579,7 @@ export default function BiofeedbackScore() {
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {OBJECTIVE_FIELDS.map(f=>(
                 <div key={f.id} style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <label style={{fontSize:10,color:"#555"}}>{f.label} ({f.unit})</label>
+                  <label style={{fontSize:12,color:"#777"}}>{f.label} ({f.unit})</label>
                   <input type="number" step="0.1" placeholder={f.placeholder} value={objective[f.id]||""} onChange={e=>setObjective(o=>({...o,[f.id]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
@@ -605,7 +605,7 @@ export default function BiofeedbackScore() {
           {/* Módulo Hormonal */}
           <div className="card" style={{border:"1px solid #2a1a4a"}}>
             <div className="section-title" style={{color:"#7c3aed"}}>💊 Uso de Esteroides Anabolizantes (EAs)</div>
-            <div style={{fontSize:11,color:"#555",marginBottom:12}}>Você usa Esteroides Anabolizantes (EAs) — incluindo TRT, testosterona, derivados ou outros compostos que possam afetar o balanço hormonal?</div>
+            <div style={{fontSize:13,color:"#777",marginBottom:12}}>Você usa Esteroides Anabolizantes (EAs) — incluindo TRT, testosterona, derivados ou outros compostos que possam afetar o balanço hormonal?</div>
             <div style={{display:"flex",gap:8,marginBottom:16}}>
               <button className={`horm-btn ${usesHormones===true?"yes":""}`} onClick={()=>setUsesHormones(true)}>Sim</button>
               <button className={`horm-btn ${usesHormones===false?"no":""}`} onClick={()=>setUsesHormones(false)}>Não</button>
@@ -614,7 +614,7 @@ export default function BiofeedbackScore() {
             {usesHormones && (
               <div>
                 <div style={{marginBottom:12}}>
-                  <label style={{fontSize:10,color:"#7c3aed",display:"block",marginBottom:4}}>Dose do Inibidor de Aromatase (AI) usado na semana</label>
+                  <label style={{fontSize:13,color:"#9d6aff",display:"block",marginBottom:6}}>Dose do Inibidor de Aromatase (AI) usado na semana</label>
                   <input type="text" placeholder="ex: Anastrozol 0.5mg 2x/semana ou Exemestane 12.5mg 2x/semana" value={hormonal.aiDose||""} onChange={e=>setHormonal(h=>({...h,aiDose:e.target.value}))} style={{width:"100%",borderColor:"#2a1a4a"}}/>
                 </div>
 
@@ -625,7 +625,7 @@ export default function BiofeedbackScore() {
                   { key:"mood", label:"Humor", opts:[{v:"sensitive",l:"Sensível / irritável"},{v:"normal",l:"Normal"},{v:"apathetic",l:"Apático"}] },
                 ].map(field=>(
                   <div key={field.key} style={{marginBottom:12}}>
-                    <div style={{fontSize:10,color:"#666",marginBottom:6}}>{field.label}</div>
+                    <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
                     <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                       {field.opts.map(opt=>(
                         <button key={opt.v} className={`opt-btn ${hormonal[field.key]===opt.v?"selected":""}`}
@@ -641,7 +641,7 @@ export default function BiofeedbackScore() {
                 {/* Ereção matinal */}
                 <div style={{marginBottom:12}}>
                   <div style={{fontSize:10,color:"#666",marginBottom:6}}>Ereção Matinal / Madrugada</div>
-                  <div style={{fontSize:10,color:"#444",marginBottom:6}}>Frequência semanal</div>
+                  <div style={{fontSize:12,color:"#666",marginBottom:8}}>Frequência semanal</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>
                     {[{v:"daily",l:"Diária"},{v:"frequent",l:"3–5x/semana"},{v:"rare",l:"1–2x/semana"},{v:"absent",l:"Ausente"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.morningErectionFreq===opt.v?"selected":""}`}
@@ -651,7 +651,7 @@ export default function BiofeedbackScore() {
                       </button>
                     ))}
                   </div>
-                  <div style={{fontSize:10,color:"#444",marginBottom:6}}>Qualidade</div>
+                  <div style={{fontSize:12,color:"#666",marginBottom:8}}>Qualidade</div>
                   <div style={{display:"flex",gap:5}}>
                     {[{v:3,l:"Forte"},{v:2,l:"Fraca"},{v:1,l:"Inexistente"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.morningErectionQuality===opt.v?"selected":""}`}
@@ -665,7 +665,7 @@ export default function BiofeedbackScore() {
 
                 {/* Mamilo */}
                 <div style={{marginBottom:12}}>
-                  <div style={{fontSize:10,color:"#666",marginBottom:6}}>Sensibilidade no Mamilo</div>
+                  <div style={{fontSize:13,color:"#888",marginBottom:8}}>Sensibilidade no Mamilo</div>
                   <div style={{display:"flex",gap:5}}>
                     {[{v:"yes",l:"Sim — sensível / dolorido"},{v:"no",l:"Não"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.nipple===opt.v?"selected":""}`}
@@ -684,7 +684,7 @@ export default function BiofeedbackScore() {
 
                 {/* Pele */}
                 <div style={{marginBottom:12}}>
-                  <div style={{fontSize:10,color:"#666",marginBottom:6}}>Oleosidade da Pele</div>
+                  <div style={{fontSize:13,color:"#888",marginBottom:8}}>Oleosidade da Pele</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                     {[{v:"acne",l:"Alta com acne"},{v:"oily",l:"Alta"},{v:"normal",l:"Normal"},{v:"dry",l:"Seca"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.skin===opt.v?"selected":""}`}
@@ -767,8 +767,8 @@ export default function BiofeedbackScore() {
                   <div key={i} style={{background:"#10101a",border:"1px solid #1e1e25",borderRadius:6,padding:"14px 18px",marginBottom:8}}>
                     <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:10}}>
                       <div>
-                        <div style={{fontSize:13,color:"#ccc"}}>{entry.week}</div>
-                        <div style={{fontSize:9,color:"#333",marginTop:1}}>{entry.date}</div>
+                        <div style={{fontSize:15,color:"#ddd"}}>{entry.week}</div>
+                        <div style={{fontSize:11,color:"#555",marginTop:2}}>{entry.date}</div>
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
                         {info && (
@@ -778,7 +778,7 @@ export default function BiofeedbackScore() {
                           </div>
                         )}
                         {entry.hormonalScore && (
-                          <div style={{padding:"3px 8px",borderRadius:3,background:`${entry.hormonalScore.color}15`,border:`1px solid ${entry.hormonalScore.color}40`,fontSize:9,color:entry.hormonalScore.color}}>
+                          <div style={{padding:"3px 8px",borderRadius:3,background:`${entry.hormonalScore.color}15`,border:`1px solid ${entry.hormonalScore.color}40`,fontSize:11,color:entry.hormonalScore.color}}>
                             💊 {entry.hormonalScore.status==="high"?"E2↑":entry.hormonalScore.status==="low"?"E2↓":"E2✓"}
                           </div>
                         )}
@@ -786,7 +786,7 @@ export default function BiofeedbackScore() {
                       </div>
                     </div>
 
-                    {info && <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:6,height:6,borderRadius:"50%",background:info.readiness==="verde"?"#22c55e":info.readiness==="amarelo"?"#eab308":"#ef4444"}}/><div style={{fontSize:10,color:"#666"}}>{info.readinessLabel}</div></div>}
+                    {info && <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:6,height:6,borderRadius:"50%",background:info.readiness==="verde"?"#22c55e":info.readiness==="amarelo"?"#eab308":"#ef4444"}}/><div style={{fontSize:12,color:"#888"}}>{info.readinessLabel}</div></div>}
 
                     <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>
                       {CATEGORIES.map(cat=>{const val=entry.scores[cat.id];if(!val) return null;const opt=cat.options.find(o=>o.value===val);return <div key={cat.id} style={{fontSize:9,padding:"2px 7px",borderRadius:3,background:`${opt.color}18`,color:opt.color,border:`1px solid ${opt.color}35`}}>{cat.icon} {cat.label.split(" ")[0]}</div>;})}
@@ -795,20 +795,20 @@ export default function BiofeedbackScore() {
                     {/* Anchors no histórico */}
                     {entry.anchors && entry.anchors.length > 0 && (
                       <div style={{marginBottom:8,padding:"8px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        {entry.anchors.map((a,j)=><div key={j} style={{fontSize:11,color:"#666"}}>{a.exercise}: <span style={{color:"#aaa"}}>{a.weight}kg × {a.reps} reps</span></div>)}
+                        {entry.anchors.map((a,j)=><div key={j} style={{fontSize:13,color:"#777"}}>{a.exercise}: <span style={{color:"#bbb"}}>{a.weight}kg × {a.reps} reps</span></div>)}
                       </div>
                     )}
 
                     {entry.macros && Object.values(entry.macros).some(v=>v) && (
                       <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:8,padding:"6px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        {MACRO_FIELDS.map(f=>{const v=entry.macros[f.id];if(!v) return null;return <div key={f.id} style={{fontSize:10,color:"#555"}}>{f.label}: <span style={{color:"#888"}}>{v}{f.unit}</span></div>;})}
+                        {MACRO_FIELDS.map(f=>{const v=entry.macros[f.id];if(!v) return null;return <div key={f.id} style={{fontSize:12,color:"#666"}}>{f.label}: <span style={{color:"#aaa"}}>{v}{f.unit}</span></div>;})}
                       </div>
                     )}
 
                     {entry.photo && <img src={entry.photo} style={{maxWidth:"100%",maxHeight:160,borderRadius:4,border:"1px solid #2a2a30",marginBottom:8,display:"block"}} alt="foto"/>}
 
-                    {entry.report && <div style={{fontSize:11,color:"#555",borderTop:"1px solid #1a1a22",paddingTop:8,marginTop:4,fontStyle:"italic"}}>{entry.report}</div>}
-                    {entry.notes && <div style={{fontSize:11,color:"#444",borderTop:"1px solid #1a1a22",paddingTop:8,marginTop:4}}>{entry.notes}</div>}
+                    {entry.report && <div style={{fontSize:12,color:"#666",borderTop:"1px solid #1e1e25",paddingTop:10,marginTop:6,fontStyle:"italic"}}>{entry.report}</div>}
+                    {entry.notes && <div style={{fontSize:13,color:"#666",borderTop:"1px solid #1e1e25",paddingTop:10,marginTop:6}}>{entry.notes}</div>}
                   </div>
                 );
               })}
@@ -820,7 +820,7 @@ export default function BiofeedbackScore() {
       {/* ══ COMPARADOR ══ */}
       {view === "compare" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
-          <div className="section-title">Comparador de semanas</div>
+          <div className="section-title" style={{fontSize:14,color:"#888"}}>Comparador de semanas</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:24}}>
             {[["A",compareA,setCompareA],["B",compareB,setCompareB]].map(([label,val,setter])=>(
               <div key={label}>
@@ -860,7 +860,7 @@ export default function BiofeedbackScore() {
                     <div key={cat.id} style={{marginBottom:10}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
                         <span style={{fontSize:11,color:"#888"}}>{cat.icon} {cat.label}</span>
-                        <span style={{fontSize:11,color:diff>0?"#22c55e":diff<0?"#ef4444":"#888"}}>{va||"—"} vs {vb||"—"} {diff!==0?`(${diff>0?"+":""}${diff})`:""}</span>
+                        <span style={{fontSize:13,color:diff>0?"#22c55e":diff<0?"#ef4444":"#888"}}>{va||"—"} vs {vb||"—"} {diff!==0?`(${diff>0?"+":""}${diff})`:""}</span>
                       </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                         {[{v:va,c:entryA.week},{v:vb,c:entryB.week}].map((x,i)=>(
@@ -886,7 +886,7 @@ export default function BiofeedbackScore() {
                     const diff=volA!==null&&volB!==null?volA-volB:null;
                     return (
                       <div key={ex} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"8px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        <span style={{fontSize:11,color:"#888"}}>{ex}</span>
+                        <span style={{fontSize:13,color:"#aaa"}}>{ex}</span>
                         <div style={{display:"flex",gap:12,alignItems:"center"}}>
                           <span style={{fontSize:11,color:"#555"}}>{a?`${a.weight}kg×${a.reps}`:"—"}</span>
                           <span style={{fontSize:10,color:"#333"}}>vs</span>
@@ -917,10 +917,10 @@ export default function BiofeedbackScore() {
           )}
 
           {(!entryA || !entryB) && compareA && compareB && (
-            <div style={{textAlign:"center",color:"#333",fontSize:12,marginTop:40}}>Selecione duas semanas diferentes para comparar.</div>
+            <div style={{textAlign:"center",color:"#333",fontSize:14,marginTop:40}}>Selecione duas semanas diferentes para comparar.</div>
           )}
           {history.length < 2 && (
-            <div style={{textAlign:"center",color:"#333",fontSize:12,marginTop:40}}>Você precisa de pelo menos 2 semanas salvas para comparar.</div>
+            <div style={{textAlign:"center",color:"#333",fontSize:14,marginTop:40}}>Você precisa de pelo menos 2 semanas salvas para comparar.</div>
           )}
         </div>
       )}
@@ -932,10 +932,10 @@ export default function BiofeedbackScore() {
           {SCORE_SCALE.map((s,i)=>(
             <div key={i} style={{background:"#10101a",borderLeft:`3px solid ${s.color}`,borderRadius:4,padding:"12px 16px",marginBottom:8}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,color:s.color}}>{s.range}</div>
-                <div style={{fontSize:11,color:s.color}}>{s.label}</div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:s.color}}>{s.range}</div>
+                <div style={{fontSize:13,color:s.color}}>{s.label}</div>
               </div>
-              <div style={{fontSize:11,color:"#555"}}>{s.desc}</div>
+              <div style={{fontSize:13,color:"#777"}}>{s.desc}</div>
             </div>
           ))}
 
