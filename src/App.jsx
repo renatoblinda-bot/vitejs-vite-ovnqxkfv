@@ -204,6 +204,11 @@ export default function BiofeedbackScore() {
   const [modal, setModal] = useState(null);
   const [compareA, setCompareA] = useState("");
   const [compareB, setCompareB] = useState("");
+  const [profile, setProfile] = useState({});
+  const [measures, setMeasures] = useState([]);
+  const [newMeasure, setNewMeasure] = useState({});
+  const [posePhotos, setPosePhotos] = useState({});
+  const [measureDate, setMeasureDate] = useState(new Date().toLocaleDateString("pt-BR"));
   const loaded = useRef(false);
 
   const store = {
@@ -221,12 +226,18 @@ export default function BiofeedbackScore() {
     const load = async () => {
       try { const h = await store.get("bf-history"); if (h) setHistory(JSON.parse(h)); } catch(_) {}
       try { const w = await store.get("bf-weights"); if (w) setWeights(JSON.parse(w)); } catch(_) {}
+      try { const p = await store.get("bf-profile"); if (p) setProfile(JSON.parse(p)); } catch(_) {}
+      try { const m = await store.get("bf-measures"); if (m) setMeasures(JSON.parse(m)); } catch(_) {}
+      try { const pp = await store.get("bf-posephotos"); if (pp) setPosePhotos(JSON.parse(pp)); } catch(_) {}
       loaded.current = true;
     };
     load();
   }, []);
   useEffect(() => { if (!loaded.current) return; store.set("bf-history", JSON.stringify(history)); }, [history]);
   useEffect(() => { if (!loaded.current) return; store.set("bf-weights", JSON.stringify(weights)); }, [weights]);
+  useEffect(() => { if (!loaded.current) return; store.set("bf-profile", JSON.stringify(profile)); }, [profile]);
+  useEffect(() => { if (!loaded.current) return; store.set("bf-measures", JSON.stringify(measures)); }, [measures]);
+  useEffect(() => { if (!loaded.current) return; store.set("bf-posephotos", JSON.stringify(posePhotos)); }, [posePhotos]);
 
   const totalAnswered = Object.keys(scores).length;
   const score = computeScore(scores, weights);
@@ -278,9 +289,63 @@ export default function BiofeedbackScore() {
   const resetWeights = () => setWeights({...DEFAULT_WEIGHTS});
 
   const handleExport = () => {
-    const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),history,weights},null,2)],{type:"application/json"});
+    const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),history,weights,profile,measures},null,2)],{type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href=url; a.download=`biofeedback-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+  };
+
+  const handleSendEmail = () => {
+    const name = profile.name || "Atleta";
+    const lines = [];
+    lines.push("BIOFEEDBACK SCORE — HISTÓRICO COMPLETO");
+    lines.push("========================================");
+    lines.push("");
+    lines.push("PERFIL");
+    lines.push(`Nome: ${profile.name||"—"} | Idade: ${profile.age||"—"} | Altura: ${profile.height||"—"}cm`);
+    lines.push(`Objetivo: ${profile.goal||"—"} | Nível: ${profile.level||"—"}`);
+    if (profile.health) lines.push(`Condições de saúde: ${profile.health}`);
+    if (profile.meds) lines.push(`Medicamentos: ${profile.meds}`);
+    lines.push("");
+    if (measures.length > 0) {
+      lines.push("MEDIDAS");
+      lines.push("Data | Peso | Cintura | Quadril | Peito | Ombros | Braço D | Braço E | Coxa D | Coxa E | Panturrilha | %Gord");
+      measures.forEach(m => {
+        lines.push(`${m.date} | ${m.weight||"—"}kg | ${m.waist||"—"}cm | ${m.hip||"—"}cm | ${m.chest||"—"}cm | ${m.shoulders||"—"}cm | ${m.armR||"—"}cm | ${m.armL||"—"}cm | ${m.thighR||"—"}cm | ${m.thighL||"—"}cm | ${m.calf||"—"}cm | ${m.bodyfat||"—"}%`);
+      });
+      lines.push("");
+    }
+    if (history.length > 0) {
+      lines.push("CHECK-INS SEMANAIS");
+      history.forEach(e => {
+        lines.push(`${e.week} (${e.date}) — Score: ${e.score||"—"}`);
+        if (e.report) lines.push(`  ${e.report}`);
+        if (e.anchors?.length > 0) lines.push(`  Performance: ${e.anchors.map(a=>`${a.exercise} ${a.weight}kg×${a.reps}`).join(" | ")}`);
+        if (e.macros && Object.values(e.macros).some(v=>v)) lines.push(`  Macros: ${e.macros.calories||"—"}kcal | P:${e.macros.protein||"—"}g | C:${e.macros.carbs||"—"}g | G:${e.macros.fat||"—"}g`);
+        if (e.notes) lines.push(`  Obs: ${e.notes}`);
+      });
+    }
+    const body = encodeURIComponent(lines.join("\n"));
+    const subject = encodeURIComponent(`Biofeedback Score — ${name} — ${new Date().toLocaleDateString("pt-BR")}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  const handlePosePhoto = (pose, e) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPosePhotos(p=>({...p,[pose]:ev.target.result}));
+    reader.readAsDataURL(file);
+    e.target.value="";
+  };
+
+  const handleSaveMeasure = () => {
+    if (Object.values(newMeasure).every(v=>!v)) return;
+    const entry = {...newMeasure, date: measureDate};
+    setMeasures(m=>[entry,...m]);
+    setNewMeasure({});
+  };
+
+  const handleDeleteMeasure = (idx) => {
+    if (window.confirm("Excluir esta medição?")) setMeasures(m=>m.filter((_,i)=>i!==idx));
   };
   const handleImport = (e) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -389,7 +454,7 @@ export default function BiofeedbackScore() {
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <div style={{display:"flex"}}>
-            {[["form","Avaliação"],["history",`Histórico${history.length>0?` (${history.length})`:""}`,],["compare","Comparar"],["about","Escala"]].map(([v,l])=>(
+            {[["form","Avaliação"],["history",`Histórico${history.length>0?` (${history.length})`:""}`,],["compare","Comparar"],["profile","Perfil"],["about","Escala"]].map(([v,l])=>(
               <button key={v} className={`tab-btn ${view===v?"active":""}`} onClick={()=>setView(v)}>{l}</button>
             ))}
           </div>
@@ -922,6 +987,267 @@ export default function BiofeedbackScore() {
           {history.length < 2 && (
             <div style={{textAlign:"center",color:"#333",fontSize:14,marginTop:40}}>Você precisa de pelo menos 2 semanas salvas para comparar.</div>
           )}
+        </div>
+      )}
+
+      {/* ══ PERFIL ══ */}
+      {view === "profile" && (
+        <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
+
+          {/* Ações do topo */}
+          <div style={{display:"flex",gap:8,marginBottom:20,justifyContent:"flex-end"}}>
+            <button className="ghost-btn" onClick={handleSendEmail}>✉ Enviar por e-mail</button>
+            <button className="ghost-btn" onClick={handleExport}>⬇ Backup completo</button>
+          </div>
+
+          {/* Anamnese */}
+          <div className="card">
+            <div className="section-title">👤 Anamnese e Objetivo</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+              {[
+                {key:"name",label:"Nome",placeholder:"Seu nome"},
+                {key:"age",label:"Idade",placeholder:"ex: 34",type:"number"},
+                {key:"height",label:"Altura (cm)",placeholder:"ex: 178",type:"number"},
+                {key:"startWeight",label:"Peso inicial (kg)",placeholder:"ex: 88.0",type:"number"},
+              ].map(f=>(
+                <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
+                  <input type={f.type||"text"} placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                </div>
+              ))}
+            </div>
+
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Nível de treinamento</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {["Iniciante","Intermediário","Avançado"].map(l=>(
+                  <button key={l} className={`opt-btn ${profile.level===l?"selected":""}`}
+                    style={profile.level===l?{background:"#22c55e",borderColor:"#22c55e",color:"#0c0c0f"}:{}}
+                    onClick={()=>setProfile(p=>({...p,level:l}))}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Objetivo principal</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {["Cutting","Bulking","Recomposição","Saúde / Qualidade de vida"].map(g=>(
+                  <button key={g} className={`opt-btn ${profile.goal===g?"selected":""}`}
+                    style={profile.goal===g?{background:"#84cc16",borderColor:"#84cc16",color:"#0c0c0f"}:{}}
+                    onClick={()=>setProfile(p=>({...p,goal:g}))}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Protocolo de treino</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {["PPL","ABC","ABCD","Full Body","Upper/Lower","Outro"].map(t=>(
+                  <button key={t} className={`opt-btn ${profile.split===t?"selected":""}`}
+                    style={profile.split===t?{background:"#3b82f6",borderColor:"#3b82f6",color:"#fff"}:{}}
+                    onClick={()=>setProfile(p=>({...p,split:t}))}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
+              <label style={{fontSize:12,color:"#777"}}>Condições de saúde relevantes</label>
+              <textarea placeholder="ex: hipertensão controlada, hipotireoidismo..." value={profile.health||""} onChange={e=>setProfile(p=>({...p,health:e.target.value}))} style={{width:"100%",minHeight:56,resize:"vertical"}}/>
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
+              <label style={{fontSize:12,color:"#777"}}>Medicamentos em uso (além de EAs)</label>
+              <textarea placeholder="ex: levotiroxina 50mcg, losartana 50mg..." value={profile.meds||""} onChange={e=>setProfile(p=>({...p,meds:e.target.value}))} style={{width:"100%",minHeight:56,resize:"vertical"}}/>
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
+              <label style={{fontSize:12,color:"#777"}}>Meta (opcional — não obrigatório)</label>
+              <input type="text" placeholder="ex: chegar a 82kg mantendo performance" value={profile.goal_notes||""} onChange={e=>setProfile(p=>({...p,goal_notes:e.target.value}))} style={{width:"100%"}}/>
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              <label style={{fontSize:12,color:"#777"}}>Coach / Médico responsável</label>
+              <input type="text" placeholder="ex: Dr. João Silva" value={profile.coach||""} onChange={e=>setProfile(p=>({...p,coach:e.target.value}))} style={{width:"100%"}}/>
+            </div>
+          </div>
+
+          {/* Fotos de poses */}
+          <div className="card">
+            <div className="section-title">📸 Fotos de Referência (Poses Básicas)</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:14}}>Atualize sempre que quiser registrar evolução visual.</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+              {[
+                {key:"front",label:"Frente"},
+                {key:"back",label:"Costas"},
+                {key:"side",label:"Lateral"},
+              ].map(pose=>(
+                <div key={pose.key} style={{textAlign:"center"}}>
+                  <div style={{fontSize:11,color:"#666",marginBottom:6}}>{pose.label}</div>
+                  {posePhotos[pose.key] ? (
+                    <div style={{position:"relative"}}>
+                      <img src={posePhotos[pose.key]} style={{width:"100%",aspectRatio:"3/4",objectFit:"cover",borderRadius:4,border:"1px solid #2a2a30"}} alt={pose.label}/>
+                      <button className="del-btn" style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.75)",color:"#ccc"}} onClick={()=>setPosePhotos(p=>({...p,[pose.key]:null}))}>✕</button>
+                    </div>
+                  ) : (
+                    <label style={{display:"flex",alignItems:"center",justifyContent:"center",aspectRatio:"3/4",border:"1px dashed #2a2a30",borderRadius:4,cursor:"pointer",color:"#333",fontSize:11,flexDirection:"column",gap:4}}>
+                      <span style={{fontSize:20}}>+</span>
+                      <span>Adicionar</span>
+                      <input type="file" accept="image/*" onChange={e=>handlePosePhoto(pose.key,e)} style={{display:"none"}}/>
+                    </label>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+
+          {/* Score VO2 */}
+          <div className="card">
+            <div className="section-title">🫁 Capacidade Aeróbica — Score VO2 estimado</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
+              Baseado na escala MRC (Medical Research Council) adaptada. Responda com honestidade — sem julgamento.
+            </div>
+
+            {[
+              { key:"vo2_stairs", label:"Subir escadas ou uma ladeira moderada",
+                opts:[{v:4,l:"Sem dificuldade"},{v:3,l:"Fico um pouco ofegante"},{v:2,l:"Preciso parar no meio"},{v:1,l:"Evito por causa do cansaço"}] },
+              { key:"vo2_walk", label:"Caminhar no mesmo ritmo que pessoas da minha idade",
+                opts:[{v:4,l:"Sem dificuldade"},{v:3,l:"Fico para trás às vezes"},{v:2,l:"Fico para trás sempre"},{v:1,l:"Não consigo caminhar por mais de 100m"}] },
+              { key:"vo2_daily", label:"Atividades cotidianas (varrer, carregar compras, jogar com criança)",
+                opts:[{v:4,l:"Sem limitação"},{v:3,l:"Fico cansado, mas concluo"},{v:2,l:"Preciso parar e descansar"},{v:1,l:"Fico ofegante em repouso ou mínimo esforço"}] },
+              { key:"vo2_cardio", label:"Treino de cardio atual (se faz)",
+                opts:[{v:4,l:"Faço 30+ min contínuos sem dificuldade"},{v:3,l:"Consigo 20–30 min com esforço"},{v:2,l:"Menos de 15 min já é difícil"},{v:1,l:"Não faço / não consigo"}] },
+              { key:"vo2_recovery", label:"Recuperação após esforço intenso",
+                opts:[{v:4,l:"Normalizo em 1–2 min"},{v:3,l:"Levo 3–5 min"},{v:2,l:"Levo mais de 5 min"},{v:1,l:"Demoro muito / fico mal-estar"}] },
+            ].map(field=>(
+              <div key={field.key} style={{marginBottom:14}}>
+                <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {field.opts.map(opt=>(
+                    <button key={opt.v} className={`opt-btn ${profile[field.key]===opt.v?"selected":""}`}
+                      style={profile[field.key]===opt.v?{background:"#3b82f6",borderColor:"#3b82f6",color:"#fff"}:{}}
+                      onClick={()=>setProfile(p=>({...p,[field.key]:opt.v}))}>
+                      {opt.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Resultado do score VO2 */}
+            {(()=>{
+              const keys = ["vo2_stairs","vo2_walk","vo2_daily","vo2_cardio","vo2_recovery"];
+              const answered = keys.filter(k=>profile[k]!==undefined);
+              if (answered.length < 3) return (
+                <div style={{fontSize:12,color:"#333",fontStyle:"italic"}}>Responda pelo menos 3 perguntas para ver o resultado.</div>
+              );
+              const total = answered.reduce((sum,k)=>sum+profile[k],0);
+              const max = answered.length * 4;
+              const pct = Math.round((total/max)*100);
+
+              let level, color, rec, zone;
+              if (pct >= 80) {
+                level="Capacidade aeróbica boa"; color="#22c55e";
+                rec="LISS (30–45 min, 60–70% FCmax) 2–3x/semana como base. Pode incluir 1 sessão de HIIT 20 min por semana para manter VO2max.";
+                zone="Zona 2 dominante. 1 sessão Zona 4 opcional.";
+              } else if (pct >= 60) {
+                level="Capacidade aeróbica moderada"; color="#84cc16";
+                rec="LISS progressivo (20–35 min, 60–70% FCmax) 3x/semana. Evite HIIT por enquanto — construa base aeróbica primeiro.";
+                zone="Zona 2 exclusiva por 4–6 semanas antes de introduzir intensidade.";
+              } else if (pct >= 40) {
+                level="Capacidade aeróbica baixa"; color="#eab308";
+                rec="Caminhada em ritmo moderado (20–30 min, 50–60% FCmax) 3–4x/semana. Priorize consistência antes de intensidade.";
+                zone="Zona 1–2. Sem HIIT até capacidade melhorar.";
+              } else {
+                level="Capacidade aeróbica muito baixa"; color="#ef4444";
+                rec="Caminhada leve diária (15–20 min). Consulte médico antes de iniciar protocolo aeróbico estruturado.";
+                zone="Zona 1 apenas. Avaliação clínica recomendada.";
+              }
+
+              return (
+                <div style={{marginTop:16,padding:"14px 16px",background:"#0c0c0f",borderRadius:6,borderLeft:`3px solid ${color}`}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                    <div style={{fontSize:14,color:color}}>{level}</div>
+                    <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:color,lineHeight:1}}>{pct}</div>
+                  </div>
+                  <div style={{fontSize:12,color:"#777",marginBottom:8,lineHeight:1.6}}><span style={{color:"#555"}}>Recomendação: </span>{rec}</div>
+                  <div style={{fontSize:11,color:"#555",fontStyle:"italic"}}>{zone}</div>
+                  <div style={{fontSize:10,color:"#333",marginTop:8}}>Score baseado na Escala MRC adaptada. Não substitui teste ergoespirométrico.</div>
+                </div>
+              );
+            })()}
+          </div>
+          {/* Tabela de medidas */}
+          <div className="card">
+            <div className="section-title">📐 Tabela de Medidas</div>
+
+            {/* Nova medição */}
+            <div style={{background:"#0c0c0f",borderRadius:6,padding:"14px",marginBottom:16}}>
+              <div style={{fontSize:12,color:"#666",marginBottom:10}}>Nova medição</div>
+              <div style={{marginBottom:8}}>
+                <label style={{fontSize:11,color:"#555",display:"block",marginBottom:4}}>Data</label>
+                <input type="text" value={measureDate} onChange={e=>setMeasureDate(e.target.value)} style={{width:"100%"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+                {[
+                  {key:"weight",label:"Peso (kg)"},
+                  {key:"waist",label:"Cintura (cm)"},
+                  {key:"hip",label:"Quadril (cm)"},
+                  {key:"chest",label:"Peito (cm)"},
+                  {key:"shoulders",label:"Ombros (cm)"},
+                  {key:"armR",label:"Braço D (cm)"},
+                  {key:"armL",label:"Braço E (cm)"},
+                  {key:"thighR",label:"Coxa D (cm)"},
+                  {key:"thighL",label:"Coxa E (cm)"},
+                  {key:"calf",label:"Panturrilha (cm)"},
+                  {key:"bodyfat",label:"% Gordura est."},
+                ].map(f=>(
+                  <div key={f.key} style={{display:"flex",flexDirection:"column",gap:3}}>
+                    <label style={{fontSize:10,color:"#555"}}>{f.label}</label>
+                    <input type="number" step="0.1" placeholder="—" value={newMeasure[f.key]||""} onChange={e=>setNewMeasure(m=>({...m,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                  </div>
+                ))}
+              </div>
+              <button className="save-btn" style={{width:"100%"}} onClick={handleSaveMeasure}>Salvar medição</button>
+            </div>
+
+            {/* Histórico de medidas */}
+            {measures.length > 0 && (
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead>
+                    <tr>
+                      {["Data","Peso","Cintura","Quadril","Peito","Ombros","Br.D","Br.E","Cx.D","Cx.E","Pant.","%G",""].map(h=>(
+                        <th key={h} style={{fontSize:10,color:"#555",padding:"6px 8px",textAlign:"left",borderBottom:"1px solid #1e1e25",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {measures.map((m,i)=>(
+                      <tr key={i} style={{borderBottom:"1px solid #1a1a20"}}>
+                        {["date","weight","waist","hip","chest","shoulders","armR","armL","thighR","thighL","calf","bodyfat"].map(k=>(
+                          <td key={k} style={{fontSize:12,color:"#888",padding:"7px 8px",whiteSpace:"nowrap"}}>{m[k]||"—"}</td>
+                        ))}
+                        <td style={{padding:"7px 8px"}}>
+                          <button className="del-btn" onClick={()=>handleDeleteMeasure(i)}>✕</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {measures.length === 0 && (
+              <div style={{textAlign:"center",color:"#333",fontSize:12,padding:"20px 0"}}>Nenhuma medição registrada ainda.</div>
+            )}
+          </div>
+
         </div>
       )}
 
