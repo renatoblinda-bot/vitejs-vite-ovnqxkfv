@@ -604,8 +604,8 @@ export default function BiofeedbackScore() {
 
           {/* Módulo Hormonal */}
           <div className="card" style={{border:"1px solid #2a1a4a"}}>
-            <div className="section-title" style={{color:"#7c3aed"}}>💊 Uso de Hormônios / AI</div>
-            <div style={{fontSize:11,color:"#555",marginBottom:12}}>Você usa inibidor de aromatase ou TRT/EAS atualmente?</div>
+            <div className="section-title" style={{color:"#7c3aed"}}>💊 Uso de Esteroides Anabolizantes (EAs)</div>
+            <div style={{fontSize:11,color:"#555",marginBottom:12}}>Você usa Esteroides Anabolizantes (EAs) — incluindo TRT, testosterona, derivados ou outros compostos que possam afetar o balanço hormonal?</div>
             <div style={{display:"flex",gap:8,marginBottom:16}}>
               <button className={`horm-btn ${usesHormones===true?"yes":""}`} onClick={()=>setUsesHormones(true)}>Sim</button>
               <button className={`horm-btn ${usesHormones===false?"no":""}`} onClick={()=>setUsesHormones(false)}>Não</button>
@@ -614,8 +614,8 @@ export default function BiofeedbackScore() {
             {usesHormones && (
               <div>
                 <div style={{marginBottom:12}}>
-                  <label style={{fontSize:10,color:"#7c3aed",display:"block",marginBottom:4}}>Dose do AI ao longo da semana</label>
-                  <input type="text" placeholder="ex: Anastrozol 0.5mg — 2x na semana" value={hormonal.aiDose||""} onChange={e=>setHormonal(h=>({...h,aiDose:e.target.value}))} style={{width:"100%",borderColor:"#2a1a4a"}}/>
+                  <label style={{fontSize:10,color:"#7c3aed",display:"block",marginBottom:4}}>Dose do Inibidor de Aromatase (AI) usado na semana</label>
+                  <input type="text" placeholder="ex: Anastrozol 0.5mg 2x/semana ou Exemestane 12.5mg 2x/semana" value={hormonal.aiDose||""} onChange={e=>setHormonal(h=>({...h,aiDose:e.target.value}))} style={{width:"100%",borderColor:"#2a1a4a"}}/>
                 </div>
 
                 {[
@@ -677,7 +677,7 @@ export default function BiofeedbackScore() {
                   </div>
                   {hormonal.nipple === "yes" && (
                     <div style={{marginTop:8,fontSize:11,color:"#ef4444",padding:"8px 10px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>
-                      ⚠ Sensibilidade mamilar persistente (&gt;2 dias) é sinal de E2 elevado. Não espere o check-in quinzenal — reavalie a dose do AI imediatamente.
+                      ⚠ Sensibilidade mamilar persistente (2+ dias) em usuários de EAs é sinal clássico de E2 elevado / início de ginecomastia. Não espere o check-in quinzenal — reavalie a dose do AI imediatamente.
                     </div>
                   )}
                 </div>
@@ -940,7 +940,7 @@ export default function BiofeedbackScore() {
           ))}
 
           <div style={{background:"#10101a",border:"1px solid #2a1a4a",borderRadius:6,padding:"16px 18px",marginTop:16}}>
-            <div className="section-title" style={{color:"#7c3aed"}}>Score Hormonal — Interpretação</div>
+            <div className="section-title" style={{color:"#7c3aed"}}>Score Hormonal — Controle de Estrogênio em usuários de EAs</div>
             {[{color:"#ef4444",label:"E2 possivelmente ELEVADO",desc:"Sinais predominantes: mamilo sensível, oleosidade/acne, humor sensível. Ação: revisar dose do AI, solicitar exame de estradiol (preferencialmente LC-MS/MS)."},{color:"#f97316",label:"E2 possivelmente BAIXO",desc:"Sinais predominantes: articulação seca, ausência de ereção matinal, humor apático, pele seca. Ação: AI pode estar em excesso — reduzir dose ou aumentar intervalo. Solicitar exame."},{color:"#22c55e",label:"Quadro equilibrado",desc:"Sinais dentro do esperado. Manter protocolo e reavaliar em 2 semanas."}].map((s,i)=>(
               <div key={i} style={{borderLeft:`3px solid ${s.color}`,padding:"10px 14px",marginBottom:8,background:"#0c0c0f",borderRadius:4}}>
                 <div style={{fontSize:12,color:s.color,marginBottom:4}}>{s.label}</div>
@@ -952,7 +952,7 @@ export default function BiofeedbackScore() {
 
           <div style={{background:"#10101a",border:"1px solid #1e1e25",borderRadius:6,padding:"16px 18px",marginTop:12}}>
             <div className="section-title">Fundamentação</div>
-            <div style={{fontSize:11,color:"#555",lineHeight:1.7}}>Modelo baseado em conceitos de John Jewett, Mike Israetel (RP), Eric Helms e James Krieger. Score hormonal baseado em marcadores clínicos de desequilíbrio androgênio/estrogênio descritos na literatura de endocrinologia aplicada ao esporte.</div>
+            <div style={{fontSize:11,color:"#555",lineHeight:1.7}}>Modelo baseado em conceitos de John Jewett, Mike Israetel (RP), Eric Helms e James Krieger. Score hormonal baseado em marcadores clínicos de desequilíbrio androgênio/estrogênio em usuários de EAs. O uso de compostos anabolizantes pode causar aromatização excessiva (E2 elevado) ou, com uso inadequado de AI, supressão de estrogênio (E2 baixo) — ambos com consequências para saúde e performance.</div>
           </div>
         </div>
       )}
