@@ -337,9 +337,34 @@ export default function BiofeedbackScore() {
     e.target.value="";
   };
 
+  const calcNavy = (w, neck, abd, hip, height, sex) => {
+    if (!height || !neck || !abd) return null;
+    let bf;
+    if (sex === "Feminino") {
+      if (!hip) return null;
+      bf = 163.205 * Math.log10(abd + hip - neck) - 97.684 * Math.log10(height) - 78.387;
+    } else {
+      bf = 86.010 * Math.log10(abd - neck) - 70.041 * Math.log10(height) + 36.76;
+    }
+    return Math.max(3, Math.min(60, parseFloat(bf.toFixed(1))));
+  };
+
   const handleSaveMeasure = () => {
     if (Object.values(newMeasure).every(v=>!v)) return;
-    const entry = {...newMeasure, date: measureDate};
+    // Auto-calculate US Navy if possible
+    const neck = parseFloat(newMeasure.neck_cm || profile.neck_cm);
+    const abd = parseFloat(newMeasure.waist || newMeasure.abdomen_cm);
+    const hip = parseFloat(newMeasure.hip || profile.hip_navy);
+    const h = parseFloat(profile.height);
+    const w = parseFloat(newMeasure.weight);
+    const sex = profile.sex;
+    const bf = calcNavy(w, neck, abd, hip, h, sex);
+    const entry = {
+      ...newMeasure,
+      date: measureDate,
+      bodyfat_navy: bf !== null ? bf : undefined,
+      lbm: (bf !== null && w) ? parseFloat((w*(1-bf/100)).toFixed(1)) : undefined,
+    };
     setMeasures(m=>[entry,...m]);
     setNewMeasure({});
   };
@@ -1183,6 +1208,211 @@ export default function BiofeedbackScore() {
               );
             })()}
           </div>
+          {/* Composição Corporal — US Navy + TDEE */}
+          <div className="card">
+            <div className="section-title">🔬 Composição Corporal — Método US Navy</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
+              Estimativa de % de gordura corporal por circunferências. Preencha os campos abaixo — o cálculo é atualizado automaticamente a cada check-in com novas medidas.
+            </div>
+
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Sexo biológico</div>
+              <div style={{display:"flex",gap:8}}>
+                {["Masculino","Feminino"].map(s=>(
+                  <button key={s} className={`opt-btn ${profile.sex===s?"selected":""}`}
+                    style={profile.sex===s?{background:"#3b82f6",borderColor:"#3b82f6",color:"#fff"}:{}}
+                    onClick={()=>setProfile(p=>({...p,sex:s}))}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+              {[
+                {key:"neck_cm",label:"Circunferência do pescoço (cm)",placeholder:"ex: 39"},
+                {key:"abdomen_cm",label:"Circunferência abdominal (cm)",placeholder:"ex: 84"},
+                ...(profile.sex==="Feminino"?[{key:"hip_navy",label:"Circunferência do quadril (cm)",placeholder:"ex: 98"}]:[]),
+              ].map(f=>(
+                <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
+                  <input type="number" step="0.1" placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                </div>
+              ))}
+            </div>
+
+            {/* Resultado US Navy */}
+            {(()=>{
+              const h = parseFloat(profile.height);
+              const neck = parseFloat(profile.neck_cm);
+              const abd = parseFloat(profile.abdomen_cm);
+              const hip = parseFloat(profile.hip_navy);
+              const w = parseFloat(profile.startWeight);
+              if (!h || !neck || !abd) return null;
+              let bf = null;
+              if (profile.sex === "Feminino") {
+                if (!hip) return null;
+                bf = 163.205 * Math.log10(abd + hip - neck) - 97.684 * Math.log10(h) - 78.387;
+              } else {
+                bf = 86.010 * Math.log10(abd - neck) - 70.041 * Math.log10(h) + 36.76;
+              }
+              bf = Math.max(3, Math.min(60, parseFloat(bf.toFixed(1))));
+              const lbm = w ? parseFloat((w * (1 - bf/100)).toFixed(1)) : null;
+              const fatMass = w ? parseFloat((w * bf/100).toFixed(1)) : null;
+
+              let bfColor = "#22c55e", bfLabel = "Atlético";
+              if (profile.sex === "Feminino") {
+                if (bf > 32) { bfColor="#ef4444"; bfLabel="Acima do ideal"; }
+                else if (bf > 25) { bfColor="#f97316"; bfLabel="Média alta"; }
+                else if (bf > 20) { bfColor="#eab308"; bfLabel="Aceitável"; }
+                else if (bf > 14) { bfColor="#84cc16"; bfLabel="Fitness"; }
+                else { bfColor="#22c55e"; bfLabel="Atlético"; }
+              } else {
+                if (bf > 25) { bfColor="#ef4444"; bfLabel="Acima do ideal"; }
+                else if (bf > 20) { bfColor="#f97316"; bfLabel="Média alta"; }
+                else if (bf > 15) { bfColor="#eab308"; bfLabel="Aceitável"; }
+                else if (bf > 10) { bfColor="#84cc16"; bfLabel="Fitness"; }
+                else { bfColor="#22c55e"; bfLabel="Atlético"; }
+              }
+
+              return (
+                <div style={{padding:"14px 16px",background:"#0c0c0f",borderRadius:6,borderLeft:`3px solid ${bfColor}`,marginTop:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:10}}>
+                    <div style={{textAlign:"center"}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:36,color:bfColor,lineHeight:1}}>{bf}%</div>
+                      <div style={{fontSize:11,color:bfColor}}>{bfLabel}</div>
+                    </div>
+                    {w && (
+                      <div style={{display:"flex",gap:20}}>
+                        <div style={{textAlign:"center"}}>
+                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"#aaa",lineHeight:1}}>{lbm}kg</div>
+                          <div style={{fontSize:11,color:"#555"}}>Massa magra</div>
+                        </div>
+                        <div style={{textAlign:"center"}}>
+                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"#888",lineHeight:1}}>{fatMass}kg</div>
+                          <div style={{fontSize:11,color:"#555"}}>Massa gorda</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{fontSize:11,color:"#444"}}>Método US Navy — estimativa. Margem de erro ±3–4%. Não substitui DEXA ou hidrostática.</div>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* TDEE — Gasto Calórico Estimado */}
+          <div className="card">
+            <div className="section-title">🔥 Gasto Calórico Estimado (TDEE)</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
+              Baseado em Mifflin-St Jeor para TMB + multiplicador de atividade personalizado.
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+              {[
+                {key:"tdee_age",label:"Idade",placeholder:"ex: 34",type:"number"},
+                {key:"tdee_weight",label:"Peso atual (kg)",placeholder:"ex: 84",type:"number"},
+              ].map(f=>(
+                <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
+                  <input type={f.type} placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                </div>
+              ))}
+            </div>
+
+            {[
+              { key:"tdee_workouts", label:"Treinos de musculação por semana",
+                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x"},{v:2,l:"3–4x"},{v:3,l:"5–6x"},{v:4,l:"7x ou mais"}] },
+              { key:"tdee_duration", label:"Duração média do treino",
+                opts:[{v:0,l:"Não treino"},{v:1,l:"< 45 min"},{v:2,l:"45–75 min"},{v:3,l:"> 75 min"}] },
+              { key:"tdee_cardio", label:"Cardio adicional por semana",
+                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x leve"},{v:2,l:"3–4x moderado"},{v:3,l:"5x+ intenso"}] },
+              { key:"tdee_job", label:"Tipo de trabalho",
+                opts:[{v:0,l:"Sentado (escritório)"},{v:1,l:"Em pé (balcão/loja)"},{v:2,l:"Andando (campo/obra)"},{v:3,l:"Trabalho pesado físico"}] },
+              { key:"tdee_neat", label:"Atividade fora do treino (NEAT)",
+                opts:[{v:0,l:"Muito sedentário"},{v:1,l:"Pouco ativo"},{v:2,l:"Moderadamente ativo"},{v:3,l:"Muito ativo"}] },
+            ].map(field=>(
+              <div key={field.key} style={{marginBottom:12}}>
+                <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {field.opts.map(opt=>(
+                    <button key={opt.v} className={`opt-btn ${profile[field.key]===opt.v?"selected":""}`}
+                      style={profile[field.key]===opt.v?{background:"#f97316",borderColor:"#f97316",color:"#0c0c0f"}:{}}
+                      onClick={()=>setProfile(p=>({...p,[field.key]:opt.v}))}>
+                      {opt.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Resultado TDEE */}
+            {(()=>{
+              const w = parseFloat(profile.tdee_weight || profile.startWeight);
+              const h2 = parseFloat(profile.height);
+              const age = parseFloat(profile.tdee_age || profile.age);
+              const sex = profile.sex;
+              if (!w || !h2 || !age || !sex) return (
+                <div style={{fontSize:12,color:"#333",fontStyle:"italic",marginTop:8}}>Preencha peso, altura, idade e sexo para calcular.</div>
+              );
+
+              // TMB Mifflin-St Jeor
+              let tmb = sex === "Feminino"
+                ? (10 * w) + (6.25 * h2) - (5 * age) - 161
+                : (10 * w) + (6.25 * h2) - (5 * age) + 5;
+
+              // Multiplicador baseado nas respostas
+              const wo = profile.tdee_workouts || 0;
+              const dur = profile.tdee_duration || 0;
+              const card = profile.tdee_cardio || 0;
+              const job = profile.tdee_job || 0;
+              const neat = profile.tdee_neat || 0;
+
+              // Score total 0–16 mapeado para fator 1.2–2.0
+              const actScore = wo + dur + card + job + neat;
+              const factor = 1.2 + (actScore / 16) * 0.8;
+              const tdee = Math.round(tmb * factor);
+              tmb = Math.round(tmb);
+
+              const cutting = Math.round(tdee * 0.82);
+              const mild = Math.round(tdee * 0.90);
+              const bulk = Math.round(tdee * 1.10);
+
+              const factorLabel = factor < 1.375 ? "Sedentário" : factor < 1.55 ? "Levemente ativo" : factor < 1.725 ? "Moderadamente ativo" : factor < 1.9 ? "Muito ativo" : "Extremamente ativo";
+
+              return (
+                <div style={{marginTop:12,padding:"16px",background:"#0c0c0f",borderRadius:6}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+                    <div style={{textAlign:"center",padding:"10px",background:"#12121a",borderRadius:4}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"#888",lineHeight:1}}>{tmb}</div>
+                      <div style={{fontSize:11,color:"#555",marginTop:2}}>TMB (kcal)</div>
+                    </div>
+                    <div style={{textAlign:"center",padding:"10px",background:"#12121a",borderRadius:4}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"#f97316",lineHeight:1}}>{tdee}</div>
+                      <div style={{fontSize:11,color:"#555",marginTop:2}}>TDEE estimado</div>
+                      <div style={{fontSize:10,color:"#333",marginTop:1}}>{factorLabel} (×{factor.toFixed(2)})</div>
+                    </div>
+                  </div>
+
+                  <div style={{fontSize:11,color:"#555",marginBottom:10,letterSpacing:".06em",textTransform:"uppercase"}}>Metas calóricas sugeridas</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                    {[
+                      {label:"Cutting (−18%)",value:cutting,color:"#22c55e"},
+                      {label:"Cutting leve (−10%)",value:mild,color:"#84cc16"},
+                      {label:"Bulk (+10%)",value:bulk,color:"#3b82f6"},
+                    ].map(c=>(
+                      <div key={c.label} style={{textAlign:"center",padding:"10px 6px",background:"#12121a",borderRadius:4}}>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:c.color,lineHeight:1}}>{c.value}</div>
+                        <div style={{fontSize:10,color:"#444",marginTop:2}}>{c.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{fontSize:10,color:"#333",marginTop:12}}>Mifflin-St Jeor + fator de atividade personalizado. Margem de erro ±10–15%. Ajuste conforme resposta do corpo nas semanas.</div>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Tabela de medidas */}
           <div className="card">
             <div className="section-title">📐 Tabela de Medidas</div>
@@ -1197,7 +1427,8 @@ export default function BiofeedbackScore() {
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
                 {[
                   {key:"weight",label:"Peso (kg)"},
-                  {key:"waist",label:"Cintura (cm)"},
+                  {key:"waist",label:"Cintura / Abdômen (cm)"},
+                  {key:"neck_cm",label:"Pescoço (cm)"},
                   {key:"hip",label:"Quadril (cm)"},
                   {key:"chest",label:"Peito (cm)"},
                   {key:"shoulders",label:"Ombros (cm)"},
@@ -1206,7 +1437,6 @@ export default function BiofeedbackScore() {
                   {key:"thighR",label:"Coxa D (cm)"},
                   {key:"thighL",label:"Coxa E (cm)"},
                   {key:"calf",label:"Panturrilha (cm)"},
-                  {key:"bodyfat",label:"% Gordura est."},
                 ].map(f=>(
                   <div key={f.key} style={{display:"flex",flexDirection:"column",gap:3}}>
                     <label style={{fontSize:10,color:"#555"}}>{f.label}</label>
@@ -1223,7 +1453,7 @@ export default function BiofeedbackScore() {
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
                   <thead>
                     <tr>
-                      {["Data","Peso","Cintura","Quadril","Peito","Ombros","Br.D","Br.E","Cx.D","Cx.E","Pant.","%G",""].map(h=>(
+                      {["Data","Peso","Cintura","Quadril","Peito","Ombros","Br.D","Br.E","Cx.D","Cx.E","Pant.","%G Navy","M.Magra",""].map(h=>(
                         <th key={h} style={{fontSize:10,color:"#555",padding:"6px 8px",textAlign:"left",borderBottom:"1px solid #1e1e25",whiteSpace:"nowrap"}}>{h}</th>
                       ))}
                     </tr>
@@ -1231,7 +1461,7 @@ export default function BiofeedbackScore() {
                   <tbody>
                     {measures.map((m,i)=>(
                       <tr key={i} style={{borderBottom:"1px solid #1a1a20"}}>
-                        {["date","weight","waist","hip","chest","shoulders","armR","armL","thighR","thighL","calf","bodyfat"].map(k=>(
+                        {["date","weight","waist","hip","chest","shoulders","armR","armL","thighR","thighL","calf","bodyfat_navy","lbm"].map(k=>(
                           <td key={k} style={{fontSize:12,color:"#888",padding:"7px 8px",whiteSpace:"nowrap"}}>{m[k]||"—"}</td>
                         ))}
                         <td style={{padding:"7px 8px"}}>
