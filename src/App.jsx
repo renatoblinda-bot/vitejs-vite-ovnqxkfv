@@ -12,19 +12,19 @@ const DEFAULT_WEIGHTS = {
 
 const CATEGORIES = [
   { id:"performance", label:"Performance", icon:"⚡", description:"Cargas e repetições estão subindo ou se mantendo?",
-    options:[{value:5,label:"Subindo claramente",color:"#22c55e"},{value:4,label:"Estável / leve progresso",color:"#84cc16"},{value:3,label:"Estável sem progresso",color:"#eab308"},{value:2,label:"Leve queda",color:"#f97316"},{value:1,label:"Queda significativa",color:"#ef4444"}]},
+    options:[{value:5,label:"Subindo claramente",color:"var(--green)"},{value:4,label:"Estável / leve progresso",color:"#84cc16"},{value:3,label:"Estável sem progresso",color:"var(--amber)"},{value:2,label:"Leve queda",color:"var(--orange)"},{value:1,label:"Queda significativa",color:"var(--red)"}]},
   { id:"recovery", label:"Recuperação", icon:"🔄", description:"Chega recuperado ao próximo treino? DOMS excessiva?",
-    options:[{value:5,label:"Totalmente recuperado",color:"#22c55e"},{value:4,label:"Bem recuperado",color:"#84cc16"},{value:3,label:"Recuperação parcial",color:"#eab308"},{value:2,label:"Ainda dolorido / pesado",color:"#f97316"},{value:1,label:"Fadiga acumulada clara",color:"#ef4444"}]},
+    options:[{value:5,label:"Totalmente recuperado",color:"var(--green)"},{value:4,label:"Bem recuperado",color:"#84cc16"},{value:3,label:"Recuperação parcial",color:"var(--amber)"},{value:2,label:"Ainda dolorido / pesado",color:"var(--orange)"},{value:1,label:"Fadiga acumulada clara",color:"var(--red)"}]},
   { id:"sleep", label:"Sono", icon:"🌙", description:"Qualidade do sono e sensação ao acordar",
-    options:[{value:5,label:"Profundo, descansado",color:"#22c55e"},{value:4,label:"Bom, poucos despertares",color:"#84cc16"},{value:3,label:"Fragmentado, ok",color:"#eab308"},{value:2,label:"Ruim, cansado ao acordar",color:"#f97316"},{value:1,label:"Muito ruim / insônia",color:"#ef4444"}]},
+    options:[{value:5,label:"Profundo, descansado",color:"var(--green)"},{value:4,label:"Bom, poucos despertares",color:"#84cc16"},{value:3,label:"Fragmentado, ok",color:"var(--amber)"},{value:2,label:"Ruim, cansado ao acordar",color:"var(--orange)"},{value:1,label:"Muito ruim / insônia",color:"var(--red)"}]},
   { id:"energy", label:"Energia e Disposição", icon:"🔋", description:"Energia ao longo do dia e motivação para treinar",
-    options:[{value:5,label:"Alta energia, motivado",color:"#22c55e"},{value:4,label:"Boa energia geral",color:"#84cc16"},{value:3,label:"Energia oscilante",color:"#eab308"},{value:2,label:"Cansado, mas funcional",color:"#f97316"},{value:1,label:"Arrastando o corpo",color:"#ef4444"}]},
+    options:[{value:5,label:"Alta energia, motivado",color:"var(--green)"},{value:4,label:"Boa energia geral",color:"#84cc16"},{value:3,label:"Energia oscilante",color:"var(--amber)"},{value:2,label:"Cansado, mas funcional",color:"var(--orange)"},{value:1,label:"Arrastando o corpo",color:"var(--red)"}]},
   { id:"joints", label:"Dor Articular", icon:"🦴", description:"Ombros, cotovelos, joelhos, lombar",
-    options:[{value:5,label:"Sem dores",color:"#22c55e"},{value:4,label:"Leve desconforto ocasional",color:"#84cc16"},{value:3,label:"Desconforto frequente",color:"#eab308"},{value:2,label:"Dor presente no treino",color:"#f97316"},{value:1,label:"Dor limitante",color:"#ef4444"}]},
+    options:[{value:5,label:"Sem dores",color:"var(--green)"},{value:4,label:"Leve desconforto ocasional",color:"#84cc16"},{value:3,label:"Desconforto frequente",color:"var(--amber)"},{value:2,label:"Dor presente no treino",color:"var(--orange)"},{value:1,label:"Dor limitante",color:"var(--red)"}]},
   { id:"hunger", label:"Fome", icon:"🍽️", description:"Controle da fome e ausência de compulsões",
-    options:[{value:5,label:"Controlada, sem compulsão",color:"#22c55e"},{value:4,label:"Controlável",color:"#84cc16"},{value:3,label:"Fome moderada",color:"#eab308"},{value:2,label:"Fome alta",color:"#f97316"},{value:1,label:"Fome extrema / compulsão",color:"#ef4444"}]},
+    options:[{value:5,label:"Controlada, sem compulsão",color:"var(--green)"},{value:4,label:"Controlável",color:"#84cc16"},{value:3,label:"Fome moderada",color:"var(--amber)"},{value:2,label:"Fome alta",color:"var(--orange)"},{value:1,label:"Fome extrema / compulsão",color:"var(--red)"}]},
   { id:"pump", label:"Pump e Conexão Muscular", icon:"💪", description:"Sente o músculo? Pump presente?",
-    options:[{value:5,label:"Pump excelente",color:"#22c55e"},{value:4,label:"Bom pump",color:"#84cc16"},{value:3,label:"Pump moderado",color:"#eab308"},{value:2,label:"Pump fraco",color:"#f97316"},{value:1,label:"Sem pump",color:"#ef4444"}]},
+    options:[{value:5,label:"Pump excelente",color:"var(--green)"},{value:4,label:"Bom pump",color:"#84cc16"},{value:3,label:"Pump moderado",color:"var(--amber)"},{value:2,label:"Pump fraco",color:"var(--orange)"},{value:1,label:"Sem pump",color:"var(--red)"}]},
 ];
 
 const OBJECTIVE_FIELDS = [
@@ -43,11 +43,11 @@ const MACRO_FIELDS = [
 
 const GUT_FREQ = [{value:"0",label:"0x"},{value:"1",label:"1x"},{value:"2",label:"2x"},{value:"3",label:"3x+"}];
 const GUT_CONSISTENCY = [
-  {value:5,label:"Ideal (formada, fácil)",color:"#22c55e"},
+  {value:5,label:"Ideal (formada, fácil)",color:"var(--green)"},
   {value:4,label:"Boa, leve variação",color:"#84cc16"},
-  {value:3,label:"Pastosa / irregular",color:"#eab308"},
-  {value:2,label:"Diarreia / constipação leve",color:"#f97316"},
-  {value:1,label:"Diarreia / constipação severa",color:"#ef4444"},
+  {value:3,label:"Pastosa / irregular",color:"var(--amber)"},
+  {value:2,label:"Diarreia / constipação leve",color:"var(--orange)"},
+  {value:1,label:"Diarreia / constipação severa",color:"var(--red)"},
 ];
 
 // ─── MÓDULO HORMONAL ─────────────────────────────────────────────────────────
@@ -101,26 +101,26 @@ const computeHormonalScore = (h) => {
   const highScore = Math.min(100, Math.round((highSignals / (total * 1.2)) * 100));
   const lowScore = Math.min(100, Math.round((lowSignals / (total * 1.2)) * 100));
 
-  if (highScore >= 35) return { status:"high", label:"E2 possivelmente ELEVADO", color:"#ef4444", suggestion:"Revisar dose do AI. Considerar exame de estradiol (LC-MS/MS). Sinais: mamilo sensível, pele oleosa, humor sensível.", highScore, lowScore };
-  if (lowScore >= 35) return { status:"low", label:"E2 possivelmente BAIXO", color:"#f97316", suggestion:"AI pode estar em excesso. Articulações secas e ereção matinal ausente são sinais clássicos de E2 suprimido. Solicitar exame.", highScore, lowScore };
-  return { status:"ok", label:"Quadro hormonal equilibrado", color:"#22c55e", suggestion:"Manter protocolo atual. Reavaliar em 2 semanas.", highScore, lowScore };
+  if (highScore >= 35) return { status:"high", label:"E2 possivelmente ELEVADO", color:"var(--red)", suggestion:"Revisar dose do AI. Considerar exame de estradiol (LC-MS/MS). Sinais: mamilo sensível, pele oleosa, humor sensível.", highScore, lowScore };
+  if (lowScore >= 35) return { status:"low", label:"E2 possivelmente BAIXO", color:"var(--orange)", suggestion:"AI pode estar em excesso. Articulações secas e ereção matinal ausente são sinais clássicos de E2 suprimido. Solicitar exame.", highScore, lowScore };
+  return { status:"ok", label:"Quadro hormonal equilibrado", color:"var(--green)", suggestion:"Manter protocolo atual. Reavaliar em 2 semanas.", highScore, lowScore };
 };
 
 // ─── SCORE BIOFEEDBACK ────────────────────────────────────────────────────────
 const getScoreInfo = (score) => {
-  if (score >= 85) return { color:"#22c55e", label:"Adaptando bem", bg:"rgba(34,197,94,0.12)", readiness:"verde", readinessLabel:"Treine normalmente", readinessDesc:"Biofeedback positivo. Mantenha o plano." };
+  if (score >= 85) return { color:"var(--green)", label:"Adaptando bem", bg:"rgba(34,197,94,0.12)", readiness:"verde", readinessLabel:"Treine normalmente", readinessDesc:"Biofeedback positivo. Mantenha o plano." };
   if (score >= 70) return { color:"#84cc16", label:"No caminho certo", bg:"rgba(132,204,22,0.12)", readiness:"verde", readinessLabel:"Treine normalmente", readinessDesc:"Boa adaptação. Monitore de perto." };
-  if (score >= 55) return { color:"#eab308", label:"Atenção necessária", bg:"rgba(234,179,8,0.12)", readiness:"amarelo", readinessLabel:"Mantenha as cargas", readinessDesc:"Primeiros sinais de fadiga. Não progrida agora." };
-  if (score >= 40) return { color:"#f97316", label:"Sinal de alerta", bg:"rgba(249,115,22,0.12)", readiness:"amarelo", readinessLabel:"Reduza o volume", readinessDesc:"Recuperação comprometida. Considere deload parcial." };
-  return { color:"#ef4444", label:"Fadiga acumulada", bg:"rgba(239,68,68,0.12)", readiness:"vermelho", readinessLabel:"Deload imediato", readinessDesc:"Alto risco de estagnação ou lesão." };
+  if (score >= 55) return { color:"var(--amber)", label:"Atenção necessária", bg:"rgba(234,179,8,0.12)", readiness:"amarelo", readinessLabel:"Mantenha as cargas", readinessDesc:"Primeiros sinais de fadiga. Não progrida agora." };
+  if (score >= 40) return { color:"var(--orange)", label:"Sinal de alerta", bg:"rgba(249,115,22,0.12)", readiness:"amarelo", readinessLabel:"Reduza o volume", readinessDesc:"Recuperação comprometida. Considere deload parcial." };
+  return { color:"var(--red)", label:"Fadiga acumulada", bg:"rgba(239,68,68,0.12)", readiness:"vermelho", readinessLabel:"Deload imediato", readinessDesc:"Alto risco de estagnação ou lesão." };
 };
 
 const SCORE_SCALE = [
-  {range:"85–100",color:"#22c55e",label:"Adaptando bem",desc:"Manter o plano. Pode progredir."},
+  {range:"85–100",color:"var(--green)",label:"Adaptando bem",desc:"Manter o plano. Pode progredir."},
   {range:"70–84",color:"#84cc16",label:"No caminho certo",desc:"Boa adaptação. Monitorar."},
-  {range:"55–69",color:"#eab308",label:"Atenção necessária",desc:"Primeiros sinais de fadiga acumulada."},
-  {range:"40–54",color:"#f97316",label:"Sinal de alerta",desc:"Recuperação comprometida. Deload parcial."},
-  {range:"0–39",color:"#ef4444",label:"Fadiga acumulada",desc:"Alto risco de estagnação ou lesão."},
+  {range:"55–69",color:"var(--amber)",label:"Atenção necessária",desc:"Primeiros sinais de fadiga acumulada."},
+  {range:"40–54",color:"var(--orange)",label:"Sinal de alerta",desc:"Recuperação comprometida. Deload parcial."},
+  {range:"0–39",color:"var(--red)",label:"Fadiga acumulada",desc:"Alto risco de estagnação ou lesão."},
 ];
 
 const computeScore = (scoreMap, weights) => {
@@ -461,58 +461,303 @@ export default function BiofeedbackScore() {
   const H = ({id,children}) => <div id={id}>{children}</div>;
 
   return (
-    <div style={{minHeight:"100vh",background:"#0c0c0f",color:"#e8e6e1",fontFamily:"'DM Mono','Courier New',monospace",fontSize:"14px"}}>
+    <div style={{minHeight:"100vh",background:"var(--surface-0)",color:"var(--text-1)",fontFamily:"'DM Mono','Courier New',monospace",fontSize:"14px"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
-        *{box-sizing:border-box}
-        ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:#0c0c0f} ::-webkit-scrollbar-thumb{background:#2a2a30;border-radius:2px}
-        .opt-btn{background:transparent;border:1px solid #2a2a30;color:#aaa;padding:9px 14px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px;transition:all .15s;white-space:nowrap}
-        .opt-btn:hover{border-color:#444;color:#ccc} .opt-btn.selected{font-weight:500;color:#0c0c0f}
-        .tab-btn{background:transparent;border:none;color:#777;font-family:inherit;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:10px 16px;border-bottom:2px solid transparent;transition:all .15s}
-        .tab-btn.active{color:#ffffff;border-bottom-color:#e8e6e1} .tab-btn:hover:not(.active){color:#999}
-        .save-btn{background:#e8e6e1;color:#0c0c0f;border:none;padding:14px 32px;font-family:inherit;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;font-weight:500;transition:opacity .15s}
-        .save-btn:disabled{opacity:.25;cursor:not-allowed} .save-btn:hover:not(:disabled){opacity:.85}
-        .ghost-btn{background:transparent;border:1px solid #3a3a40;color:#888;padding:8px 16px;font-family:inherit;font-size:12px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s}
-        .ghost-btn:hover{border-color:#555;color:#aaa}
-        input,textarea,select{background:#15151a;border:1px solid #3a3a40;color:#e8e6e1;font-family:inherit;font-size:13px;padding:10px 14px;border-radius:4px;outline:none;transition:border-color .15s}
-        input:focus,textarea:focus,select:focus{border-color:#555}
-        .weight-input{background:#15151a;border:1px solid #2a2a30;color:#e8e6e1;font-family:inherit;font-size:12px;padding:4px 8px;border-radius:3px;outline:none;width:52px;text-align:center}
-        .del-btn{background:transparent;border:none;color:#2a2a30;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:3px;transition:color .15s}
-        .del-btn:hover{color:#ef4444}
-        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
-        .modal-box{background:#12121a;border:1px solid #2a2a35;border-radius:10px;max-width:540px;width:100%;max-height:88vh;overflow-y:auto;padding:28px 24px}
-        .close-btn{background:transparent;border:1px solid #3a3a40;color:#888;padding:10px 24px;font-family:inherit;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s;margin-top:20px}
-        .close-btn:hover{border-color:#555;color:#aaa}
-        .card{background:#10101a;border:1px solid #1a1a20;border-radius:6px;padding:14px 16px;margin-bottom:8px}
-        .section-title{font-size:12px;color:#666;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-        .horm-btn{background:transparent;border:1px solid #2a2a30;color:#888;padding:8px 16px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:11px;transition:all .15s}
-        .horm-btn.yes{background:#7c3aed;border-color:#7c3aed;color:#fff}
-        .horm-btn.no{background:#2a2a30;border-color:#2a2a30;color:#aaa}
-        .anchor-row{display:grid;grid-template-columns:1fr 80px 70px 32px;gap:6px;margin-bottom:6px}
+        :root{
+          --brand:#2563eb;
+          --brand-dim:rgba(37,99,235,0.15);
+          --brand-glow:rgba(37,99,235,0.3);
+          --surface-0:#07090f;
+          --surface-1:#0c0f1a;
+          --surface-2:#111520;
+          --surface-3:#161b28;
+          --surface-4:#1c2130;
+          --border:rgba(255,255,255,0.07);
+          --border-strong:rgba(255,255,255,0.12);
+          --text-1:#f0eee9;
+          --text-2:#9aa0b4;
+          --text-3:#545c74;
+          --text-4:#2e3448;
+          --green:#22c55e;
+          --amber:#eab308;
+          --red:#ef4444;
+          --orange:#f97316;
+          --purple:#7c3aed;
+          --radius:8px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--surface-0)}
+        ::-webkit-scrollbar{width:4px}
+        ::-webkit-scrollbar-track{background:var(--surface-0)}
+        ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:2px}
+
+        /* ── Option buttons ── */
+        .opt-btn{
+          background:rgba(255,255,255,0.03);
+          border:1px solid var(--border);
+          color:var(--text-2);
+          padding:9px 16px;
+          border-radius:6px;
+          cursor:pointer;
+          font-family:inherit;
+          font-size:13px;
+          transition:all .18s;
+          white-space:nowrap;
+        }
+        .opt-btn:hover{
+          background:rgba(255,255,255,0.07);
+          border-color:var(--border-strong);
+          color:var(--text-1);
+        }
+        .opt-btn.selected{
+          font-weight:500;
+          color:#fff;
+          box-shadow:0 0 0 1px var(--brand), 0 0 12px var(--brand-glow);
+        }
+
+        /* ── Tabs ── */
+        .tab-btn{
+          background:transparent;
+          border:none;
+          color:var(--text-3);
+          font-family:inherit;
+          font-size:11px;
+          letter-spacing:.12em;
+          text-transform:uppercase;
+          cursor:pointer;
+          padding:12px 16px;
+          border-bottom:2px solid transparent;
+          transition:all .18s;
+        }
+        .tab-btn.active{
+          color:var(--text-1);
+          border-bottom-color:var(--brand);
+        }
+        .tab-btn:hover:not(.active){color:var(--text-2)}
+
+        /* ── Primary button ── */
+        .save-btn{
+          background:linear-gradient(135deg,#2563eb,#1d4ed8);
+          color:#fff;
+          border:none;
+          padding:14px 32px;
+          font-family:inherit;
+          font-size:13px;
+          letter-spacing:.1em;
+          text-transform:uppercase;
+          cursor:pointer;
+          border-radius:6px;
+          font-weight:500;
+          transition:all .18s;
+          box-shadow:0 4px 16px rgba(37,99,235,0.3);
+        }
+        .save-btn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
+        .save-btn:hover:not(:disabled){
+          background:linear-gradient(135deg,#3b82f6,#2563eb);
+          box-shadow:0 4px 24px rgba(37,99,235,0.5);
+          transform:translateY(-1px);
+        }
+
+        /* ── Ghost button ── */
+        .ghost-btn{
+          background:rgba(255,255,255,0.03);
+          border:1px solid var(--border);
+          color:var(--text-3);
+          padding:8px 16px;
+          font-family:inherit;
+          font-size:11px;
+          letter-spacing:.08em;
+          text-transform:uppercase;
+          cursor:pointer;
+          border-radius:6px;
+          transition:all .18s;
+        }
+        .ghost-btn:hover{
+          background:rgba(255,255,255,0.06);
+          border-color:var(--border-strong);
+          color:var(--text-2);
+        }
+
+        /* ── Inputs ── */
+        input,textarea,select{
+          background:var(--surface-2);
+          border:1px solid var(--border);
+          color:var(--text-1);
+          font-family:inherit;
+          font-size:13px;
+          padding:10px 14px;
+          border-radius:6px;
+          outline:none;
+          transition:all .18s;
+        }
+        input:focus,textarea:focus,select:focus{
+          border-color:var(--brand);
+          background:var(--surface-3);
+          box-shadow:0 0 0 3px var(--brand-dim);
+        }
+        input::placeholder,textarea::placeholder{color:var(--text-4)}
+
+        .weight-input{
+          background:var(--surface-2);
+          border:1px solid var(--border);
+          color:var(--text-1);
+          font-family:inherit;
+          font-size:12px;
+          padding:4px 8px;
+          border-radius:4px;
+          outline:none;
+          width:52px;
+          text-align:center;
+        }
+
+        /* ── Delete button ── */
+        .del-btn{
+          background:transparent;
+          border:none;
+          color:var(--text-4);
+          cursor:pointer;
+          font-size:14px;
+          padding:4px 8px;
+          border-radius:4px;
+          transition:all .15s;
+          font-family:inherit;
+        }
+        .del-btn:hover{color:var(--red);background:rgba(239,68,68,0.08)}
+
+        /* ── Modal ── */
+        .modal-overlay{
+          position:fixed;inset:0;
+          background:rgba(0,0,0,0.9);
+          backdrop-filter:blur(4px);
+          z-index:100;
+          display:flex;align-items:center;justify-content:center;padding:20px;
+        }
+        .modal-box{
+          background:linear-gradient(180deg,var(--surface-2),var(--surface-1));
+          border:1px solid var(--border-strong);
+          border-radius:12px;
+          max-width:540px;width:100%;max-height:88vh;overflow-y:auto;
+          padding:28px 24px;
+          box-shadow:0 24px 64px rgba(0,0,0,0.6);
+        }
+        .close-btn{
+          background:rgba(255,255,255,0.03);
+          border:1px solid var(--border);
+          color:var(--text-3);
+          padding:10px 24px;
+          font-family:inherit;font-size:12px;
+          letter-spacing:.08em;text-transform:uppercase;
+          cursor:pointer;border-radius:6px;
+          transition:all .18s;margin-top:20px;
+        }
+        .close-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-2)}
+
+        /* ── Cards ── */
+        .card{
+          background:linear-gradient(180deg,var(--surface-2),var(--surface-1));
+          border:1px solid var(--border);
+          border-radius:var(--radius);
+          padding:18px 20px;
+          margin-bottom:10px;
+        }
+        .card-hero{
+          background:linear-gradient(135deg,#0f1828 0%,#0a1020 60%,#07090f 100%);
+          border:1px solid rgba(37,99,235,0.2);
+          border-radius:var(--radius);
+          padding:24px;
+          margin-bottom:16px;
+          box-shadow:0 0 40px rgba(37,99,235,0.05);
+        }
+
+        /* ── Section title ── */
+        .section-title{
+          font-size:11px;
+          color:var(--text-3);
+          letter-spacing:.14em;
+          text-transform:uppercase;
+          margin-bottom:16px;
+          display:flex;align-items:center;gap:8px;
+        }
+        .section-title::after{
+          content:'';flex:1;
+          height:1px;
+          background:linear-gradient(90deg,var(--border),transparent);
+        }
+
+        /* ── Hormonal buttons ── */
+        .horm-btn{
+          background:rgba(255,255,255,0.03);
+          border:1px solid var(--border);
+          color:var(--text-3);
+          padding:10px 20px;
+          border-radius:6px;
+          cursor:pointer;
+          font-family:inherit;font-size:13px;
+          transition:all .18s;
+        }
+        .horm-btn.yes{
+          background:rgba(124,58,237,0.15);
+          border-color:var(--purple);
+          color:var(--purple);
+          box-shadow:0 0 12px rgba(124,58,237,0.2);
+        }
+        .horm-btn.no{
+          background:rgba(255,255,255,0.04);
+          border-color:var(--border-strong);
+          color:var(--text-2);
+        }
+
+        /* ── Anchor row ── */
+        .anchor-row{display:grid;grid-template-columns:1fr 80px 70px 32px;gap:6px;margin-bottom:8px}
+
+        /* ── Progress bar ── */
+        .progress-bar{
+          height:4px;
+          background:var(--surface-4);
+          border-radius:2px;
+          overflow:hidden;
+          margin-top:12px;
+        }
+        .progress-fill{
+          height:100%;
+          border-radius:2px;
+          background:linear-gradient(90deg,var(--brand),#60a5fa);
+          transition:width .4s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── Category icons ── */
+        .cat-icon{
+          width:36px;height:36px;
+          border-radius:8px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:18px;flex-shrink:0;
+        }
       `}</style>
 
       {/* ── Auth loading ── */}
       {authLoading && (
-        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <div style={{fontSize:13,color:"#444",letterSpacing:".1em"}}>CARREGANDO...</div>
+        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--surface-0)"}}>
+          <div style={{fontSize:12,color:"var(--text-4)",letterSpacing:".2em",textTransform:"uppercase"}}>CALIBRA</div>
         </div>
       )}
 
       {/* ── Auth screen ── */}
       {!authLoading && !user && (
         <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-          <div style={{width:"100%",maxWidth:380,background:"#10101a",border:"1px solid #1e1e25",borderRadius:10,padding:"32px 28px"}}>
+          <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,var(--surface-3),var(--surface-1))",border:"1px solid var(--border-strong)",borderRadius:12,padding:"36px 32px",boxShadow:"0 24px 64px rgba(0,0,0,0.5)"}}>
             <div style={{textAlign:"center",marginBottom:28}}>
-              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:32,letterSpacing:".1em",color:"#e8e6e1"}}>CALIBRA</div>
-              <div style={{fontSize:11,color:"#444",letterSpacing:".12em",textTransform:"uppercase",marginTop:4}}>Monitoramento de adaptação ao treino</div>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,letterSpacing:".15em",color:"var(--text-1)",background:"linear-gradient(135deg,#fff,#9aa0b4)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>CALIBRA</div>
+              <div style={{fontSize:11,color:"var(--text-4)",letterSpacing:".14em",textTransform:"uppercase",marginTop:6}}>Monitoramento de adaptação ao treino</div>
             </div>
 
-            <div style={{display:"flex",marginBottom:20,background:"#0c0c0f",borderRadius:4,padding:3}}>
+            <div style={{display:"flex",marginBottom:24,background:"var(--surface-0)",borderRadius:8,padding:4}}>
               {[["login","Entrar"],["register","Criar conta"]].map(([v,l])=>(
                 <button key={v} onClick={()=>{setAuthView(v);setAuthError("");setAuthMsg("");}}
                   style={{flex:1,padding:"8px",border:"none",borderRadius:3,cursor:"pointer",fontFamily:"inherit",fontSize:12,letterSpacing:".06em",transition:"all .15s",
-                    background:authView===v?"#1e1e2e":"transparent",
-                    color:authView===v?"#e8e6e1":"#555"}}>
+                    background:authView===v?"var(--surface-4)":"transparent",
+                    color:authView===v?"var(--text-1)":"var(--text-4)",
+                    borderRadius:6}}>
                   {l}
                 </button>
               ))}
@@ -520,28 +765,28 @@ export default function BiofeedbackScore() {
 
             <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
               <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                <label style={{fontSize:12,color:"#666"}}>E-mail</label>
+                <label style={{fontSize:12,color:"var(--text-3)"}}>E-mail</label>
                 <input type="email" placeholder="seu@email.com" value={authEmail} onChange={e=>setAuthEmail(e.target.value)}
                   onKeyDown={e=>e.key==="Enter"&&(authView==="login"?handleLogin():handleRegister())}
                   style={{width:"100%"}}/>
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                <label style={{fontSize:12,color:"#666"}}>Senha</label>
+                <label style={{fontSize:12,color:"var(--text-3)"}}>Senha</label>
                 <input type="password" placeholder={authView==="register"?"mínimo 6 caracteres":""} value={authPassword} onChange={e=>setAuthPassword(e.target.value)}
                   onKeyDown={e=>e.key==="Enter"&&(authView==="login"?handleLogin():handleRegister())}
                   style={{width:"100%"}}/>
               </div>
             </div>
 
-            {authError && <div style={{fontSize:12,color:"#ef4444",marginBottom:12,padding:"8px 12px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>{authError}</div>}
-            {authMsg && <div style={{fontSize:12,color:"#22c55e",marginBottom:12,padding:"8px 12px",background:"rgba(34,197,94,0.08)",borderRadius:4}}>{authMsg}</div>}
+            {authError && <div style={{fontSize:12,color:"var(--red)",marginBottom:12,padding:"8px 12px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>{authError}</div>}
+            {authMsg && <div style={{fontSize:12,color:"var(--green)",marginBottom:12,padding:"8px 12px",background:"rgba(34,197,94,0.08)",borderRadius:4}}>{authMsg}</div>}
 
             <button className="save-btn" style={{width:"100%"}}
               onClick={authView==="login"?handleLogin:handleRegister}>
               {authView==="login"?"Entrar":"Criar conta"}
             </button>
 
-            <div style={{fontSize:11,color:"#333",textAlign:"center",marginTop:16,lineHeight:1.6}}>
+            <div style={{fontSize:11,color:"var(--text-4)",textAlign:"center",marginTop:16,lineHeight:1.6}}>
               Seus dados ficam salvos na nuvem e acessíveis de qualquer dispositivo.
             </div>
           </div>
@@ -556,47 +801,47 @@ export default function BiofeedbackScore() {
         <div className="modal-overlay" onClick={()=>{setModal(null);setView("history");}}>
           <div className="modal-box" onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".08em",marginBottom:6}}>RESUMO DA SEMANA</div>
-            <div style={{fontSize:13,color:"#666",marginBottom:18}}>{modal.week}</div>
+            <div style={{fontSize:13,color:"var(--text-3)",marginBottom:18}}>{modal.week}</div>
 
             {/* Score biofeedback */}
-            <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:16,padding:"14px 16px",background:"#0c0c0f",borderRadius:6}}>
+            <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16,padding:"16px",background:"var(--surface-0)",borderRadius:8,border:"1px solid var(--border)"}}>
               <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:getScoreInfo(modal.score).color,lineHeight:1}}>{modal.score}</div>
               <div>
                 <div style={{fontSize:14,color:getScoreInfo(modal.score).color,marginBottom:6}}>{getScoreInfo(modal.score).label}</div>
-                <div style={{fontSize:13,color:"#777"}}>{getScoreInfo(modal.score).readinessDesc}</div>
+                <div style={{fontSize:13,color:"var(--text-2)"}}>{getScoreInfo(modal.score).readinessDesc}</div>
               </div>
             </div>
 
             {/* Score hormonal */}
             {modal.hormonalScore && (
-              <div style={{padding:"12px 16px",background:"#0c0c0f",borderRadius:6,marginBottom:16,borderLeft:`3px solid ${modal.hormonalScore.color}`}}>
-                <div style={{fontSize:10,color:"#555",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Score Hormonal</div>
+              <div style={{padding:"12px 16px",background:"var(--surface-0)",borderRadius:6,marginBottom:16,borderLeft:`3px solid ${modal.hormonalScore.color}`}}>
+                <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Score Hormonal</div>
                 <div style={{fontSize:15,color:modal.hormonalScore.color,marginBottom:8}}>{modal.hormonalScore.label}</div>
-                <div style={{fontSize:13,color:"#888",lineHeight:1.7}}>{modal.hormonalScore.suggestion}</div>
+                <div style={{fontSize:13,color:"var(--text-2)",lineHeight:1.7}}>{modal.hormonalScore.suggestion}</div>
                 <div style={{display:"flex",gap:16,marginTop:10}}>
-                  <div style={{fontSize:10,color:"#ef4444"}}>E2 alto: {modal.hormonalScore.highScore}%</div>
-                  <div style={{fontSize:10,color:"#f97316"}}>E2 baixo: {modal.hormonalScore.lowScore}%</div>
+                  <div style={{fontSize:10,color:"var(--red)"}}>E2 alto: {modal.hormonalScore.highScore}%</div>
+                  <div style={{fontSize:10,color:"var(--orange)"}}>E2 baixo: {modal.hormonalScore.lowScore}%</div>
                 </div>
               </div>
             )}
 
-            <div style={{fontSize:13,color:"#777",fontStyle:"italic",marginBottom:16,paddingLeft:12,borderLeft:"2px solid #2a2a35"}}>{modal.report}</div>
+            <div style={{fontSize:13,color:"var(--text-3)",fontStyle:"italic",marginBottom:16,paddingLeft:14,borderLeft:"2px solid var(--brand)"}}>{modal.report}</div>
 
             {modal.suggestions.length > 0 ? (
               <>
-                <div style={{fontSize:10,color:"#444",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>Sugestões para as próximas semanas</div>
+                <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>Sugestões para as próximas semanas</div>
                 {modal.suggestions.map((s,i)=>(
-                  <div key={i} style={{display:"flex",gap:12,marginBottom:10,padding:"12px 14px",background:"#0c0c0f",borderRadius:6,borderLeft:`2px solid ${s.priority?"#ef4444":"#2a2a45"}`}}>
+                  <div key={i} style={{display:"flex",gap:12,marginBottom:10,padding:"14px 16px",background:"var(--surface-0)",borderRadius:8,borderLeft:`3px solid ${s.priority?"var(--red)":"var(--brand)"}`,border:`1px solid ${s.priority?"rgba(239,68,68,0.2)":"var(--border)"}`,borderLeftWidth:3}}>
                     <span style={{fontSize:16,flexShrink:0}}>{s.icon}</span>
                     <div>
-                      <div style={{fontSize:11,color:s.priority?"#ef4444":"#777",textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{s.area}</div>
+                      <div style={{fontSize:11,color:s.priority?"#ef4444":"var(--text-2)",textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{s.area}</div>
                       <div style={{fontSize:13,color:"#bbb",lineHeight:1.7}}>{s.text}</div>
                     </div>
                   </div>
                 ))}
               </>
             ) : (
-              <div style={{fontSize:12,color:"#555",padding:"12px 14px",background:"#0c0c0f",borderRadius:6}}>✅ Biofeedback positivo — mantenha o protocolo.</div>
+              <div style={{fontSize:12,color:"var(--text-3)",padding:"12px 14px",background:"var(--surface-0)",borderRadius:6}}>✅ Biofeedback positivo — mantenha o protocolo.</div>
             )}
 
             <div style={{display:"flex",justifyContent:"center"}}>
@@ -607,10 +852,10 @@ export default function BiofeedbackScore() {
       )}
 
       {/* ── Header ── */}
-      <div style={{borderBottom:"1px solid #1e1e25",padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#0c0c0f",zIndex:10,flexWrap:"wrap",gap:8}}>
+      <div style={{borderBottom:"1px solid var(--border)",padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"var(--surface-0)",zIndex:10,flexWrap:"wrap",gap:8}}>
         <div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".1em",color:"#e8e6e1"}}>CALIBRA</div>
-          <div style={{fontSize:10,color:"#444",letterSpacing:".1em",textTransform:"uppercase",marginTop:2}}>Monitoramento de adaptação ao treino</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".1em",color:"var(--text-1)"}}>CALIBRA</div>
+          <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".1em",textTransform:"uppercase",marginTop:2}}>Monitoramento de adaptação ao treino</div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <div style={{display:"flex"}}>
@@ -619,7 +864,7 @@ export default function BiofeedbackScore() {
             ))}
           </div>
           <div style={{display:"flex",gap:6,alignItems:"center"}}>
-            <span style={{fontSize:11,color:"#333",display:"none"}}>{user?.email}</span>
+            <span style={{fontSize:11,color:"var(--text-4)",display:"none"}}>{user?.email}</span>
             <button className="ghost-btn" onClick={handleExport}>⬇ Backup</button>
             <label className="ghost-btn" style={{cursor:"pointer"}}>⬆ Importar<input type="file" accept=".json" onChange={handleImport} style={{display:"none"}}/></label>
             <button className="ghost-btn" style={{borderColor:"#2a1a1a",color:"#664444"}} onClick={handleLogout}>Sair</button>
@@ -631,40 +876,64 @@ export default function BiofeedbackScore() {
       {view === "form" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
 
-          {/* Score gauge */}
-          <div className="card" style={{display:"flex",alignItems:"center",gap:24,border:"1px solid #1e1e25"}}>
-            <div style={{position:"relative",flexShrink:0}}>
-              <svg width={110} height={65} viewBox="0 0 120 70">
-                <path d="M 10 65 A 50 50 0 0 1 110 65" fill="none" stroke="#1e1e25" strokeWidth="12"/>
-                {score !== null && (()=>{ const c=Math.PI*50,d=(score/100)*c; return <path d="M 10 65 A 50 50 0 0 1 110 65" fill="none" stroke={scoreInfo.color} strokeWidth="12" strokeLinecap="round" strokeDasharray={`${d} ${c}`}/>; })()}
-              </svg>
-              <div style={{position:"absolute",bottom:0,left:"50%",transform:"translateX(-50%)",textAlign:"center"}}>
-                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:score!==null?30:22,color:score!==null?scoreInfo.color:"#2a2a30",lineHeight:1}}>{score!==null?score:"--"}</div>
+          {/* Score hero card */}
+          <div className="card-hero">
+            <div style={{display:"flex",alignItems:"stretch",gap:24}}>
+              {/* Score number */}
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:110,padding:"8px 0"}}>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:score!==null?72:48,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)",letterSpacing:".02em",textShadow:score!==null?`0 0 40px ${scoreInfo.color}40`:"none",transition:"all .3s"}}>
+                  {score!==null?score:"—"}
+                </div>
+                {score!==null && (
+                  <div style={{fontSize:10,color:scoreInfo.color,letterSpacing:".12em",textTransform:"uppercase",marginTop:4,opacity:.8}}>{scoreInfo.label}</div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div style={{width:1,background:"linear-gradient(180deg,transparent,var(--border-strong),transparent)",flexShrink:0}}/>
+
+              {/* Details */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",gap:10}}>
+                {score !== null ? (
+                  <>
+                    {/* Readiness */}
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <div style={{width:8,height:8,borderRadius:"50%",flexShrink:0,background:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",boxShadow:`0 0 8px ${scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}`}}/>
+                      <div style={{fontSize:14,fontWeight:500,color:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}}>{scoreInfo.readinessLabel}</div>
+                    </div>
+                    <div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.5}}>{scoreInfo.readinessDesc}</div>
+                    {/* Bottlenecks */}
+                    {bottlenecks.length>0 && (
+                      <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:2}}>
+                        {bottlenecks.map((b,i)=>(
+                          <div key={i} style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:`${b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)"}18`,color:b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)",border:`1px solid ${b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)"}35`}}>
+                            {b.cat.icon} {b.cat.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    <div style={{fontSize:14,color:"var(--text-3)",marginBottom:8}}>Avalie os critérios abaixo</div>
+                    <div style={{fontSize:12,color:"var(--text-4)"}}>{totalAnswered} de 7 preenchidos</div>
+                  </div>
+                )}
               </div>
             </div>
-            <div style={{flex:1}}>
-              {score !== null ? (
-                <>
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:scoreInfo.readiness==="verde"?"#22c55e":scoreInfo.readiness==="amarelo"?"#eab308":"#ef4444"}}/>
-                    <div style={{fontSize:14,color:scoreInfo.readiness==="verde"?"#22c55e":scoreInfo.readiness==="amarelo"?"#eab308":"#ef4444"}}>{scoreInfo.readinessLabel}</div>
-                  </div>
-                  <div style={{fontSize:13,color:"#777",marginBottom:8}}>{scoreInfo.readinessDesc}</div>
-                  {bottlenecks.map((b,i)=>(
-                    <div key={i} style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-                      <span style={{fontSize:10,color:"#444"}}>{i+1}.</span>
-                      <span style={{fontSize:13,color:b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"#888"}}>{b.cat.icon} {b.cat.label}</span>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <div style={{color:"#333",fontSize:14}}>Preencha os critérios para calcular o score.<br/><span style={{fontSize:11,color:"#252530"}}>{totalAnswered}/7 preenchidos</span></div>
-              )}
+
+            {/* Progress bar */}
+            <div className="progress-bar" style={{marginTop:16}}>
+              <div className="progress-fill" style={{width:`${(totalAnswered/7)*100}%`}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
+              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>{totalAnswered}/7 CRITÉRIOS</div>
+              {score!==null && <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>SCORE CALIBRA</div>}
             </div>
           </div>
 
           {/* Semana */}
-          <div style={{display:"flex",gap:10,margin:"16px 0",alignItems:"center"}}>
+          <div style={{display:"flex",gap:10,margin:"16px 0 20px",alignItems:"center"}}>
             <input type="text" placeholder="Semana (ex: S23 · 02–08 jun)" value={week} onChange={e=>setWeek(e.target.value)} style={{flex:1}}/>
             <button className="ghost-btn" onClick={()=>setShowWeights(v=>!v)}>{showWeights?"Fechar":"⚙ Pesos"}</button>
           </div>
@@ -682,7 +951,7 @@ export default function BiofeedbackScore() {
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {CATEGORIES.map(cat=>(
                   <div key={cat.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
-                    <span style={{fontSize:13,color:"#aaa"}}>{cat.icon} {cat.label}</span>
+                    <span style={{fontSize:13,color:"var(--text-2)"}}>{cat.icon} {cat.label}</span>
                     <input type="number" className="weight-input" min={0} max={50} value={weights[cat.id]} onChange={e=>handleWeightChange(cat.id,e.target.value)}/>
                   </div>
                 ))}
@@ -691,33 +960,49 @@ export default function BiofeedbackScore() {
           )}
 
           {/* Critérios */}
-          {CATEGORIES.map(cat=>(
-            <div key={cat.id} className="card" style={{border:`1px solid ${scores[cat.id]?"#1e1e30":"#1a1a20"}`}}>
-              <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:8}}>
-                <span style={{fontSize:15}}>{cat.icon}</span>
-                <div>
-                  <div style={{fontSize:13,letterSpacing:".06em",textTransform:"uppercase",color:scores[cat.id]?cat.options.find(o=>o.value===scores[cat.id])?.color:"#ddd",fontWeight:500}}>
-                    {cat.label}<span style={{fontSize:9,color:"#2a2a35",marginLeft:8,textTransform:"none",letterSpacing:0,fontWeight:400}}>peso {weights[cat.id]}%</span>
+          {CATEGORIES.map(cat=>{
+            const catColors={"performance":"#2563eb","recovery":"#22c55e","sleep":"#7c3aed","energy":"#eab308","joints":"#f97316","hunger":"#ec4899","pump":"#06b6d4"};
+            const cc=catColors[cat.id]||"var(--text-2)";
+            const selected=scores[cat.id];
+            const selectedOpt=selected?cat.options.find(o=>o.value===selected):null;
+            return (
+              <div key={cat.id} style={{
+                background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",
+                border:`1px solid ${selected?`${selectedOpt?.color}30`:"var(--border)"}`,
+                borderLeft:`3px solid ${selected?selectedOpt?.color:cc}`,
+                borderRadius:"var(--radius)",padding:"16px 18px",marginBottom:8,
+                transition:"all .2s",
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                  <div className="cat-icon" style={{background:`${cc}18`,border:`1px solid ${cc}30`}}>
+                    {cat.icon}
                   </div>
-                  <div style={{fontSize:12,color:"#666",marginTop:4}}>{cat.description}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:selected?selectedOpt?.color:"var(--text-2)",fontWeight:500,display:"flex",alignItems:"center",gap:8}}>
+                      {cat.label}
+                      <span style={{fontSize:9,color:"var(--text-4)",textTransform:"none",letterSpacing:0,fontWeight:400,background:"var(--surface-3)",padding:"1px 6px",borderRadius:3}}>×{weights[cat.id]}%</span>
+                      {selected && <span style={{fontSize:10,color:selectedOpt?.color,marginLeft:"auto"}}>✓ {selectedOpt?.label}</span>}
+                    </div>
+                    <div style={{fontSize:12,color:"var(--text-3)",marginTop:3}}>{cat.description}</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {cat.options.map(opt=>(
+                    <button key={opt.value} className={`opt-btn ${scores[cat.id]===opt.value?"selected":""}`}
+                      style={scores[cat.id]===opt.value?{background:opt.color,borderColor:opt.color,color:"#000",boxShadow:`0 0 12px ${opt.color}50`}:{}}
+                      onClick={()=>setScores(s=>({...s,[cat.id]:opt.value}))}>
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-                {cat.options.map(opt=>(
-                  <button key={opt.value} className={`opt-btn ${scores[cat.id]===opt.value?"selected":""}`}
-                    style={scores[cat.id]===opt.value?{background:opt.color,borderColor:opt.color,color:"#0c0c0f"}:{}}
-                    onClick={()=>setScores(s=>({...s,[cat.id]:opt.value}))}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Performance Anchor Sets */}
           <div className="card">
             <div className="section-title">⚡ Performance Anchor Sets</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:12}}>Registre exercício principal + carga + reps para comparar semana a semana</div>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:12}}>Registre exercício principal + carga + reps para comparar semana a semana</div>
             {anchors.map((a,i)=>(
               <div key={i} className="anchor-row">
                 <input type="text" placeholder="Exercício (ex: Supino)" value={a.exercise} onChange={e=>{const n=[...anchors];n[i]={...n[i],exercise:e.target.value};setAnchors(n);}}/>
@@ -742,14 +1027,14 @@ export default function BiofeedbackScore() {
                 }).filter(Boolean);
               if (comparisons.length === 0) return null;
               return (
-                <div style={{marginTop:12,padding:"10px 12px",background:"#0c0c0f",borderRadius:4}}>
-                  <div style={{fontSize:12,color:"#666",letterSpacing:".06em",textTransform:"uppercase",marginBottom:8}}>vs semana anterior</div>
+                <div style={{marginTop:12,padding:"10px 12px",background:"var(--surface-0)",borderRadius:4}}>
+                  <div style={{fontSize:12,color:"var(--text-3)",letterSpacing:".06em",textTransform:"uppercase",marginBottom:8}}>vs semana anterior</div>
                   {comparisons.map((c,i)=>(
                     <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-                      <span style={{fontSize:11,color:"#666",flex:1}}>{c.exercise}</span>
-                      <span style={{fontSize:10,color:"#444"}}>{c.prev}</span>
-                      <span style={{fontSize:10,color:"#333"}}>→</span>
-                      <span style={{fontSize:11,color:c.diff>0?"#22c55e":c.diff<0?"#ef4444":"#888"}}>{c.curr}</span>
+                      <span style={{fontSize:11,color:"var(--text-3)",flex:1}}>{c.exercise}</span>
+                      <span style={{fontSize:10,color:"var(--text-3)"}}>{c.prev}</span>
+                      <span style={{fontSize:10,color:"var(--text-4)"}}>→</span>
+                      <span style={{fontSize:11,color:c.diff>0?"#22c55e":c.diff<0?"#ef4444":"var(--text-2)"}}>{c.curr}</span>
                       {c.diff!==0 && <span style={{fontSize:10,color:c.diff>0?"#22c55e":"#ef4444"}}>{c.diff>0?"+":""}{c.diff.toFixed(0)}vol</span>}
                     </div>
                   ))}
@@ -764,7 +1049,7 @@ export default function BiofeedbackScore() {
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {MACRO_FIELDS.map(f=>(
                 <div key={f.id} style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <label style={{fontSize:12,color:"#777"}}>{f.label} ({f.unit})</label>
+                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label} ({f.unit})</label>
                   <input type="number" step="1" placeholder={f.placeholder} value={macros[f.id]||""} onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
@@ -775,11 +1060,11 @@ export default function BiofeedbackScore() {
           <div className="card">
             <div className="section-title">🫙 Saúde intestinal</div>
             <div style={{marginBottom:12}}>
-              <div style={{fontSize:13,color:"#777",marginBottom:8}}>Frequência diária</div>
+              <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>Frequência diária</div>
               <div style={{display:"flex",gap:6}}>
                 {GUT_FREQ.map(f=>(
                   <button key={f.value} className={`opt-btn ${gut.frequency===f.value?"selected":""}`}
-                    style={gut.frequency===f.value?{background:"#84cc16",borderColor:"#84cc16",color:"#0c0c0f"}:{}}
+                    style={gut.frequency===f.value?{background:"#84cc16",borderColor:"#84cc16",color:"var(--surface-0)"}:{}}
                     onClick={()=>setGut(g=>({...g,frequency:f.value}))}>
                     {f.label}
                   </button>
@@ -787,11 +1072,11 @@ export default function BiofeedbackScore() {
               </div>
             </div>
             <div>
-              <div style={{fontSize:13,color:"#777",marginBottom:8}}>Consistência das fezes</div>
+              <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>Consistência das fezes</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                 {GUT_CONSISTENCY.map(opt=>(
                   <button key={opt.value} className={`opt-btn ${gut.consistency===opt.value?"selected":""}`}
-                    style={gut.consistency===opt.value?{background:opt.color,borderColor:opt.color,color:"#0c0c0f"}:{}}
+                    style={gut.consistency===opt.value?{background:opt.color,borderColor:opt.color,color:"var(--surface-0)"}:{}}
                     onClick={()=>setGut(g=>({...g,consistency:opt.value}))}>
                     {opt.label}
                   </button>
@@ -806,7 +1091,7 @@ export default function BiofeedbackScore() {
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {OBJECTIVE_FIELDS.map(f=>(
                 <div key={f.id} style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <label style={{fontSize:12,color:"#777"}}>{f.label} ({f.unit})</label>
+                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label} ({f.unit})</label>
                   <input type="number" step="0.1" placeholder={f.placeholder} value={objective[f.id]||""} onChange={e=>setObjective(o=>({...o,[f.id]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
@@ -818,7 +1103,7 @@ export default function BiofeedbackScore() {
             <div className="section-title">📸 Foto da semana (opcional)</div>
             {photo ? (
               <div style={{position:"relative",display:"inline-block"}}>
-                <img src={photo} style={{maxWidth:"100%",maxHeight:200,borderRadius:4,border:"1px solid #2a2a30"}} alt="foto semana"/>
+                <img src={photo} style={{maxWidth:"100%",maxHeight:200,borderRadius:4,border:"1px solid var(--border)"}} alt="foto semana"/>
                 <button className="del-btn" style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.7)"}} onClick={()=>setPhoto(null)}>✕</button>
               </div>
             ) : (
@@ -832,7 +1117,7 @@ export default function BiofeedbackScore() {
           {/* Módulo Hormonal */}
           <div className="card" style={{border:"1px solid #2a1a4a"}}>
             <div className="section-title" style={{color:"#7c3aed"}}>💊 Uso de Esteroides Anabolizantes (EAs)</div>
-            <div style={{fontSize:13,color:"#777",marginBottom:12}}>Você usa Esteroides Anabolizantes (EAs) — incluindo TRT, testosterona, derivados ou outros compostos que possam afetar o balanço hormonal?</div>
+            <div style={{fontSize:13,color:"var(--text-2)",marginBottom:12}}>Você usa Esteroides Anabolizantes (EAs) — incluindo TRT, testosterona, derivados ou outros compostos que possam afetar o balanço hormonal?</div>
             <div style={{display:"flex",gap:8,marginBottom:16}}>
               <button className={`horm-btn ${usesHormones===true?"yes":""}`} onClick={()=>setUsesHormones(true)}>Sim</button>
               <button className={`horm-btn ${usesHormones===false?"no":""}`} onClick={()=>setUsesHormones(false)}>Não</button>
@@ -852,7 +1137,7 @@ export default function BiofeedbackScore() {
                   { key:"mood", label:"Humor", opts:[{v:"sensitive",l:"Sensível / irritável"},{v:"normal",l:"Normal"},{v:"apathetic",l:"Apático"}] },
                 ].map(field=>(
                   <div key={field.key} style={{marginBottom:12}}>
-                    <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
+                    <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>{field.label}</div>
                     <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                       {field.opts.map(opt=>(
                         <button key={opt.v} className={`opt-btn ${hormonal[field.key]===opt.v?"selected":""}`}
@@ -867,8 +1152,8 @@ export default function BiofeedbackScore() {
 
                 {/* Ereção matinal */}
                 <div style={{marginBottom:12}}>
-                  <div style={{fontSize:10,color:"#666",marginBottom:6}}>Ereção Matinal / Madrugada</div>
-                  <div style={{fontSize:12,color:"#666",marginBottom:8}}>Frequência semanal</div>
+                  <div style={{fontSize:10,color:"var(--text-3)",marginBottom:6}}>Ereção Matinal / Madrugada</div>
+                  <div style={{fontSize:12,color:"var(--text-3)",marginBottom:8}}>Frequência semanal</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>
                     {[{v:"daily",l:"Diária"},{v:"frequent",l:"3–5x/semana"},{v:"rare",l:"1–2x/semana"},{v:"absent",l:"Ausente"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.morningErectionFreq===opt.v?"selected":""}`}
@@ -878,7 +1163,7 @@ export default function BiofeedbackScore() {
                       </button>
                     ))}
                   </div>
-                  <div style={{fontSize:12,color:"#666",marginBottom:8}}>Qualidade</div>
+                  <div style={{fontSize:12,color:"var(--text-3)",marginBottom:8}}>Qualidade</div>
                   <div style={{display:"flex",gap:5}}>
                     {[{v:3,l:"Forte"},{v:2,l:"Fraca"},{v:1,l:"Inexistente"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.morningErectionQuality===opt.v?"selected":""}`}
@@ -892,7 +1177,7 @@ export default function BiofeedbackScore() {
 
                 {/* Mamilo */}
                 <div style={{marginBottom:12}}>
-                  <div style={{fontSize:13,color:"#888",marginBottom:8}}>Sensibilidade no Mamilo</div>
+                  <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>Sensibilidade no Mamilo</div>
                   <div style={{display:"flex",gap:5}}>
                     {[{v:"yes",l:"Sim — sensível / dolorido"},{v:"no",l:"Não"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.nipple===opt.v?"selected":""}`}
@@ -903,7 +1188,7 @@ export default function BiofeedbackScore() {
                     ))}
                   </div>
                   {hormonal.nipple === "yes" && (
-                    <div style={{marginTop:8,fontSize:11,color:"#ef4444",padding:"8px 10px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>
+                    <div style={{marginTop:8,fontSize:11,color:"var(--red)",padding:"8px 10px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>
                       ⚠ Sensibilidade mamilar persistente (2+ dias) em usuários de EAs é sinal clássico de E2 elevado / início de ginecomastia. Não espere o check-in quinzenal — reavalie a dose do AI imediatamente.
                     </div>
                   )}
@@ -911,7 +1196,7 @@ export default function BiofeedbackScore() {
 
                 {/* Pele */}
                 <div style={{marginBottom:12}}>
-                  <div style={{fontSize:13,color:"#888",marginBottom:8}}>Oleosidade da Pele</div>
+                  <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>Oleosidade da Pele</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                     {[{v:"acne",l:"Alta com acne"},{v:"oily",l:"Alta"},{v:"normal",l:"Normal"},{v:"dry",l:"Seca"}].map(opt=>(
                       <button key={opt.v} className={`opt-btn ${hormonal.skin===opt.v?"selected":""}`}
@@ -927,8 +1212,8 @@ export default function BiofeedbackScore() {
                 {computeHormonalScore(hormonal) && (() => {
                   const hs = computeHormonalScore(hormonal);
                   return (
-                    <div style={{padding:"10px 14px",background:"#0c0c0f",borderRadius:4,borderLeft:`3px solid ${hs.color}`}}>
-                      <div style={{fontSize:10,color:"#555",marginBottom:4}}>Score Hormonal Atual</div>
+                    <div style={{padding:"10px 14px",background:"var(--surface-0)",borderRadius:4,borderLeft:`3px solid ${hs.color}`}}>
+                      <div style={{fontSize:10,color:"var(--text-3)",marginBottom:4}}>Score Hormonal Atual</div>
                       <div style={{fontSize:12,color:hs.color}}>{hs.label}</div>
                     </div>
                   );
@@ -950,17 +1235,17 @@ export default function BiofeedbackScore() {
       {view === "history" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
           {history.length === 0 ? (
-            <div style={{textAlign:"center",color:"#333",fontSize:13,marginTop:60}}>Nenhum check-in salvo ainda.</div>
+            <div style={{textAlign:"center",color:"var(--text-3)",fontSize:13,marginTop:60}}>Nenhum check-in salvo ainda.</div>
           ) : (
             <>
               {historyWithScore.length >= 2 && (
-                <div style={{background:"#10101a",border:"1px solid #1e1e25",borderRadius:6,padding:"16px 20px",marginBottom:16}}>
+                <div style={{background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:"20px",marginBottom:16}}>
                   <div className="section-title">Últimas {Math.min(4,last4.length)} semanas</div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
-                    {[{label:"Média",value:avg4,suffix:""},{label:"Melhor",value:best,suffix:""},{label:"Pior",value:worst,suffix:""},{label:"Tendência",value:trend4!==null?(trend4>0?`+${trend4}`:trend4):null,suffix:"pts",color:trend4>0?"#22c55e":trend4<0?"#ef4444":"#888"}].map(s=>(
+                    {[{label:"Média",value:avg4,suffix:""},{label:"Melhor",value:best,suffix:""},{label:"Pior",value:worst,suffix:""},{label:"Tendência",value:trend4!==null?(trend4>0?`+${trend4}`:trend4):null,suffix:"pts",color:trend4>0?"#22c55e":trend4<0?"#ef4444":"var(--text-2)"}].map(s=>(
                       <div key={s.label} style={{textAlign:"center"}}>
-                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,color:s.color||(s.value!==null?getScoreInfo(s.value).color:"#333"),lineHeight:1}}>{s.value!==null?`${s.value}${s.suffix}`:"—"}</div>
-                        <div style={{fontSize:9,color:"#444",marginTop:3,letterSpacing:".08em",textTransform:"uppercase"}}>{s.label}</div>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,color:s.color||(s.value!==null?getScoreInfo(s.value).color:"var(--text-4)"),lineHeight:1}}>{s.value!==null?`${s.value}${s.suffix}`:"—"}</div>
+                        <div style={{fontSize:9,color:"var(--text-3)",marginTop:3,letterSpacing:".08em",textTransform:"uppercase"}}>{s.label}</div>
                       </div>
                     ))}
                   </div>
@@ -978,7 +1263,7 @@ export default function BiofeedbackScore() {
                           {pts.map((p,i)=><circle key={i} cx={toX(i)} cy={toY(p.score)} r="3" fill={getScoreInfo(p.score).color}/>)}
                         </svg>
                         <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
-                          {pts.map((p,i)=><div key={i} style={{fontSize:9,color:"#333",textAlign:"center"}}>{p.week.split("·")[0]?.trim()||p.week}</div>)}
+                          {pts.map((p,i)=><div key={i} style={{fontSize:9,color:"var(--text-4)",textAlign:"center"}}>{p.week.split("·")[0]?.trim()||p.week}</div>)}
                         </div>
                       </>
                     );
@@ -991,17 +1276,17 @@ export default function BiofeedbackScore() {
                 const prevEntry=historyWithScore[historyWithScore.indexOf(entry)+1]||null;
                 const diff=prevEntry&&entry.score!==null?entry.score-prevEntry.score:null;
                 return (
-                  <div key={i} style={{background:"#10101a",border:"1px solid #1e1e25",borderRadius:6,padding:"14px 18px",marginBottom:8}}>
+                  <div key={i} style={{background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:"16px 20px",marginBottom:10}}>
                     <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:10}}>
                       <div>
-                        <div style={{fontSize:15,color:"#ddd"}}>{entry.week}</div>
-                        <div style={{fontSize:11,color:"#555",marginTop:2}}>{entry.date}</div>
+                        <div style={{fontSize:15,color:"var(--text-1)",fontWeight:500}}>{entry.week}</div>
+                        <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>{entry.date}</div>
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
                         {info && (
                           <div style={{textAlign:"right"}}>
                             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,color:info.color,lineHeight:1}}>{entry.score}</div>
-                            {diff!==null&&<div style={{fontSize:9,color:diff>0?"#22c55e":diff<0?"#ef4444":"#555"}}>{diff>0?`+${diff}`:diff} pts</div>}
+                            {diff!==null&&<div style={{fontSize:9,color:diff>0?"var(--green)":diff<0?"var(--red)":"var(--text-3)"}}>{diff>0?`+${diff}`:diff} pts</div>}
                           </div>
                         )}
                         {entry.hormonalScore && (
@@ -1013,7 +1298,7 @@ export default function BiofeedbackScore() {
                       </div>
                     </div>
 
-                    {info && <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:6,height:6,borderRadius:"50%",background:info.readiness==="verde"?"#22c55e":info.readiness==="amarelo"?"#eab308":"#ef4444"}}/><div style={{fontSize:12,color:"#888"}}>{info.readinessLabel}</div></div>}
+                    {info && <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:6,height:6,borderRadius:"50%",background:info.readiness==="verde"?"#22c55e":info.readiness==="amarelo"?"#eab308":"#ef4444"}}/><div style={{fontSize:12,color:"var(--text-2)"}}>{info.readinessLabel}</div></div>}
 
                     <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>
                       {CATEGORIES.map(cat=>{const val=entry.scores[cat.id];if(!val) return null;const opt=cat.options.find(o=>o.value===val);return <div key={cat.id} style={{fontSize:9,padding:"2px 7px",borderRadius:3,background:`${opt.color}18`,color:opt.color,border:`1px solid ${opt.color}35`}}>{cat.icon} {cat.label.split(" ")[0]}</div>;})}
@@ -1021,21 +1306,21 @@ export default function BiofeedbackScore() {
 
                     {/* Anchors no histórico */}
                     {entry.anchors && entry.anchors.length > 0 && (
-                      <div style={{marginBottom:8,padding:"8px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        {entry.anchors.map((a,j)=><div key={j} style={{fontSize:13,color:"#777"}}>{a.exercise}: <span style={{color:"#bbb"}}>{a.weight}kg × {a.reps} reps</span></div>)}
+                      <div style={{marginBottom:8,padding:"8px 10px",background:"var(--surface-0)",borderRadius:4}}>
+                        {entry.anchors.map((a,j)=><div key={j} style={{fontSize:13,color:"var(--text-2)"}}>{a.exercise}: <span style={{color:"#bbb"}}>{a.weight}kg × {a.reps} reps</span></div>)}
                       </div>
                     )}
 
                     {entry.macros && Object.values(entry.macros).some(v=>v) && (
-                      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:8,padding:"6px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        {MACRO_FIELDS.map(f=>{const v=entry.macros[f.id];if(!v) return null;return <div key={f.id} style={{fontSize:12,color:"#666"}}>{f.label}: <span style={{color:"#aaa"}}>{v}{f.unit}</span></div>;})}
+                      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:8,padding:"6px 10px",background:"var(--surface-0)",borderRadius:4}}>
+                        {MACRO_FIELDS.map(f=>{const v=entry.macros[f.id];if(!v) return null;return <div key={f.id} style={{fontSize:12,color:"var(--text-3)"}}>{f.label}: <span style={{color:"var(--text-2)"}}>{v}{f.unit}</span></div>;})}
                       </div>
                     )}
 
-                    {entry.photo && <img src={entry.photo} style={{maxWidth:"100%",maxHeight:160,borderRadius:4,border:"1px solid #2a2a30",marginBottom:8,display:"block"}} alt="foto"/>}
+                    {entry.photo && <img src={entry.photo} style={{maxWidth:"100%",maxHeight:160,borderRadius:4,border:"1px solid var(--border)",marginBottom:8,display:"block"}} alt="foto"/>}
 
-                    {entry.report && <div style={{fontSize:12,color:"#666",borderTop:"1px solid #1e1e25",paddingTop:10,marginTop:6,fontStyle:"italic"}}>{entry.report}</div>}
-                    {entry.notes && <div style={{fontSize:13,color:"#666",borderTop:"1px solid #1e1e25",paddingTop:10,marginTop:6}}>{entry.notes}</div>}
+                    {entry.report && <div style={{fontSize:12,color:"var(--text-3)",borderTop:"1px solid var(--border)",paddingTop:10,marginTop:6,fontStyle:"italic"}}>{entry.report}</div>}
+                    {entry.notes && <div style={{fontSize:13,color:"var(--text-3)",borderTop:"1px solid var(--border)",paddingTop:10,marginTop:6}}>{entry.notes}</div>}
                   </div>
                 );
               })}
@@ -1047,11 +1332,11 @@ export default function BiofeedbackScore() {
       {/* ══ COMPARADOR ══ */}
       {view === "compare" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
-          <div className="section-title" style={{fontSize:14,color:"#888"}}>Comparador de semanas</div>
+          <div className="section-title" style={{fontSize:14,color:"var(--text-2)"}}>Comparador de semanas</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:24}}>
             {[["A",compareA,setCompareA],["B",compareB,setCompareB]].map(([label,val,setter])=>(
               <div key={label}>
-                <div style={{fontSize:10,color:"#444",marginBottom:6}}>Semana {label}</div>
+                <div style={{fontSize:10,color:"var(--text-3)",marginBottom:6}}>Semana {label}</div>
                 <select value={val} onChange={e=>setter(e.target.value)} style={{width:"100%"}}>
                   <option value="">Selecionar...</option>
                   {history.map((h,i)=><option key={i} value={h.week}>{h.week}</option>)}
@@ -1065,13 +1350,13 @@ export default function BiofeedbackScore() {
               {/* Score geral */}
               <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:12,marginBottom:20,alignItems:"center",textAlign:"center"}}>
                 <div>
-                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:entryA.score?getScoreInfo(entryA.score).color:"#333"}}>{entryA.score||"—"}</div>
-                  <div style={{fontSize:11,color:"#555"}}>{entryA.week}</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:entryA.score?getScoreInfo(entryA.score).color:"var(--text-4)"}}>{entryA.score||"—"}</div>
+                  <div style={{fontSize:11,color:"var(--text-3)"}}>{entryA.week}</div>
                 </div>
-                <div style={{fontSize:20,color:"#333"}}>vs</div>
+                <div style={{fontSize:20,color:"var(--text-4)"}}>vs</div>
                 <div>
-                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:entryB.score?getScoreInfo(entryB.score).color:"#333"}}>{entryB.score||"—"}</div>
-                  <div style={{fontSize:11,color:"#555"}}>{entryB.week}</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:44,color:entryB.score?getScoreInfo(entryB.score).color:"var(--text-4)"}}>{entryB.score||"—"}</div>
+                  <div style={{fontSize:11,color:"var(--text-3)"}}>{entryB.week}</div>
                 </div>
               </div>
 
@@ -1086,13 +1371,13 @@ export default function BiofeedbackScore() {
                   return (
                     <div key={cat.id} style={{marginBottom:10}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-                        <span style={{fontSize:11,color:"#888"}}>{cat.icon} {cat.label}</span>
-                        <span style={{fontSize:13,color:diff>0?"#22c55e":diff<0?"#ef4444":"#888"}}>{va||"—"} vs {vb||"—"} {diff!==0?`(${diff>0?"+":""}${diff})`:""}</span>
+                        <span style={{fontSize:11,color:"var(--text-2)"}}>{cat.icon} {cat.label}</span>
+                        <span style={{fontSize:13,color:diff>0?"#22c55e":diff<0?"#ef4444":"var(--text-2)"}}>{va||"—"} vs {vb||"—"} {diff!==0?`(${diff>0?"+":""}${diff})`:""}</span>
                       </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                         {[{v:va,c:entryA.week},{v:vb,c:entryB.week}].map((x,i)=>(
-                          <div key={i} style={{height:4,background:"#1a1a20",borderRadius:2,overflow:"hidden"}}>
-                            <div style={{width:`${((x.v||0)/5)*100}%`,height:"100%",background:x.v?cat.options.find(o=>o.value===x.v)?.color||"#555":"transparent",borderRadius:2,transition:"width .3s"}}/>
+                          <div key={i} style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden"}}>
+                            <div style={{width:`${((x.v||0)/5)*100}%`,height:"100%",background:x.v?cat.options.find(o=>o.value===x.v)?.color||"var(--text-3)":"transparent",borderRadius:2,transition:"width .3s"}}/>
                           </div>
                         ))}
                       </div>
@@ -1112,13 +1397,13 @@ export default function BiofeedbackScore() {
                     const volB=b?parseFloat(b.weight)*parseFloat(b.reps):null;
                     const diff=volA!==null&&volB!==null?volA-volB:null;
                     return (
-                      <div key={ex} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"8px 10px",background:"#0c0c0f",borderRadius:4}}>
-                        <span style={{fontSize:13,color:"#aaa"}}>{ex}</span>
+                      <div key={ex} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"8px 10px",background:"var(--surface-0)",borderRadius:4}}>
+                        <span style={{fontSize:13,color:"var(--text-2)"}}>{ex}</span>
                         <div style={{display:"flex",gap:12,alignItems:"center"}}>
-                          <span style={{fontSize:11,color:"#555"}}>{a?`${a.weight}kg×${a.reps}`:"—"}</span>
-                          <span style={{fontSize:10,color:"#333"}}>vs</span>
-                          <span style={{fontSize:11,color:"#555"}}>{b?`${b.weight}kg×${b.reps}`:"—"}</span>
-                          {diff!==null&&<span style={{fontSize:11,color:diff>0?"#22c55e":diff<0?"#ef4444":"#888"}}>{diff>0?"+":""}{diff}vol</span>}
+                          <span style={{fontSize:11,color:"var(--text-3)"}}>{a?`${a.weight}kg×${a.reps}`:"—"}</span>
+                          <span style={{fontSize:10,color:"var(--text-4)"}}>vs</span>
+                          <span style={{fontSize:11,color:"var(--text-3)"}}>{b?`${b.weight}kg×${b.reps}`:"—"}</span>
+                          {diff!==null&&<span style={{fontSize:11,color:diff>0?"#22c55e":diff<0?"#ef4444":"var(--text-2)"}}>{diff>0?"+":""}{diff}vol</span>}
                         </div>
                       </div>
                     );
@@ -1133,8 +1418,8 @@ export default function BiofeedbackScore() {
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                     {[entryA,entryB].map((e,i)=>(
                       <div key={i} style={{textAlign:"center"}}>
-                        {e.photo ? <img src={e.photo} style={{width:"100%",borderRadius:4,border:"1px solid #2a2a30"}} alt="foto"/> : <div style={{height:120,border:"1px dashed #2a2a30",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",color:"#333",fontSize:11}}>Sem foto</div>}
-                        <div style={{fontSize:10,color:"#444",marginTop:4}}>{e.week}</div>
+                        {e.photo ? <img src={e.photo} style={{width:"100%",borderRadius:4,border:"1px solid var(--border)"}} alt="foto"/> : <div style={{height:120,border:"1px dashed var(--border)",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text-4)",fontSize:11}}>Sem foto</div>}
+                        <div style={{fontSize:10,color:"var(--text-3)",marginTop:4}}>{e.week}</div>
                       </div>
                     ))}
                   </div>
@@ -1144,10 +1429,10 @@ export default function BiofeedbackScore() {
           )}
 
           {(!entryA || !entryB) && compareA && compareB && (
-            <div style={{textAlign:"center",color:"#333",fontSize:14,marginTop:40}}>Selecione duas semanas diferentes para comparar.</div>
+            <div style={{textAlign:"center",color:"var(--text-4)",fontSize:14,marginTop:40}}>Selecione duas semanas diferentes para comparar.</div>
           )}
           {history.length < 2 && (
-            <div style={{textAlign:"center",color:"#333",fontSize:14,marginTop:40}}>Você precisa de pelo menos 2 semanas salvas para comparar.</div>
+            <div style={{textAlign:"center",color:"var(--text-4)",fontSize:14,marginTop:40}}>Você precisa de pelo menos 2 semanas salvas para comparar.</div>
           )}
         </div>
       )}
@@ -1173,18 +1458,18 @@ export default function BiofeedbackScore() {
                 {key:"startWeight",label:"Peso inicial (kg)",placeholder:"ex: 88.0",type:"number"},
               ].map(f=>(
                 <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
-                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
+                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label}</label>
                   <input type={f.type||"text"} placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
             </div>
 
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Nível de treinamento</div>
+              <div style={{fontSize:12,color:"var(--text-2)",marginBottom:6}}>Nível de treinamento</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                 {["Iniciante","Intermediário","Avançado"].map(l=>(
                   <button key={l} className={`opt-btn ${profile.level===l?"selected":""}`}
-                    style={profile.level===l?{background:"#22c55e",borderColor:"#22c55e",color:"#0c0c0f"}:{}}
+                    style={profile.level===l?{background:"#22c55e",borderColor:"#22c55e",color:"var(--surface-0)"}:{}}
                     onClick={()=>setProfile(p=>({...p,level:l}))}>
                     {l}
                   </button>
@@ -1193,11 +1478,11 @@ export default function BiofeedbackScore() {
             </div>
 
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Objetivo principal</div>
+              <div style={{fontSize:12,color:"var(--text-2)",marginBottom:6}}>Objetivo principal</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                 {["Cutting","Bulking","Recomposição","Saúde / Qualidade de vida"].map(g=>(
                   <button key={g} className={`opt-btn ${profile.goal===g?"selected":""}`}
-                    style={profile.goal===g?{background:"#84cc16",borderColor:"#84cc16",color:"#0c0c0f"}:{}}
+                    style={profile.goal===g?{background:"#84cc16",borderColor:"#84cc16",color:"var(--surface-0)"}:{}}
                     onClick={()=>setProfile(p=>({...p,goal:g}))}>
                     {g}
                   </button>
@@ -1206,7 +1491,7 @@ export default function BiofeedbackScore() {
             </div>
 
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Protocolo de treino</div>
+              <div style={{fontSize:12,color:"var(--text-2)",marginBottom:6}}>Protocolo de treino</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                 {["PPL","ABC","ABCD","Full Body","Upper/Lower","Outro"].map(t=>(
                   <button key={t} className={`opt-btn ${profile.split===t?"selected":""}`}
@@ -1219,22 +1504,22 @@ export default function BiofeedbackScore() {
             </div>
 
             <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
-              <label style={{fontSize:12,color:"#777"}}>Condições de saúde relevantes</label>
+              <label style={{fontSize:12,color:"var(--text-2)"}}>Condições de saúde relevantes</label>
               <textarea placeholder="ex: hipertensão controlada, hipotireoidismo..." value={profile.health||""} onChange={e=>setProfile(p=>({...p,health:e.target.value}))} style={{width:"100%",minHeight:56,resize:"vertical"}}/>
             </div>
 
             <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
-              <label style={{fontSize:12,color:"#777"}}>Medicamentos em uso (além de EAs)</label>
+              <label style={{fontSize:12,color:"var(--text-2)"}}>Medicamentos em uso (além de EAs)</label>
               <textarea placeholder="ex: levotiroxina 50mcg, losartana 50mg..." value={profile.meds||""} onChange={e=>setProfile(p=>({...p,meds:e.target.value}))} style={{width:"100%",minHeight:56,resize:"vertical"}}/>
             </div>
 
             <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:10}}>
-              <label style={{fontSize:12,color:"#777"}}>Meta (opcional — não obrigatório)</label>
+              <label style={{fontSize:12,color:"var(--text-2)"}}>Meta (opcional — não obrigatório)</label>
               <input type="text" placeholder="ex: chegar a 82kg mantendo performance" value={profile.goal_notes||""} onChange={e=>setProfile(p=>({...p,goal_notes:e.target.value}))} style={{width:"100%"}}/>
             </div>
 
             <div style={{display:"flex",flexDirection:"column",gap:4}}>
-              <label style={{fontSize:12,color:"#777"}}>Coach / Médico responsável</label>
+              <label style={{fontSize:12,color:"var(--text-2)"}}>Coach / Médico responsável</label>
               <input type="text" placeholder="ex: Dr. João Silva" value={profile.coach||""} onChange={e=>setProfile(p=>({...p,coach:e.target.value}))} style={{width:"100%"}}/>
             </div>
           </div>
@@ -1242,7 +1527,7 @@ export default function BiofeedbackScore() {
           {/* Fotos de poses */}
           <div className="card">
             <div className="section-title">📸 Fotos de Referência (Poses Básicas)</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14}}>Atualize sempre que quiser registrar evolução visual.</div>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14}}>Atualize sempre que quiser registrar evolução visual.</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
               {[
                 {key:"front",label:"Frente"},
@@ -1250,14 +1535,14 @@ export default function BiofeedbackScore() {
                 {key:"side",label:"Lateral"},
               ].map(pose=>(
                 <div key={pose.key} style={{textAlign:"center"}}>
-                  <div style={{fontSize:11,color:"#666",marginBottom:6}}>{pose.label}</div>
+                  <div style={{fontSize:11,color:"var(--text-3)",marginBottom:6}}>{pose.label}</div>
                   {posePhotos[pose.key] ? (
                     <div style={{position:"relative"}}>
-                      <img src={posePhotos[pose.key]} style={{width:"100%",aspectRatio:"3/4",objectFit:"cover",borderRadius:4,border:"1px solid #2a2a30"}} alt={pose.label}/>
-                      <button className="del-btn" style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.75)",color:"#ccc"}} onClick={()=>setPosePhotos(p=>({...p,[pose.key]:null}))}>✕</button>
+                      <img src={posePhotos[pose.key]} style={{width:"100%",aspectRatio:"3/4",objectFit:"cover",borderRadius:4,border:"1px solid var(--border)"}} alt={pose.label}/>
+                      <button className="del-btn" style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.75)",color:"var(--text-1)"}} onClick={()=>setPosePhotos(p=>({...p,[pose.key]:null}))}>✕</button>
                     </div>
                   ) : (
-                    <label style={{display:"flex",alignItems:"center",justifyContent:"center",aspectRatio:"3/4",border:"1px dashed #2a2a30",borderRadius:4,cursor:"pointer",color:"#333",fontSize:11,flexDirection:"column",gap:4}}>
+                    <label style={{display:"flex",alignItems:"center",justifyContent:"center",aspectRatio:"3/4",border:"1px dashed var(--border)",borderRadius:4,cursor:"pointer",color:"var(--text-4)",fontSize:11,flexDirection:"column",gap:4}}>
                       <span style={{fontSize:20}}>+</span>
                       <span>Adicionar</span>
                       <input type="file" accept="image/*" onChange={e=>handlePosePhoto(pose.key,e)} style={{display:"none"}}/>
@@ -1272,7 +1557,7 @@ export default function BiofeedbackScore() {
           {/* Score VO2 */}
           <div className="card">
             <div className="section-title">🫁 Capacidade Aeróbica — Score VO2 estimado</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
               Baseado na escala MRC (Medical Research Council) adaptada. Responda com honestidade — sem julgamento.
             </div>
 
@@ -1289,7 +1574,7 @@ export default function BiofeedbackScore() {
                 opts:[{v:4,l:"Normalizo em 1–2 min"},{v:3,l:"Levo 3–5 min"},{v:2,l:"Levo mais de 5 min"},{v:1,l:"Demoro muito / fico mal-estar"}] },
             ].map(field=>(
               <div key={field.key} style={{marginBottom:14}}>
-                <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
+                <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>{field.label}</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                   {field.opts.map(opt=>(
                     <button key={opt.v} className={`opt-btn ${profile[field.key]===opt.v?"selected":""}`}
@@ -1307,7 +1592,7 @@ export default function BiofeedbackScore() {
               const keys = ["vo2_stairs","vo2_walk","vo2_daily","vo2_cardio","vo2_recovery"];
               const answered = keys.filter(k=>profile[k]!==undefined);
               if (answered.length < 3) return (
-                <div style={{fontSize:12,color:"#333",fontStyle:"italic"}}>Responda pelo menos 3 perguntas para ver o resultado.</div>
+                <div style={{fontSize:12,color:"var(--text-4)",fontStyle:"italic"}}>Responda pelo menos 3 perguntas para ver o resultado.</div>
               );
               const total = answered.reduce((sum,k)=>sum+profile[k],0);
               const max = answered.length * 4;
@@ -1333,14 +1618,14 @@ export default function BiofeedbackScore() {
               }
 
               return (
-                <div style={{marginTop:16,padding:"14px 16px",background:"#0c0c0f",borderRadius:6,borderLeft:`3px solid ${color}`}}>
+                <div style={{marginTop:16,padding:"14px 16px",background:"var(--surface-0)",borderRadius:6,borderLeft:`3px solid ${color}`}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                     <div style={{fontSize:14,color:color}}>{level}</div>
                     <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:color,lineHeight:1}}>{pct}</div>
                   </div>
-                  <div style={{fontSize:12,color:"#777",marginBottom:8,lineHeight:1.6}}><span style={{color:"#555"}}>Recomendação: </span>{rec}</div>
-                  <div style={{fontSize:11,color:"#555",fontStyle:"italic"}}>{zone}</div>
-                  <div style={{fontSize:10,color:"#333",marginTop:8}}>Score baseado na Escala MRC adaptada. Não substitui teste ergoespirométrico.</div>
+                  <div style={{fontSize:12,color:"var(--text-2)",marginBottom:8,lineHeight:1.6}}><span style={{color:"var(--text-3)"}}>Recomendação: </span>{rec}</div>
+                  <div style={{fontSize:11,color:"var(--text-3)",fontStyle:"italic"}}>{zone}</div>
+                  <div style={{fontSize:10,color:"var(--text-4)",marginTop:8}}>Score baseado na Escala MRC adaptada. Não substitui teste ergoespirométrico.</div>
                 </div>
               );
             })()}
@@ -1348,12 +1633,12 @@ export default function BiofeedbackScore() {
           {/* Composição Corporal — US Navy + TDEE */}
           <div className="card">
             <div className="section-title">🔬 Composição Corporal — Método US Navy</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
               Estimativa de % de gordura corporal por circunferências. Preencha os campos abaixo — o cálculo é atualizado automaticamente a cada check-in com novas medidas.
             </div>
 
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:12,color:"#777",marginBottom:6}}>Sexo biológico</div>
+              <div style={{fontSize:12,color:"var(--text-2)",marginBottom:6}}>Sexo biológico</div>
               <div style={{display:"flex",gap:8}}>
                 {["Masculino","Feminino"].map(s=>(
                   <button key={s} className={`opt-btn ${profile.sex===s?"selected":""}`}
@@ -1372,7 +1657,7 @@ export default function BiofeedbackScore() {
                 ...(profile.sex==="Feminino"?[{key:"hip_navy",label:"Circunferência do quadril (cm)",placeholder:"ex: 98"}]:[]),
               ].map(f=>(
                 <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
-                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
+                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label}</label>
                   <input type="number" step="0.1" placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
                 </div>
               ))}
@@ -1413,7 +1698,7 @@ export default function BiofeedbackScore() {
               }
 
               return (
-                <div style={{padding:"14px 16px",background:"#0c0c0f",borderRadius:6,borderLeft:`3px solid ${bfColor}`,marginTop:8}}>
+                <div style={{padding:"14px 16px",background:"var(--surface-0)",borderRadius:6,borderLeft:`3px solid ${bfColor}`,marginTop:8}}>
                   <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:10}}>
                     <div style={{textAlign:"center"}}>
                       <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:36,color:bfColor,lineHeight:1}}>{bf}%</div>
@@ -1422,17 +1707,17 @@ export default function BiofeedbackScore() {
                     {w && (
                       <div style={{display:"flex",gap:20}}>
                         <div style={{textAlign:"center"}}>
-                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"#aaa",lineHeight:1}}>{lbm}kg</div>
-                          <div style={{fontSize:11,color:"#555"}}>Massa magra</div>
+                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"var(--text-2)",lineHeight:1}}>{lbm}kg</div>
+                          <div style={{fontSize:11,color:"var(--text-3)"}}>Massa magra</div>
                         </div>
                         <div style={{textAlign:"center"}}>
-                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"#888",lineHeight:1}}>{fatMass}kg</div>
-                          <div style={{fontSize:11,color:"#555"}}>Massa gorda</div>
+                          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:"var(--text-2)",lineHeight:1}}>{fatMass}kg</div>
+                          <div style={{fontSize:11,color:"var(--text-3)"}}>Massa gorda</div>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div style={{fontSize:11,color:"#444"}}>Método US Navy — estimativa. Margem de erro ±3–4%. Não substitui DEXA ou hidrostática.</div>
+                  <div style={{fontSize:11,color:"var(--text-3)"}}>Método US Navy — estimativa. Margem de erro ±3–4%. Não substitui DEXA ou hidrostática.</div>
                 </div>
               );
             })()}
@@ -1440,217 +1725,4 @@ export default function BiofeedbackScore() {
 
           {/* TDEE — Gasto Calórico Estimado */}
           <div className="card">
-            <div className="section-title">🔥 Gasto Calórico Estimado (TDEE)</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>
-              Baseado em Mifflin-St Jeor para TMB + multiplicador de atividade personalizado.
-            </div>
-
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-              {[
-                {key:"tdee_age",label:"Idade",placeholder:"ex: 34",type:"number"},
-                {key:"tdee_weight",label:"Peso atual (kg)",placeholder:"ex: 84",type:"number"},
-              ].map(f=>(
-                <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
-                  <label style={{fontSize:12,color:"#777"}}>{f.label}</label>
-                  <input type={f.type} placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
-                </div>
-              ))}
-            </div>
-
-            {[
-              { key:"tdee_workouts", label:"Treinos de musculação por semana",
-                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x"},{v:2,l:"3–4x"},{v:3,l:"5–6x"},{v:4,l:"7x ou mais"}] },
-              { key:"tdee_duration", label:"Duração média do treino",
-                opts:[{v:0,l:"Não treino"},{v:1,l:"< 45 min"},{v:2,l:"45–75 min"},{v:3,l:"> 75 min"}] },
-              { key:"tdee_cardio", label:"Cardio adicional por semana",
-                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x leve"},{v:2,l:"3–4x moderado"},{v:3,l:"5x+ intenso"}] },
-              { key:"tdee_job", label:"Tipo de trabalho",
-                opts:[{v:0,l:"Sentado (escritório)"},{v:1,l:"Em pé (balcão/loja)"},{v:2,l:"Andando (campo/obra)"},{v:3,l:"Trabalho pesado físico"}] },
-              { key:"tdee_neat", label:"Atividade fora do treino (NEAT)",
-                opts:[{v:0,l:"Muito sedentário"},{v:1,l:"Pouco ativo"},{v:2,l:"Moderadamente ativo"},{v:3,l:"Muito ativo"}] },
-            ].map(field=>(
-              <div key={field.key} style={{marginBottom:12}}>
-                <div style={{fontSize:13,color:"#888",marginBottom:8}}>{field.label}</div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                  {field.opts.map(opt=>(
-                    <button key={opt.v} className={`opt-btn ${profile[field.key]===opt.v?"selected":""}`}
-                      style={profile[field.key]===opt.v?{background:"#f97316",borderColor:"#f97316",color:"#0c0c0f"}:{}}
-                      onClick={()=>setProfile(p=>({...p,[field.key]:opt.v}))}>
-                      {opt.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-
-            {/* Resultado TDEE */}
-            {(()=>{
-              const w = parseFloat(profile.tdee_weight || profile.startWeight);
-              const h2 = parseFloat(profile.height);
-              const age = parseFloat(profile.tdee_age || profile.age);
-              const sex = profile.sex;
-              if (!w || !h2 || !age || !sex) return (
-                <div style={{fontSize:12,color:"#333",fontStyle:"italic",marginTop:8}}>Preencha peso, altura, idade e sexo para calcular.</div>
-              );
-
-              // TMB Mifflin-St Jeor
-              let tmb = sex === "Feminino"
-                ? (10 * w) + (6.25 * h2) - (5 * age) - 161
-                : (10 * w) + (6.25 * h2) - (5 * age) + 5;
-
-              // Multiplicador baseado nas respostas
-              const wo = profile.tdee_workouts || 0;
-              const dur = profile.tdee_duration || 0;
-              const card = profile.tdee_cardio || 0;
-              const job = profile.tdee_job || 0;
-              const neat = profile.tdee_neat || 0;
-
-              // Score total 0–16 mapeado para fator 1.2–2.0
-              const actScore = wo + dur + card + job + neat;
-              const factor = 1.2 + (actScore / 16) * 0.8;
-              const tdee = Math.round(tmb * factor);
-              tmb = Math.round(tmb);
-
-              const cutting = Math.round(tdee * 0.82);
-              const mild = Math.round(tdee * 0.90);
-              const bulk = Math.round(tdee * 1.10);
-
-              const factorLabel = factor < 1.375 ? "Sedentário" : factor < 1.55 ? "Levemente ativo" : factor < 1.725 ? "Moderadamente ativo" : factor < 1.9 ? "Muito ativo" : "Extremamente ativo";
-
-              return (
-                <div style={{marginTop:12,padding:"16px",background:"#0c0c0f",borderRadius:6}}>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
-                    <div style={{textAlign:"center",padding:"10px",background:"#12121a",borderRadius:4}}>
-                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"#888",lineHeight:1}}>{tmb}</div>
-                      <div style={{fontSize:11,color:"#555",marginTop:2}}>TMB (kcal)</div>
-                    </div>
-                    <div style={{textAlign:"center",padding:"10px",background:"#12121a",borderRadius:4}}>
-                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"#f97316",lineHeight:1}}>{tdee}</div>
-                      <div style={{fontSize:11,color:"#555",marginTop:2}}>TDEE estimado</div>
-                      <div style={{fontSize:10,color:"#333",marginTop:1}}>{factorLabel} (×{factor.toFixed(2)})</div>
-                    </div>
-                  </div>
-
-                  <div style={{fontSize:11,color:"#555",marginBottom:10,letterSpacing:".06em",textTransform:"uppercase"}}>Metas calóricas sugeridas</div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                    {[
-                      {label:"Cutting (−18%)",value:cutting,color:"#22c55e"},
-                      {label:"Cutting leve (−10%)",value:mild,color:"#84cc16"},
-                      {label:"Bulk (+10%)",value:bulk,color:"#3b82f6"},
-                    ].map(c=>(
-                      <div key={c.label} style={{textAlign:"center",padding:"10px 6px",background:"#12121a",borderRadius:4}}>
-                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:c.color,lineHeight:1}}>{c.value}</div>
-                        <div style={{fontSize:10,color:"#444",marginTop:2}}>{c.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{fontSize:10,color:"#333",marginTop:12}}>Mifflin-St Jeor + fator de atividade personalizado. Margem de erro ±10–15%. Ajuste conforme resposta do corpo nas semanas.</div>
-                </div>
-              );
-            })()}
-          </div>
-
-          {/* Tabela de medidas */}
-          <div className="card">
-            <div className="section-title">📐 Tabela de Medidas</div>
-
-            {/* Nova medição */}
-            <div style={{background:"#0c0c0f",borderRadius:6,padding:"14px",marginBottom:16}}>
-              <div style={{fontSize:12,color:"#666",marginBottom:10}}>Nova medição</div>
-              <div style={{marginBottom:8}}>
-                <label style={{fontSize:11,color:"#555",display:"block",marginBottom:4}}>Data</label>
-                <input type="text" value={measureDate} onChange={e=>setMeasureDate(e.target.value)} style={{width:"100%"}}/>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
-                {[
-                  {key:"weight",label:"Peso (kg)"},
-                  {key:"waist",label:"Cintura / Abdômen (cm)"},
-                  {key:"neck_cm",label:"Pescoço (cm)"},
-                  {key:"hip",label:"Quadril (cm)"},
-                  {key:"chest",label:"Peito (cm)"},
-                  {key:"shoulders",label:"Ombros (cm)"},
-                  {key:"armR",label:"Braço D (cm)"},
-                  {key:"armL",label:"Braço E (cm)"},
-                  {key:"thighR",label:"Coxa D (cm)"},
-                  {key:"thighL",label:"Coxa E (cm)"},
-                  {key:"calf",label:"Panturrilha (cm)"},
-                ].map(f=>(
-                  <div key={f.key} style={{display:"flex",flexDirection:"column",gap:3}}>
-                    <label style={{fontSize:10,color:"#555"}}>{f.label}</label>
-                    <input type="number" step="0.1" placeholder="—" value={newMeasure[f.key]||""} onChange={e=>setNewMeasure(m=>({...m,[f.key]:e.target.value}))} style={{width:"100%"}}/>
-                  </div>
-                ))}
-              </div>
-              <button className="save-btn" style={{width:"100%"}} onClick={handleSaveMeasure}>Salvar medição</button>
-            </div>
-
-            {/* Histórico de medidas */}
-            {measures.length > 0 && (
-              <div style={{overflowX:"auto"}}>
-                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                  <thead>
-                    <tr>
-                      {["Data","Peso","Cintura","Quadril","Peito","Ombros","Br.D","Br.E","Cx.D","Cx.E","Pant.","%G Navy","M.Magra",""].map(h=>(
-                        <th key={h} style={{fontSize:10,color:"#555",padding:"6px 8px",textAlign:"left",borderBottom:"1px solid #1e1e25",whiteSpace:"nowrap"}}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {measures.map((m,i)=>(
-                      <tr key={i} style={{borderBottom:"1px solid #1a1a20"}}>
-                        {["date","weight","waist","hip","chest","shoulders","armR","armL","thighR","thighL","calf","bodyfat_navy","lbm"].map(k=>(
-                          <td key={k} style={{fontSize:12,color:"#888",padding:"7px 8px",whiteSpace:"nowrap"}}>{m[k]||"—"}</td>
-                        ))}
-                        <td style={{padding:"7px 8px"}}>
-                          <button className="del-btn" onClick={()=>handleDeleteMeasure(i)}>✕</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            {measures.length === 0 && (
-              <div style={{textAlign:"center",color:"#333",fontSize:12,padding:"20px 0"}}>Nenhuma medição registrada ainda.</div>
-            )}
-          </div>
-
-        </div>
-      )}
-
-      {/* ══ ESCALA ══ */}
-      {view === "about" && (
-        <div style={{maxWidth:620,margin:"0 auto",padding:"24px 20px 60px"}}>
-          <div className="section-title">Interpretação do score</div>
-          {SCORE_SCALE.map((s,i)=>(
-            <div key={i} style={{background:"#10101a",borderLeft:`3px solid ${s.color}`,borderRadius:4,padding:"12px 16px",marginBottom:8}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:s.color}}>{s.range}</div>
-                <div style={{fontSize:13,color:s.color}}>{s.label}</div>
-              </div>
-              <div style={{fontSize:13,color:"#777"}}>{s.desc}</div>
-            </div>
-          ))}
-
-          <div style={{background:"#10101a",border:"1px solid #2a1a4a",borderRadius:6,padding:"16px 18px",marginTop:16}}>
-            <div className="section-title" style={{color:"#7c3aed"}}>Score Hormonal — Controle de Estrogênio em usuários de EAs</div>
-            {[{color:"#ef4444",label:"E2 possivelmente ELEVADO",desc:"Sinais predominantes: mamilo sensível, oleosidade/acne, humor sensível. Ação: revisar dose do AI, solicitar exame de estradiol (preferencialmente LC-MS/MS)."},{color:"#f97316",label:"E2 possivelmente BAIXO",desc:"Sinais predominantes: articulação seca, ausência de ereção matinal, humor apático, pele seca. Ação: AI pode estar em excesso — reduzir dose ou aumentar intervalo. Solicitar exame."},{color:"#22c55e",label:"Quadro equilibrado",desc:"Sinais dentro do esperado. Manter protocolo e reavaliar em 2 semanas."}].map((s,i)=>(
-              <div key={i} style={{borderLeft:`3px solid ${s.color}`,padding:"10px 14px",marginBottom:8,background:"#0c0c0f",borderRadius:4}}>
-                <div style={{fontSize:12,color:s.color,marginBottom:4}}>{s.label}</div>
-                <div style={{fontSize:11,color:"#555",lineHeight:1.6}}>{s.desc}</div>
-              </div>
-            ))}
-            <div style={{fontSize:10,color:"#333",marginTop:8}}>O score hormonal não substitui exames laboratoriais. Use como auxiliar de monitoramento entre exames.</div>
-          </div>
-
-          <div style={{background:"#10101a",border:"1px solid #1e1e25",borderRadius:6,padding:"16px 18px",marginTop:12}}>
-            <div className="section-title">Fundamentação</div>
-            <div style={{fontSize:11,color:"#555",lineHeight:1.7}}>Modelo baseado em conceitos de John Jewett, Mike Israetel (RP), Eric Helms e James Krieger. Score hormonal baseado em marcadores clínicos de desequilíbrio androgênio/estrogênio em usuários de EAs. O uso de compostos anabolizantes pode causar aromatização excessiva (E2 elevado) ou, com uso inadequado de AI, supressão de estrogênio (E2 baixo) — ambos com consequências para saúde e performance.</div>
-          </div>
-        </div>
-      )}
-      </>
-    )}
-    </div>
-  );
-}
+            <div cla
