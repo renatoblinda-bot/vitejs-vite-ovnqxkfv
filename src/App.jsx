@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = "https://hlkesynzmmveajbwmgwm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_gG5lVePrVMobnK24_O-u3A_ajuRlMPV";
@@ -1649,9 +1649,8 @@ export default function BiofeedbackScore() {
           </div>
         </div>
       )}
-    </div>
-  </>
-  )}
+      </>
+    )}
     </div>
   );
 }
