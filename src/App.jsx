@@ -1725,4 +1725,217 @@ export default function BiofeedbackScore() {
 
           {/* TDEE — Gasto Calórico Estimado */}
           <div className="card">
-            <div cla
+            <div className="section-title">🔥 Gasto Calórico Estimado (TDEE)</div>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
+              Baseado em Mifflin-St Jeor para TMB + multiplicador de atividade personalizado.
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+              {[
+                {key:"tdee_age",label:"Idade",placeholder:"ex: 34",type:"number"},
+                {key:"tdee_weight",label:"Peso atual (kg)",placeholder:"ex: 84",type:"number"},
+              ].map(f=>(
+                <div key={f.key} style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label}</label>
+                  <input type={f.type} placeholder={f.placeholder} value={profile[f.key]||""} onChange={e=>setProfile(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                </div>
+              ))}
+            </div>
+
+            {[
+              { key:"tdee_workouts", label:"Treinos de musculação por semana",
+                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x"},{v:2,l:"3–4x"},{v:3,l:"5–6x"},{v:4,l:"7x ou mais"}] },
+              { key:"tdee_duration", label:"Duração média do treino",
+                opts:[{v:0,l:"Não treino"},{v:1,l:"< 45 min"},{v:2,l:"45–75 min"},{v:3,l:"> 75 min"}] },
+              { key:"tdee_cardio", label:"Cardio adicional por semana",
+                opts:[{v:0,l:"Nenhum"},{v:1,l:"1–2x leve"},{v:2,l:"3–4x moderado"},{v:3,l:"5x+ intenso"}] },
+              { key:"tdee_job", label:"Tipo de trabalho",
+                opts:[{v:0,l:"Sentado (escritório)"},{v:1,l:"Em pé (balcão/loja)"},{v:2,l:"Andando (campo/obra)"},{v:3,l:"Trabalho pesado físico"}] },
+              { key:"tdee_neat", label:"Atividade fora do treino (NEAT)",
+                opts:[{v:0,l:"Muito sedentário"},{v:1,l:"Pouco ativo"},{v:2,l:"Moderadamente ativo"},{v:3,l:"Muito ativo"}] },
+            ].map(field=>(
+              <div key={field.key} style={{marginBottom:12}}>
+                <div style={{fontSize:13,color:"var(--text-2)",marginBottom:8}}>{field.label}</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {field.opts.map(opt=>(
+                    <button key={opt.v} className={`opt-btn ${profile[field.key]===opt.v?"selected":""}`}
+                      style={profile[field.key]===opt.v?{background:"#f97316",borderColor:"#f97316",color:"var(--surface-0)"}:{}}
+                      onClick={()=>setProfile(p=>({...p,[field.key]:opt.v}))}>
+                      {opt.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Resultado TDEE */}
+            {(()=>{
+              const w = parseFloat(profile.tdee_weight || profile.startWeight);
+              const h2 = parseFloat(profile.height);
+              const age = parseFloat(profile.tdee_age || profile.age);
+              const sex = profile.sex;
+              if (!w || !h2 || !age || !sex) return (
+                <div style={{fontSize:12,color:"var(--text-4)",fontStyle:"italic",marginTop:8}}>Preencha peso, altura, idade e sexo para calcular.</div>
+              );
+
+              // TMB Mifflin-St Jeor
+              let tmb = sex === "Feminino"
+                ? (10 * w) + (6.25 * h2) - (5 * age) - 161
+                : (10 * w) + (6.25 * h2) - (5 * age) + 5;
+
+              // Multiplicador baseado nas respostas
+              const wo = profile.tdee_workouts || 0;
+              const dur = profile.tdee_duration || 0;
+              const card = profile.tdee_cardio || 0;
+              const job = profile.tdee_job || 0;
+              const neat = profile.tdee_neat || 0;
+
+              // Score total 0–16 mapeado para fator 1.2–2.0
+              const actScore = wo + dur + card + job + neat;
+              const factor = 1.2 + (actScore / 16) * 0.8;
+              const tdee = Math.round(tmb * factor);
+              tmb = Math.round(tmb);
+
+              const cutting = Math.round(tdee * 0.82);
+              const mild = Math.round(tdee * 0.90);
+              const bulk = Math.round(tdee * 1.10);
+
+              const factorLabel = factor < 1.375 ? "Sedentário" : factor < 1.55 ? "Levemente ativo" : factor < 1.725 ? "Moderadamente ativo" : factor < 1.9 ? "Muito ativo" : "Extremamente ativo";
+
+              return (
+                <div style={{marginTop:12,padding:"16px",background:"var(--surface-0)",borderRadius:6}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+                    <div style={{textAlign:"center",padding:"10px",background:"var(--surface-1)",borderRadius:4}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"var(--text-2)",lineHeight:1}}>{tmb}</div>
+                      <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>TMB (kcal)</div>
+                    </div>
+                    <div style={{textAlign:"center",padding:"10px",background:"var(--surface-1)",borderRadius:4}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:"var(--orange)",lineHeight:1}}>{tdee}</div>
+                      <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>TDEE estimado</div>
+                      <div style={{fontSize:10,color:"var(--text-4)",marginTop:1}}>{factorLabel} (×{factor.toFixed(2)})</div>
+                    </div>
+                  </div>
+
+                  <div style={{fontSize:11,color:"var(--text-3)",marginBottom:10,letterSpacing:".06em",textTransform:"uppercase"}}>Metas calóricas sugeridas</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                    {[
+                      {label:"Cutting (−18%)",value:cutting,color:"var(--green)"},
+                      {label:"Cutting leve (−10%)",value:mild,color:"#84cc16"},
+                      {label:"Bulk (+10%)",value:bulk,color:"#3b82f6"},
+                    ].map(c=>(
+                      <div key={c.label} style={{textAlign:"center",padding:"10px 6px",background:"var(--surface-1)",borderRadius:4}}>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:c.color,lineHeight:1}}>{c.value}</div>
+                        <div style={{fontSize:10,color:"var(--text-3)",marginTop:2}}>{c.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{fontSize:10,color:"var(--text-4)",marginTop:12}}>Mifflin-St Jeor + fator de atividade personalizado. Margem de erro ±10–15%. Ajuste conforme resposta do corpo nas semanas.</div>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Tabela de medidas */}
+          <div className="card">
+            <div className="section-title">📐 Tabela de Medidas</div>
+
+            {/* Nova medição */}
+            <div style={{background:"var(--surface-0)",borderRadius:6,padding:"14px",marginBottom:16}}>
+              <div style={{fontSize:12,color:"var(--text-3)",marginBottom:10}}>Nova medição</div>
+              <div style={{marginBottom:8}}>
+                <label style={{fontSize:11,color:"var(--text-3)",display:"block",marginBottom:4}}>Data</label>
+                <input type="text" value={measureDate} onChange={e=>setMeasureDate(e.target.value)} style={{width:"100%"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+                {[
+                  {key:"weight",label:"Peso (kg)"},
+                  {key:"waist",label:"Cintura / Abdômen (cm)"},
+                  {key:"neck_cm",label:"Pescoço (cm)"},
+                  {key:"hip",label:"Quadril (cm)"},
+                  {key:"chest",label:"Peito (cm)"},
+                  {key:"shoulders",label:"Ombros (cm)"},
+                  {key:"armR",label:"Braço D (cm)"},
+                  {key:"armL",label:"Braço E (cm)"},
+                  {key:"thighR",label:"Coxa D (cm)"},
+                  {key:"thighL",label:"Coxa E (cm)"},
+                  {key:"calf",label:"Panturrilha (cm)"},
+                ].map(f=>(
+                  <div key={f.key} style={{display:"flex",flexDirection:"column",gap:3}}>
+                    <label style={{fontSize:10,color:"var(--text-3)"}}>{f.label}</label>
+                    <input type="number" step="0.1" placeholder="—" value={newMeasure[f.key]||""} onChange={e=>setNewMeasure(m=>({...m,[f.key]:e.target.value}))} style={{width:"100%"}}/>
+                  </div>
+                ))}
+              </div>
+              <button className="save-btn" style={{width:"100%"}} onClick={handleSaveMeasure}>Salvar medição</button>
+            </div>
+
+            {/* Histórico de medidas */}
+            {measures.length > 0 && (
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead>
+                    <tr>
+                      {["Data","Peso","Cintura","Quadril","Peito","Ombros","Br.D","Br.E","Cx.D","Cx.E","Pant.","%G Navy","M.Magra",""].map(h=>(
+                        <th key={h} style={{fontSize:10,color:"var(--text-3)",padding:"6px 8px",textAlign:"left",borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {measures.map((m,i)=>(
+                      <tr key={i} style={{borderBottom:"1px solid var(--border)"}}>
+                        {["date","weight","waist","hip","chest","shoulders","armR","armL","thighR","thighL","calf","bodyfat_navy","lbm"].map(k=>(
+                          <td key={k} style={{fontSize:12,color:"var(--text-2)",padding:"7px 8px",whiteSpace:"nowrap"}}>{m[k]||"—"}</td>
+                        ))}
+                        <td style={{padding:"7px 8px"}}>
+                          <button className="del-btn" onClick={()=>handleDeleteMeasure(i)}>✕</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {measures.length === 0 && (
+              <div style={{textAlign:"center",color:"var(--text-3)",fontSize:12,padding:"20px 0"}}>Nenhuma medição registrada ainda.</div>
+            )}
+          </div>
+
+        </div>
+      )}
+
+      {/* ══ ESCALA ══ */}
+      {view === "about" && (
+        <div style={{maxWidth:620,margin:"0 auto",padding:"24px 20px 60px"}}>
+          <div className="section-title">Interpretação do score</div>
+          {SCORE_SCALE.map((s,i)=>(
+            <div key={i} style={{background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",borderLeft:`3px solid ${s.color}`,borderRadius:"var(--radius)",padding:"14px 18px",marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:s.color}}>{s.range}</div>
+                <div style={{fontSize:13,color:s.color}}>{s.label}</div>
+              </div>
+              <div style={{fontSize:13,color:"var(--text-2)"}}>{s.desc}</div>
+            </div>
+          ))}
+
+          <div style={{background:"var(--surface-2)",border:"1px solid #2a1a4a",borderRadius:6,padding:"16px 18px",marginTop:16}}>
+            <div className="section-title" style={{color:"#7c3aed"}}>Score Hormonal — Controle de Estrogênio em usuários de EAs</div>
+            {[{color:"var(--red)",label:"E2 possivelmente ELEVADO",desc:"Sinais predominantes: mamilo sensível, oleosidade/acne, humor sensível. Ação: revisar dose do AI, solicitar exame de estradiol (preferencialmente LC-MS/MS)."},{color:"var(--orange)",label:"E2 possivelmente BAIXO",desc:"Sinais predominantes: articulação seca, ausência de ereção matinal, humor apático, pele seca. Ação: AI pode estar em excesso — reduzir dose ou aumentar intervalo. Solicitar exame."},{color:"var(--green)",label:"Quadro equilibrado",desc:"Sinais dentro do esperado. Manter protocolo e reavaliar em 2 semanas."}].map((s,i)=>(
+              <div key={i} style={{borderLeft:`3px solid ${s.color}`,padding:"10px 14px",marginBottom:8,background:"var(--surface-0)",borderRadius:4}}>
+                <div style={{fontSize:12,color:s.color,marginBottom:4}}>{s.label}</div>
+                <div style={{fontSize:11,color:"var(--text-3)",lineHeight:1.6}}>{s.desc}</div>
+              </div>
+            ))}
+            <div style={{fontSize:10,color:"var(--text-4)",marginTop:8}}>O score hormonal não substitui exames laboratoriais. Use como auxiliar de monitoramento entre exames.</div>
+          </div>
+
+          <div style={{background:"var(--surface-2)",border:"1px solid var(--border)",borderRadius:6,padding:"16px 18px",marginTop:12}}>
+            <div className="section-title">Fundamentação</div>
+            <div style={{fontSize:11,color:"var(--text-3)",lineHeight:1.7}}>Modelo baseado em conceitos de John Jewett, Mike Israetel (RP), Eric Helms e James Krieger. Score hormonal baseado em marcadores clínicos de desequilíbrio androgênio/estrogênio em usuários de EAs. O uso de compostos anabolizantes pode causar aromatização excessiva (E2 elevado) ou, com uso inadequado de AI, supressão de estrogênio (E2 baixo) — ambos com consequências para saúde e performance.</div>
+          </div>
+        </div>
+      )}
+      </>
+    )}
+    </div>
+  );
+}
