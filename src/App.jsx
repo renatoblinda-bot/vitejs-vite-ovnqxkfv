@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://hlkesynzmmveajbwmgwm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gG5lVePrVMobnK24_O-u3A_ajuRlMPV";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── PESOS BIOFEEDBACK ────────────────────────────────────────────────────────
 const DEFAULT_WEIGHTS = {
@@ -204,6 +209,13 @@ export default function BiofeedbackScore() {
   const [modal, setModal] = useState(null);
   const [compareA, setCompareA] = useState("");
   const [compareB, setCompareB] = useState("");
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authView, setAuthView] = useState("login"); // login | register
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authMsg, setAuthMsg] = useState("");
   const [profile, setProfile] = useState({});
   const [measures, setMeasures] = useState([]);
   const [newMeasure, setNewMeasure] = useState({});
@@ -211,33 +223,78 @@ export default function BiofeedbackScore() {
   const [measureDate, setMeasureDate] = useState(new Date().toLocaleDateString("pt-BR"));
   const loaded = useRef(false);
 
-  const store = {
-    get: async (key) => {
-      if (typeof window.storage?.get === "function") { const r = await window.storage.get(key); return r?.value ?? null; }
-      return localStorage.getItem(key);
-    },
-    set: async (key, value) => {
-      if (typeof window.storage?.set === "function") await window.storage.set(key, value);
-      else localStorage.setItem(key, value);
-    },
-  };
-
+  // ── Auth listener ──
   useEffect(() => {
-    const load = async () => {
-      try { const h = await store.get("bf-history"); if (h) setHistory(JSON.parse(h)); } catch(_) {}
-      try { const w = await store.get("bf-weights"); if (w) setWeights(JSON.parse(w)); } catch(_) {}
-      try { const p = await store.get("bf-profile"); if (p) setProfile(JSON.parse(p)); } catch(_) {}
-      try { const m = await store.get("bf-measures"); if (m) setMeasures(JSON.parse(m)); } catch(_) {}
-      try { const pp = await store.get("bf-posephotos"); if (pp) setPosePhotos(JSON.parse(pp)); } catch(_) {}
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setAuthLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // ── Load data when user logs in ──
+  useEffect(() => {
+    if (!user) return;
+    const loadAll = async () => {
+      try {
+        const { data: p } = await supabase.from("profiles").select("data").eq("id", user.id).single();
+        if (p?.data) {
+          const pd = p.data;
+          if (pd.profile) setProfile(pd.profile);
+          if (pd.posePhotos) setPosePhotos(pd.posePhotos);
+        }
+      } catch(_) {}
+      try {
+        const { data: w } = await supabase.from("user_weights").select("weights").eq("id", user.id).single();
+        if (w?.weights) setWeights(w.weights);
+      } catch(_) {}
+      try {
+        const { data: c } = await supabase.from("checkins").select("week,data").eq("user_id", user.id).order("created_at", { ascending: false });
+        if (c) setHistory(c.map(r => ({ week: r.week, ...r.data })));
+      } catch(_) {}
+      try {
+        const { data: m } = await supabase.from("measures").select("data").eq("user_id", user.id).order("created_at", { ascending: false });
+        if (m) setMeasures(m.map(r => r.data));
+      } catch(_) {}
       loaded.current = true;
     };
-    load();
-  }, []);
-  useEffect(() => { if (!loaded.current) return; store.set("bf-history", JSON.stringify(history)); }, [history]);
-  useEffect(() => { if (!loaded.current) return; store.set("bf-weights", JSON.stringify(weights)); }, [weights]);
-  useEffect(() => { if (!loaded.current) return; store.set("bf-profile", JSON.stringify(profile)); }, [profile]);
-  useEffect(() => { if (!loaded.current) return; store.set("bf-measures", JSON.stringify(measures)); }, [measures]);
-  useEffect(() => { if (!loaded.current) return; store.set("bf-posephotos", JSON.stringify(posePhotos)); }, [posePhotos]);
+    loadAll();
+  }, [user]);
+
+  // ── Auth handlers ──
+  const handleLogin = async () => {
+    setAuthError(""); setAuthMsg("");
+    const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
+    if (error) setAuthError(error.message);
+  };
+
+  const handleRegister = async () => {
+    setAuthError(""); setAuthMsg("");
+    if (authPassword.length < 6) { setAuthError("Senha deve ter pelo menos 6 caracteres."); return; }
+    const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
+    if (error) setAuthError(error.message);
+    else setAuthMsg("Conta criada! Verifique seu e-mail para confirmar.");
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setHistory([]); setProfile({}); setMeasures([]); setPosePhotos({}); setWeights({...DEFAULT_WEIGHTS});
+    loaded.current = false;
+  };
+
+  // ── Save to Supabase ──
+  const saveProfile = async (newProfile, newPosePhotos) => {
+    if (!user) return;
+    await supabase.from("profiles").upsert({ id: user.id, data: { profile: newProfile, posePhotos: newPosePhotos || posePhotos } });
+  };
+
+  const saveWeights = async (newWeights) => {
+    if (!user) return;
+    await supabase.from("user_weights").upsert({ id: user.id, weights: newWeights });
+  };
 
   const totalAnswered = Object.keys(scores).length;
   const score = computeScore(scores, weights);
@@ -277,19 +334,29 @@ export default function BiofeedbackScore() {
     entry.report = generateReport(entry, prev, weights);
     const suggestions = generateSuggestions(entry, historyWithScore, weights);
     setHistory(h => [entry, ...h]);
+    // Save to Supabase
+    if (user) {
+      const { week: w, ...rest } = entry;
+      supabase.from("checkins").insert({ user_id: user.id, week: w, data: rest }).then(() => {});
+    }
     setScores({}); setWeek(""); setNotes(""); setObjective({}); setMacros({}); setGut({});
     setHormonal({}); setUsesHormones(null); setAnchors([{exercise:"",weight:"",reps:""}]); setPhoto(null);
     setModal({suggestions, report:entry.report, score:entry.score, week:entry.week, hormonalScore});
   };
 
-  const handleDeleteEntry = (idx) => {
-    if (window.confirm("Excluir este registro?")) setHistory(h => h.filter((_,i)=>i!==idx));
+  const handleDeleteEntry = async (idx) => {
+    if (!window.confirm("Excluir este registro?")) return;
+    const entry = history[idx];
+    setHistory(h => h.filter((_,i)=>i!==idx));
+    if (user && entry.week) {
+      await supabase.from("checkins").delete().eq("user_id", user.id).eq("week", entry.week);
+    }
   };
   const handleWeightChange = (id, val) => { const n = Math.max(0,Math.min(50,parseInt(val)||0)); setWeights(w=>({...w,[id]:n})); };
   const resetWeights = () => setWeights({...DEFAULT_WEIGHTS});
 
   const handleExport = () => {
-    const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),history,weights,profile,measures},null,2)],{type:"application/json"});
+    const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),user:user?.email,history,weights,profile,measures},null,2)],{type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href=url; a.download=`biofeedback-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
   };
@@ -366,11 +433,19 @@ export default function BiofeedbackScore() {
       lbm: (bf !== null && w) ? parseFloat((w*(1-bf/100)).toFixed(1)) : undefined,
     };
     setMeasures(m=>[entry,...m]);
+    if (user) {
+      supabase.from("measures").insert({ user_id: user.id, data: entry }).then(() => {});
+    }
     setNewMeasure({});
   };
 
-  const handleDeleteMeasure = (idx) => {
-    if (window.confirm("Excluir esta medição?")) setMeasures(m=>m.filter((_,i)=>i!==idx));
+  const handleDeleteMeasure = async (idx) => {
+    if (!window.confirm("Excluir esta medição?")) return;
+    const entry = measures[idx];
+    setMeasures(m=>m.filter((_,i)=>i!==idx));
+    if (user) {
+      await supabase.from("measures").delete().eq("user_id", user.id).eq("data->>date", entry.date);
+    }
   };
   const handleImport = (e) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -415,6 +490,66 @@ export default function BiofeedbackScore() {
         .horm-btn.no{background:#2a2a30;border-color:#2a2a30;color:#aaa}
         .anchor-row{display:grid;grid-template-columns:1fr 80px 70px 32px;gap:6px;margin-bottom:6px}
       `}</style>
+
+      {/* ── Auth loading ── */}
+      {authLoading && (
+        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{fontSize:13,color:"#444",letterSpacing:".1em"}}>CARREGANDO...</div>
+        </div>
+      )}
+
+      {/* ── Auth screen ── */}
+      {!authLoading && !user && (
+        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+          <div style={{width:"100%",maxWidth:380,background:"#10101a",border:"1px solid #1e1e25",borderRadius:10,padding:"32px 28px"}}>
+            <div style={{textAlign:"center",marginBottom:28}}>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:32,letterSpacing:".1em",color:"#e8e6e1"}}>CALIBRA</div>
+              <div style={{fontSize:11,color:"#444",letterSpacing:".12em",textTransform:"uppercase",marginTop:4}}>Monitoramento de adaptação ao treino</div>
+            </div>
+
+            <div style={{display:"flex",marginBottom:20,background:"#0c0c0f",borderRadius:4,padding:3}}>
+              {[["login","Entrar"],["register","Criar conta"]].map(([v,l])=>(
+                <button key={v} onClick={()=>{setAuthView(v);setAuthError("");setAuthMsg("");}}
+                  style={{flex:1,padding:"8px",border:"none",borderRadius:3,cursor:"pointer",fontFamily:"inherit",fontSize:12,letterSpacing:".06em",transition:"all .15s",
+                    background:authView===v?"#1e1e2e":"transparent",
+                    color:authView===v?"#e8e6e1":"#555"}}>
+                  {l}
+                </button>
+              ))}
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
+              <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                <label style={{fontSize:12,color:"#666"}}>E-mail</label>
+                <input type="email" placeholder="seu@email.com" value={authEmail} onChange={e=>setAuthEmail(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&(authView==="login"?handleLogin():handleRegister())}
+                  style={{width:"100%"}}/>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                <label style={{fontSize:12,color:"#666"}}>Senha</label>
+                <input type="password" placeholder={authView==="register"?"mínimo 6 caracteres":""} value={authPassword} onChange={e=>setAuthPassword(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&(authView==="login"?handleLogin():handleRegister())}
+                  style={{width:"100%"}}/>
+              </div>
+            </div>
+
+            {authError && <div style={{fontSize:12,color:"#ef4444",marginBottom:12,padding:"8px 12px",background:"rgba(239,68,68,0.08)",borderRadius:4}}>{authError}</div>}
+            {authMsg && <div style={{fontSize:12,color:"#22c55e",marginBottom:12,padding:"8px 12px",background:"rgba(34,197,94,0.08)",borderRadius:4}}>{authMsg}</div>}
+
+            <button className="save-btn" style={{width:"100%"}}
+              onClick={authView==="login"?handleLogin:handleRegister}>
+              {authView==="login"?"Entrar":"Criar conta"}
+            </button>
+
+            <div style={{fontSize:11,color:"#333",textAlign:"center",marginTop:16,lineHeight:1.6}}>
+              Seus dados ficam salvos na nuvem e acessíveis de qualquer dispositivo.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── App (autenticado) ── */}
+      {!authLoading && user && (<>
 
       {/* ── Modal pós-salvar ── */}
       {modal && (
@@ -474,8 +609,8 @@ export default function BiofeedbackScore() {
       {/* ── Header ── */}
       <div style={{borderBottom:"1px solid #1e1e25",padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#0c0c0f",zIndex:10,flexWrap:"wrap",gap:8}}>
         <div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".08em"}}>BIOFEEDBACK SCORE</div>
-          <div style={{fontSize:11,color:"#555",letterSpacing:".08em",textTransform:"uppercase"}}>Jewett · Israetel · Helms · Krieger</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".1em",color:"#e8e6e1"}}>CALIBRA</div>
+          <div style={{fontSize:10,color:"#444",letterSpacing:".1em",textTransform:"uppercase",marginTop:2}}>Monitoramento de adaptação ao treino</div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <div style={{display:"flex"}}>
@@ -483,9 +618,11 @@ export default function BiofeedbackScore() {
               <button key={v} className={`tab-btn ${view===v?"active":""}`} onClick={()=>setView(v)}>{l}</button>
             ))}
           </div>
-          <div style={{display:"flex",gap:6}}>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            <span style={{fontSize:11,color:"#333",display:"none"}}>{user?.email}</span>
             <button className="ghost-btn" onClick={handleExport}>⬇ Backup</button>
             <label className="ghost-btn" style={{cursor:"pointer"}}>⬆ Importar<input type="file" accept=".json" onChange={handleImport} style={{display:"none"}}/></label>
+            <button className="ghost-btn" style={{borderColor:"#2a1a1a",color:"#664444"}} onClick={handleLogout}>Sair</button>
           </div>
         </div>
       </div>
@@ -1512,6 +1649,9 @@ export default function BiofeedbackScore() {
           </div>
         </div>
       )}
+    </div>
+  </>
+  )}
     </div>
   );
 }
