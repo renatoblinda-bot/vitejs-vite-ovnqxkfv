@@ -465,80 +465,86 @@ export default function BiofeedbackScore() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
         :root{
-          --brand:#2563eb;
-          --brand-dim:rgba(37,99,235,0.15);
-          --brand-glow:rgba(37,99,235,0.3);
-          --surface-0:#07090f;
-          --surface-1:#0c0f1a;
-          --surface-2:#111520;
-          --surface-3:#161b28;
-          --surface-4:#1c2130;
-          --border:rgba(255,255,255,0.07);
+          --brand:#3b82f6;
+          --brand-dim:rgba(59,130,246,0.15);
+          --brand-glow:rgba(59,130,246,0.25);
+          --surface-0:#070c14;
+          --surface-1:#0c1220;
+          --surface-2:#101827;
+          --surface-3:#141e2e;
+          --surface-4:#1a2538;
+          --border:rgba(255,255,255,0.06);
           --border-strong:rgba(255,255,255,0.12);
           --text-1:#f0eee9;
-          --text-2:#9aa0b4;
-          --text-3:#545c74;
-          --text-4:#2e3448;
+          --text-2:#a8b0c0;
+          --text-3:#6b7a96;
+          --text-4:#3a4460;
           --green:#22c55e;
           --amber:#eab308;
           --red:#ef4444;
           --orange:#f97316;
           --purple:#7c3aed;
-          --radius:8px;
+          --radius:12px;
         }
         *{box-sizing:border-box;margin:0;padding:0}
         body{background:var(--surface-0)}
-        ::-webkit-scrollbar{width:4px}
-        ::-webkit-scrollbar-track{background:var(--surface-0)}
-        ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:2px}
+        ::-webkit-scrollbar{width:3px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:99px}
 
         /* ── Option buttons ── */
         .opt-btn{
           background:rgba(255,255,255,0.03);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.08);
           color:var(--text-2);
           padding:9px 16px;
-          border-radius:6px;
+          border-radius:8px;
           cursor:pointer;
           font-family:inherit;
           font-size:13px;
-          transition:all .18s;
+          transition:background .2s, border-color .2s, transform .2s, box-shadow .2s;
           white-space:nowrap;
         }
         .opt-btn:hover{
-          background:rgba(255,255,255,0.07);
-          border-color:var(--border-strong);
+          background:rgba(255,255,255,0.08);
+          border-color:rgba(255,255,255,0.18);
           color:var(--text-1);
+          transform:translateY(-1px);
         }
         .opt-btn.selected{
-          font-weight:500;
+          background:rgba(59,130,246,0.18);
+          border-color:#3b82f6;
           color:#fff;
-          box-shadow:0 0 0 1px var(--brand), 0 0 12px var(--brand-glow);
+          font-weight:500;
+          box-shadow:0 0 0 1px rgba(59,130,246,0.35), 0 0 24px rgba(59,130,246,0.18);
         }
 
-        /* ── Tabs ── */
+        /* ── Tabs — pill style ── */
         .tab-btn{
           background:transparent;
           border:none;
-          color:var(--text-3);
+          color:#94a3b8;
           font-family:inherit;
           font-size:11px;
-          letter-spacing:.12em;
+          letter-spacing:.1em;
           text-transform:uppercase;
           cursor:pointer;
-          padding:12px 16px;
-          border-bottom:2px solid transparent;
-          transition:all .18s;
+          padding:7px 14px;
+          border-radius:999px;
+          transition:background .18s, color .18s;
         }
         .tab-btn.active{
-          color:var(--text-1);
-          border-bottom-color:var(--brand);
+          background:rgba(255,255,255,0.08);
+          color:#fff;
         }
-        .tab-btn:hover:not(.active){color:var(--text-2)}
+        .tab-btn:hover:not(.active){
+          background:rgba(255,255,255,0.04);
+          color:var(--text-2);
+        }
 
         /* ── Primary button ── */
         .save-btn{
-          background:linear-gradient(135deg,#2563eb,#1d4ed8);
+          background:linear-gradient(135deg,#3b82f6,#2563eb);
           color:#fff;
           border:none;
           padding:14px 32px;
@@ -547,49 +553,50 @@ export default function BiofeedbackScore() {
           letter-spacing:.1em;
           text-transform:uppercase;
           cursor:pointer;
-          border-radius:6px;
+          border-radius:8px;
           font-weight:500;
-          transition:all .18s;
-          box-shadow:0 4px 16px rgba(37,99,235,0.3);
+          transition:all .2s;
+          box-shadow:0 4px 20px rgba(59,130,246,0.35);
         }
-        .save-btn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
+        .save-btn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none;transform:none}
         .save-btn:hover:not(:disabled){
-          background:linear-gradient(135deg,#3b82f6,#2563eb);
-          box-shadow:0 4px 24px rgba(37,99,235,0.5);
-          transform:translateY(-1px);
+          background:linear-gradient(135deg,#60a5fa,#3b82f6);
+          box-shadow:0 6px 28px rgba(59,130,246,0.55);
+          transform:translateY(-2px);
         }
 
         /* ── Ghost button ── */
         .ghost-btn{
           background:rgba(255,255,255,0.03);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.08);
           color:var(--text-3);
-          padding:8px 16px;
+          padding:7px 14px;
           font-family:inherit;
           font-size:11px;
           letter-spacing:.08em;
           text-transform:uppercase;
           cursor:pointer;
-          border-radius:6px;
-          transition:all .18s;
+          border-radius:8px;
+          transition:all .2s;
         }
         .ghost-btn:hover{
-          background:rgba(255,255,255,0.06);
-          border-color:var(--border-strong);
+          background:rgba(255,255,255,0.07);
+          border-color:rgba(255,255,255,0.15);
           color:var(--text-2);
         }
 
         /* ── Inputs ── */
         input,textarea,select{
           background:var(--surface-2);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.07);
           color:var(--text-1);
           font-family:inherit;
           font-size:13px;
           padding:10px 14px;
-          border-radius:6px;
+          border-radius:8px;
           outline:none;
-          transition:all .18s;
+          transition:all .2s;
+          width:100%;
         }
         input:focus,textarea:focus,select:focus{
           border-color:var(--brand);
@@ -600,12 +607,12 @@ export default function BiofeedbackScore() {
 
         .weight-input{
           background:var(--surface-2);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.07);
           color:var(--text-1);
           font-family:inherit;
           font-size:12px;
-          padding:4px 8px;
-          border-radius:4px;
+          padding:5px 8px;
+          border-radius:6px;
           outline:none;
           width:52px;
           text-align:center;
@@ -619,119 +626,175 @@ export default function BiofeedbackScore() {
           cursor:pointer;
           font-size:14px;
           padding:4px 8px;
-          border-radius:4px;
+          border-radius:6px;
           transition:all .15s;
           font-family:inherit;
         }
-        .del-btn:hover{color:var(--red);background:rgba(239,68,68,0.08)}
+        .del-btn:hover{color:var(--red);background:rgba(239,68,68,0.1)}
 
         /* ── Modal ── */
         .modal-overlay{
           position:fixed;inset:0;
-          background:rgba(0,0,0,0.9);
-          backdrop-filter:blur(4px);
+          background:rgba(0,0,0,0.88);
+          backdrop-filter:blur(8px);
           z-index:100;
           display:flex;align-items:center;justify-content:center;padding:20px;
         }
         .modal-box{
-          background:linear-gradient(180deg,var(--surface-2),var(--surface-1));
+          background:linear-gradient(180deg,#101827,#0c1220);
           border:1px solid var(--border-strong);
-          border-radius:12px;
+          border-radius:16px;
           max-width:540px;width:100%;max-height:88vh;overflow-y:auto;
           padding:28px 24px;
-          box-shadow:0 24px 64px rgba(0,0,0,0.6);
+          box-shadow:0 32px 80px rgba(0,0,0,0.7);
         }
         .close-btn{
           background:rgba(255,255,255,0.03);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.08);
           color:var(--text-3);
           padding:10px 24px;
           font-family:inherit;font-size:12px;
           letter-spacing:.08em;text-transform:uppercase;
-          cursor:pointer;border-radius:6px;
-          transition:all .18s;margin-top:20px;
+          cursor:pointer;border-radius:8px;
+          transition:all .2s;margin-top:20px;
         }
-        .close-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-2)}
+        .close-btn:hover{background:rgba(255,255,255,0.07);color:var(--text-2)}
 
         /* ── Cards ── */
         .card{
-          background:linear-gradient(180deg,var(--surface-2),var(--surface-1));
-          border:1px solid var(--border);
+          background:linear-gradient(180deg,#101827,#0c1423);
+          border:1px solid rgba(255,255,255,0.06);
           border-radius:var(--radius);
-          padding:18px 20px;
+          padding:20px;
           margin-bottom:10px;
+          box-shadow:0 10px 30px rgba(0,0,0,0.35);
+          transition:transform .2s, box-shadow .2s;
+        }
+        @media(hover:hover){
+          .card:hover{
+            transform:translateY(-2px);
+            box-shadow:0 16px 40px rgba(0,0,0,0.45);
+          }
         }
         .card-hero{
-          background:linear-gradient(135deg,#0f1828 0%,#0a1020 60%,#07090f 100%);
-          border:1px solid rgba(37,99,235,0.2);
+          background:linear-gradient(145deg,#0f1e35 0%,#0a1525 50%,#070c14 100%);
+          border:1px solid rgba(59,130,246,0.18);
           border-radius:var(--radius);
-          padding:24px;
+          padding:28px 24px;
           margin-bottom:16px;
-          box-shadow:0 0 40px rgba(37,99,235,0.05);
+          box-shadow:0 0 60px rgba(59,130,246,0.06), 0 20px 40px rgba(0,0,0,0.4);
         }
 
         /* ── Section title ── */
         .section-title{
           font-size:11px;
           color:var(--text-3);
-          letter-spacing:.14em;
+          letter-spacing:.16em;
           text-transform:uppercase;
           margin-bottom:16px;
-          display:flex;align-items:center;gap:8px;
+          display:flex;align-items:center;gap:10px;
         }
         .section-title::after{
           content:'';flex:1;
           height:1px;
-          background:linear-gradient(90deg,var(--border),transparent);
+          background:linear-gradient(90deg,rgba(255,255,255,0.06),transparent);
         }
 
         /* ── Hormonal buttons ── */
         .horm-btn{
           background:rgba(255,255,255,0.03);
-          border:1px solid var(--border);
+          border:1px solid rgba(255,255,255,0.08);
           color:var(--text-3);
           padding:10px 20px;
-          border-radius:6px;
+          border-radius:8px;
           cursor:pointer;
           font-family:inherit;font-size:13px;
-          transition:all .18s;
+          transition:all .2s;
         }
         .horm-btn.yes{
-          background:rgba(124,58,237,0.15);
-          border-color:var(--purple);
-          color:var(--purple);
-          box-shadow:0 0 12px rgba(124,58,237,0.2);
+          background:rgba(124,58,237,0.18);
+          border-color:rgba(124,58,237,0.6);
+          color:#a78bfa;
+          box-shadow:0 0 20px rgba(124,58,237,0.2);
         }
         .horm-btn.no{
-          background:rgba(255,255,255,0.04);
-          border-color:var(--border-strong);
+          background:rgba(255,255,255,0.05);
+          border-color:rgba(255,255,255,0.12);
           color:var(--text-2);
         }
 
         /* ── Anchor row ── */
         .anchor-row{display:grid;grid-template-columns:1fr 80px 70px 32px;gap:6px;margin-bottom:8px}
+        @media(max-width:480px){
+          .anchor-row{grid-template-columns:1fr 64px 56px 28px}
+        }
 
         /* ── Progress bar ── */
         .progress-bar{
-          height:4px;
-          background:var(--surface-4);
-          border-radius:2px;
+          height:3px;
+          background:rgba(255,255,255,0.05);
+          border-radius:99px;
           overflow:hidden;
-          margin-top:12px;
+          margin-top:16px;
         }
         .progress-fill{
           height:100%;
-          border-radius:2px;
+          border-radius:99px;
           background:linear-gradient(90deg,var(--brand),#60a5fa);
-          transition:width .4s cubic-bezier(0.4,0,0.2,1);
+          transition:width .5s cubic-bezier(0.4,0,0.2,1);
+          box-shadow:0 0 8px rgba(59,130,246,0.5);
         }
 
         /* ── Category icons ── */
         .cat-icon{
-          width:36px;height:36px;
-          border-radius:8px;
+          width:38px;height:38px;
+          border-radius:10px;
           display:flex;align-items:center;justify-content:center;
           font-size:18px;flex-shrink:0;
+        }
+
+        /* ── Macro cards ── */
+        .macro-card{
+          background:#101827;
+          border:1px solid rgba(255,255,255,0.06);
+          border-radius:14px;
+          padding:14px 16px;
+          display:flex;flex-direction:column;gap:6px;
+          transition:border-color .2s;
+        }
+        .macro-card:focus-within{
+          border-color:rgba(59,130,246,0.4);
+        }
+        .macro-card label{
+          font-size:11px;
+          color:var(--text-3);
+          letter-spacing:.08em;
+          text-transform:uppercase;
+          display:flex;align-items:center;gap:6px;
+        }
+        .macro-card input{
+          background:transparent;
+          border:none;
+          padding:0;
+          font-size:20px;
+          font-family:'Bebas Neue',sans-serif;
+          color:var(--text-1);
+          letter-spacing:.04em;
+          box-shadow:none;
+        }
+        .macro-card input:focus{
+          box-shadow:none;
+          background:transparent;
+        }
+        .macro-card .unit{
+          font-size:11px;
+          color:var(--text-3);
+        }
+
+        /* ── Responsive ── */
+        @media(max-width:600px){
+          .tab-btn{padding:6px 10px;font-size:10px}
+          .hide-mobile{display:none}
         }
       `}</style>
 
@@ -744,7 +807,7 @@ export default function BiofeedbackScore() {
 
       {/* ── Auth screen ── */}
       {!authLoading && !user && (
-        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24,background:"radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, var(--surface-0) 60%)"}}>
           <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,var(--surface-3),var(--surface-1))",border:"1px solid var(--border-strong)",borderRadius:12,padding:"36px 32px",boxShadow:"0 24px 64px rgba(0,0,0,0.5)"}}>
             <div style={{textAlign:"center",marginBottom:28}}>
               <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,letterSpacing:".15em",color:"var(--text-1)",background:"linear-gradient(135deg,#fff,#9aa0b4)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>CALIBRA</div>
@@ -754,10 +817,10 @@ export default function BiofeedbackScore() {
             <div style={{display:"flex",marginBottom:24,background:"var(--surface-0)",borderRadius:8,padding:4}}>
               {[["login","Entrar"],["register","Criar conta"]].map(([v,l])=>(
                 <button key={v} onClick={()=>{setAuthView(v);setAuthError("");setAuthMsg("");}}
-                  style={{flex:1,padding:"8px",border:"none",borderRadius:3,cursor:"pointer",fontFamily:"inherit",fontSize:12,letterSpacing:".06em",transition:"all .15s",
-                    background:authView===v?"var(--surface-4)":"transparent",
-                    color:authView===v?"var(--text-1)":"var(--text-4)",
-                    borderRadius:6}}>
+                  style={{flex:1,padding:"9px",border:"none",borderRadius:8,cursor:"pointer",fontFamily:"inherit",fontSize:12,letterSpacing:".08em",textTransform:"uppercase",transition:"all .2s",
+                    background:authView===v?"rgba(59,130,246,0.15)":"transparent",
+                    color:authView===v?"#60a5fa":"var(--text-4)",
+                    boxShadow:authView===v?"0 0 0 1px rgba(59,130,246,0.3)":"none"}}>
                   {l}
                 </button>
               ))}
@@ -852,13 +915,13 @@ export default function BiofeedbackScore() {
       )}
 
       {/* ── Header ── */}
-      <div style={{borderBottom:"1px solid var(--border)",padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"var(--surface-0)",zIndex:10,flexWrap:"wrap",gap:8}}>
-        <div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:".1em",color:"var(--text-1)"}}>CALIBRA</div>
-          <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".1em",textTransform:"uppercase",marginTop:2}}>Monitoramento de adaptação ao treino</div>
+      <div style={{borderBottom:"1px solid rgba(255,255,255,0.05)",padding:"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"rgba(7,12,20,0.95)",backdropFilter:"blur(16px)",zIndex:10,flexWrap:"wrap",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:26,height:26,borderRadius:7,background:"linear-gradient(135deg,#3b82f6,#2563eb)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,boxShadow:"0 0 16px rgba(59,130,246,0.45)"}}>⚡</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:".15em",color:"var(--text-1)"}}>CALIBRA</div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <div style={{display:"flex"}}>
+          <div style={{display:"flex",background:"rgba(255,255,255,0.04)",borderRadius:999,padding:3,gap:2}}>
             {[["form","Avaliação"],["history",`Histórico${history.length>0?` (${history.length})`:""}`,],["compare","Comparar"],["profile","Perfil"],["about","Escala"]].map(([v,l])=>(
               <button key={v} className={`tab-btn ${view===v?"active":""}`} onClick={()=>setView(v)}>{l}</button>
             ))}
@@ -874,60 +937,46 @@ export default function BiofeedbackScore() {
 
       {/* ══ FORM ══ */}
       {view === "form" && (
-        <div style={{maxWidth:680,margin:"0 auto",padding:"24px 20px 60px"}}>
+        <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 80px"}}>
 
           {/* Score hero card */}
-          <div className="card-hero">
-            <div style={{display:"flex",alignItems:"stretch",gap:24}}>
-              {/* Score number */}
-              <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:110,padding:"8px 0"}}>
-                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:score!==null?72:48,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)",letterSpacing:".02em",textShadow:score!==null?`0 0 40px ${scoreInfo.color}40`:"none",transition:"all .3s"}}>
-                  {score!==null?score:"—"}
-                </div>
-                {score!==null && (
-                  <div style={{fontSize:10,color:scoreInfo.color,letterSpacing:".12em",textTransform:"uppercase",marginTop:4,opacity:.8}}>{scoreInfo.label}</div>
-                )}
-              </div>
+          <div className="card-hero" style={{textAlign:"center"}}>
+            <div style={{fontSize:11,color:"var(--text-3)",letterSpacing:".2em",textTransform:"uppercase",marginBottom:12}}>PRONTIDÃO</div>
 
-              {/* Divider */}
-              <div style={{width:1,background:"linear-gradient(180deg,transparent,var(--border-strong),transparent)",flexShrink:0}}/>
-
-              {/* Details */}
-              <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",gap:10}}>
-                {score !== null ? (
-                  <>
-                    {/* Readiness */}
-                    <div style={{display:"flex",alignItems:"center",gap:8}}>
-                      <div style={{width:8,height:8,borderRadius:"50%",flexShrink:0,background:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",boxShadow:`0 0 8px ${scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}`}}/>
-                      <div style={{fontSize:14,fontWeight:500,color:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}}>{scoreInfo.readinessLabel}</div>
-                    </div>
-                    <div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.5}}>{scoreInfo.readinessDesc}</div>
-                    {/* Bottlenecks */}
-                    {bottlenecks.length>0 && (
-                      <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:2}}>
-                        {bottlenecks.map((b,i)=>(
-                          <div key={i} style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:`${b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)"}18`,color:b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)",border:`1px solid ${b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)"}35`}}>
-                            {b.cat.icon} {b.cat.label}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div>
-                    <div style={{fontSize:14,color:"var(--text-3)",marginBottom:8}}>Avalie os critérios abaixo</div>
-                    <div style={{fontSize:12,color:"var(--text-4)"}}>{totalAnswered} de 7 preenchidos</div>
-                  </div>
-                )}
-              </div>
+            {/* Big score */}
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:score!==null?88:64,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)",letterSpacing:".02em",textShadow:score!==null?`0 0 60px ${scoreInfo.color}40`:"none",transition:"all .4s cubic-bezier(0.4,0,0.2,1)"}}>
+              {score!==null?score:"--"}
             </div>
 
+            {/* Status label */}
+            <div style={{fontSize:13,letterSpacing:".15em",textTransform:"uppercase",color:score!==null?scoreInfo.color:"var(--text-4)",marginTop:8,fontWeight:500}}>
+              {score!==null?scoreInfo.label:"Preencha os critérios"}
+            </div>
+
+            {/* Readiness pill */}
+            {score!==null && (
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,marginTop:12,padding:"5px 14px",borderRadius:999,background:scoreInfo.readiness==="verde"?"rgba(34,197,94,0.1)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.1)":"rgba(239,68,68,0.1)",border:`1px solid ${scoreInfo.readiness==="verde"?"rgba(34,197,94,0.3)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.3)":"rgba(239,68,68,0.3)"}`}}>
+                <div style={{width:6,height:6,borderRadius:"50%",background:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",boxShadow:`0 0 6px ${scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}`}}/>
+                <span style={{fontSize:12,color:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",letterSpacing:".08em"}}>{scoreInfo.readinessLabel}</span>
+              </div>
+            )}
+
+            {/* Bottlenecks */}
+            {score!==null && bottlenecks.length>0 && (
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:14,justifyContent:"center"}}>
+                {bottlenecks.map((b,i)=>{
+                  const c=b.cat.options.find(o=>o.value===scores[b.cat.id])?.color||"var(--text-2)";
+                  return <div key={i} style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:`${c}15`,color:c,border:`1px solid ${c}30`}}>{b.cat.icon} {b.cat.label}</div>;
+                })}
+              </div>
+            )}
+
             {/* Progress bar */}
-            <div className="progress-bar" style={{marginTop:16}}>
+            <div className="progress-bar">
               <div className="progress-fill" style={{width:`${(totalAnswered/7)*100}%`}}/>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
-              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>{totalAnswered}/7 CRITÉRIOS</div>
+              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".1em"}}>{totalAnswered}/7 CRITÉRIOS</div>
               {score!==null && <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>SCORE CALIBRA</div>}
             </div>
           </div>
@@ -978,20 +1027,20 @@ export default function BiofeedbackScore() {
                     {cat.icon}
                   </div>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:selected?selectedOpt?.color:"var(--text-2)",fontWeight:500,display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{fontSize:13,letterSpacing:".08em",textTransform:"uppercase",color:selected?selectedOpt?.color:"var(--text-1)",fontWeight:700,display:"flex",alignItems:"center",gap:8}}>
                       {cat.label}
                       <span style={{fontSize:9,color:"var(--text-4)",textTransform:"none",letterSpacing:0,fontWeight:400,background:"var(--surface-3)",padding:"1px 6px",borderRadius:3}}>×{weights[cat.id]}%</span>
-                      {selected && <span style={{fontSize:10,color:selectedOpt?.color,marginLeft:"auto"}}>✓ {selectedOpt?.label}</span>}
+                      {selected && <span style={{fontSize:10,color:selectedOpt?.color,marginLeft:"auto",display:"flex",alignItems:"center",gap:3}}><span style={{fontSize:12}}>✓</span> {selectedOpt?.label}</span>}
                     </div>
-                    <div style={{fontSize:12,color:"var(--text-3)",marginTop:3}}>{cat.description}</div>
+                    <div style={{fontSize:13,color:"var(--text-2)",marginTop:4,lineHeight:1.5}}>{cat.description}</div>
                   </div>
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                   {cat.options.map(opt=>(
                     <button key={opt.value} className={`opt-btn ${scores[cat.id]===opt.value?"selected":""}`}
-                      style={scores[cat.id]===opt.value?{background:opt.color,borderColor:opt.color,color:"#000",boxShadow:`0 0 12px ${opt.color}50`}:{}}
+                      style={scores[cat.id]===opt.value?{borderColor:opt.color,color:"#fff",background:`${opt.color}22`,boxShadow:`0 0 0 1px ${opt.color}55, 0 0 20px ${opt.color}22`}:{}}
                       onClick={()=>setScores(s=>({...s,[cat.id]:opt.value}))}>
-                      {opt.label}
+                      {scores[cat.id]===opt.value?"✓ ":""}{opt.label}
                     </button>
                   ))}
                 </div>
@@ -1046,11 +1095,16 @@ export default function BiofeedbackScore() {
           {/* Macros */}
           <div className="card">
             <div className="section-title">🔢 Macros (média diária)</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-              {MACRO_FIELDS.map(f=>(
-                <div key={f.id} style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <label style={{fontSize:12,color:"var(--text-2)"}}>{f.label} ({f.unit})</label>
-                  <input type="number" step="1" placeholder={f.placeholder} value={macros[f.id]||""} onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))} style={{width:"100%"}}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[
+                {id:"calories",label:"Calorias",unit:"kcal",icon:"🔥",placeholder:"ex: 2400"},
+                {id:"protein",label:"Proteína",unit:"g",icon:"🥩",placeholder:"ex: 180"},
+                {id:"carbs",label:"Carboidratos",unit:"g",icon:"🍚",placeholder:"ex: 250"},
+                {id:"fat",label:"Gorduras",unit:"g",icon:"🥑",placeholder:"ex: 70"},
+              ].map(f=>(
+                <div key={f.id} className="macro-card">
+                  <label>{f.icon} {f.label} <span className="unit">{f.unit}</span></label>
+                  <input type="number" step="1" placeholder="—" value={macros[f.id]||""} onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))}/>
                 </div>
               ))}
             </div>
@@ -1064,7 +1118,7 @@ export default function BiofeedbackScore() {
               <div style={{display:"flex",gap:6}}>
                 {GUT_FREQ.map(f=>(
                   <button key={f.value} className={`opt-btn ${gut.frequency===f.value?"selected":""}`}
-                    style={gut.frequency===f.value?{background:"#84cc16",borderColor:"#84cc16",color:"var(--surface-0)"}:{}}
+                    style={gut.frequency===f.value?{borderColor:"#84cc16",color:"#fff",background:"rgba(132,204,22,0.15)",boxShadow:"0 0 0 1px rgba(132,204,22,0.4), 0 0 16px rgba(132,204,22,0.15)"}:{}}
                     onClick={()=>setGut(g=>({...g,frequency:f.value}))}>
                     {f.label}
                   </button>
@@ -1076,7 +1130,7 @@ export default function BiofeedbackScore() {
               <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                 {GUT_CONSISTENCY.map(opt=>(
                   <button key={opt.value} className={`opt-btn ${gut.consistency===opt.value?"selected":""}`}
-                    style={gut.consistency===opt.value?{background:opt.color,borderColor:opt.color,color:"var(--surface-0)"}:{}}
+                    style={gut.consistency===opt.value?{borderColor:opt.color,color:"#fff",background:`${opt.color}22`,boxShadow:`0 0 0 1px ${opt.color}55, 0 0 16px ${opt.color}18`}:{}}
                     onClick={()=>setGut(g=>({...g,consistency:opt.value}))}>
                     {opt.label}
                   </button>
@@ -1285,7 +1339,7 @@ export default function BiofeedbackScore() {
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
                         {info && (
                           <div style={{textAlign:"right"}}>
-                            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,color:info.color,lineHeight:1}}>{entry.score}</div>
+                            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:info.color,lineHeight:1,textShadow:`0 0 20px ${info.color}50`}}>{entry.score}</div>
                             {diff!==null&&<div style={{fontSize:9,color:diff>0?"var(--green)":diff<0?"var(--red)":"var(--text-3)"}}>{diff>0?`+${diff}`:diff} pts</div>}
                           </div>
                         )}
