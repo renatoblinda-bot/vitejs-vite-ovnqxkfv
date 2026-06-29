@@ -7,24 +7,47 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── PESOS BIOFEEDBACK ────────────────────────────────────────────────────────
 const DEFAULT_WEIGHTS = {
-  performance:25, recovery:20, sleep:20, energy:15, joints:10, hunger:5, pump:5,
+  // Shared domains weighted via J3U mapping
+  performance:25, recovery:20, sleep:20, energy:15, hunger:5,
+  // Calibra-exclusive
+  joints:10, pump:5,
 };
 
+// CATEGORIES: only Calibra-exclusive domains (joints + pump)
+// Shared domains (performance, recovery, sleep, energy, hunger) answered via J3U_DOMAINS
 const CATEGORIES = [
-  { id:"performance", label:"Performance", icon:"⚡", description:"Cargas e repetições estão subindo ou se mantendo?",
-    options:[{value:5,label:"Subindo claramente",color:"var(--green)"},{value:4,label:"Estável / leve progresso",color:"#84cc16"},{value:3,label:"Estável sem progresso",color:"var(--amber)"},{value:2,label:"Leve queda",color:"var(--orange)"},{value:1,label:"Queda significativa",color:"var(--red)"}]},
-  { id:"recovery", label:"Recuperação", icon:"🔄", description:"Chega recuperado ao próximo treino? DOMS excessiva?",
-    options:[{value:5,label:"Totalmente recuperado",color:"var(--green)"},{value:4,label:"Bem recuperado",color:"#84cc16"},{value:3,label:"Recuperação parcial",color:"var(--amber)"},{value:2,label:"Ainda dolorido / pesado",color:"var(--orange)"},{value:1,label:"Fadiga acumulada clara",color:"var(--red)"}]},
-  { id:"sleep", label:"Sono", icon:"🌙", description:"Qualidade do sono e sensação ao acordar",
-    options:[{value:5,label:"Profundo, descansado",color:"var(--green)"},{value:4,label:"Bom, poucos despertares",color:"#84cc16"},{value:3,label:"Fragmentado, ok",color:"var(--amber)"},{value:2,label:"Ruim, cansado ao acordar",color:"var(--orange)"},{value:1,label:"Muito ruim / insônia",color:"var(--red)"}]},
-  { id:"energy", label:"Energia e Disposição", icon:"🔋", description:"Energia ao longo do dia e motivação para treinar",
-    options:[{value:5,label:"Alta energia, motivado",color:"var(--green)"},{value:4,label:"Boa energia geral",color:"#84cc16"},{value:3,label:"Energia oscilante",color:"var(--amber)"},{value:2,label:"Cansado, mas funcional",color:"var(--orange)"},{value:1,label:"Arrastando o corpo",color:"var(--red)"}]},
   { id:"joints", label:"Dor Articular", icon:"🦴", description:"Ombros, cotovelos, joelhos, lombar",
     options:[{value:5,label:"Sem dores",color:"var(--green)"},{value:4,label:"Leve desconforto ocasional",color:"#84cc16"},{value:3,label:"Desconforto frequente",color:"var(--amber)"},{value:2,label:"Dor presente no treino",color:"var(--orange)"},{value:1,label:"Dor limitante",color:"var(--red)"}]},
-  { id:"hunger", label:"Fome", icon:"🍽️", description:"Controle da fome e ausência de compulsões",
-    options:[{value:5,label:"Controlada, sem compulsão",color:"var(--green)"},{value:4,label:"Controlável",color:"#84cc16"},{value:3,label:"Fome moderada",color:"var(--amber)"},{value:2,label:"Fome alta",color:"var(--orange)"},{value:1,label:"Fome extrema / compulsão",color:"var(--red)"}]},
   { id:"pump", label:"Pump e Conexão Muscular", icon:"💪", description:"Sente o músculo? Pump presente?",
     options:[{value:5,label:"Pump excelente",color:"var(--green)"},{value:4,label:"Bom pump",color:"#84cc16"},{value:3,label:"Pump moderado",color:"var(--amber)"},{value:2,label:"Pump fraco",color:"var(--orange)"},{value:1,label:"Sem pump",color:"var(--red)"}]},
+];
+
+// Map J3U domain values (0/1/2) to Calibra score scale (1/3/5) for shared domains
+const J3U_TO_CALIBRA = {0:1, 1:3, 2:5};
+
+// Build full score map combining J3U shared domains + Calibra exclusive domains
+const buildFullScores = (j3u, calibraScores) => {
+  const mapped = {};
+  // Map shared J3U domains to Calibra IDs
+  const shared = {
+    j3u_performance:"performance", j3u_recovery:"recovery",
+    j3u_sleep:"sleep", j3u_energy:"energy", j3u_hunger:"hunger"
+  };
+  Object.entries(shared).forEach(([jid, cid]) => {
+    if (j3u[jid] !== undefined) mapped[cid] = J3U_TO_CALIBRA[j3u[jid]];
+  });
+  return {...mapped, ...calibraScores};
+};
+
+// Full categories list (for display/analysis only — not form)
+const ALL_CATEGORIES = [
+  { id:"performance", label:"Performance", icon:"⚡" },
+  { id:"recovery",    label:"Recuperação", icon:"🔄" },
+  { id:"sleep",       label:"Sono",        icon:"🌙" },
+  { id:"energy",      label:"Energia",     icon:"🔋" },
+  { id:"hunger",      label:"Fome",        icon:"🍽️" },
+  { id:"joints",      label:"Dor Articular",icon:"🦴" },
+  { id:"pump",        label:"Pump",        icon:"💪" },
 ];
 
 const OBJECTIVE_FIELDS = [
@@ -126,8 +149,10 @@ const SCORE_SCALE = [
 const computeScore = (scoreMap, weights) => {
   if (Object.keys(scoreMap).length === 0) return null;
   let weighted = 0, totalWeight = 0;
-  CATEGORIES.forEach((cat) => {
-    if (scoreMap[cat.id] !== undefined) {
+  // Use ALL_CATEGORIES for scoring (includes shared J3U-mapped domains)
+  const cats = ALL_CATEGORIES || Object.keys(weights).map(id=>({id}));
+  cats.forEach((cat) => {
+    if (scoreMap[cat.id] !== undefined && weights[cat.id] !== undefined) {
       weighted += (scoreMap[cat.id] / 5) * weights[cat.id];
       totalWeight += weights[cat.id];
     }
@@ -136,8 +161,8 @@ const computeScore = (scoreMap, weights) => {
 };
 
 const getBottlenecks = (scoreMap, weights) => {
-  return CATEGORIES
-    .filter(cat => scoreMap[cat.id] !== undefined)
+  return ALL_CATEGORIES
+    .filter(cat => scoreMap[cat.id] !== undefined && weights[cat.id] !== undefined)
     .map(cat => ({ cat, impact:((5-scoreMap[cat.id])/5)*weights[cat.id], value:scoreMap[cat.id] }))
     .filter(x => x.impact > 0)
     .sort((a,b) => b.impact - a.impact)
@@ -311,6 +336,38 @@ const generateJ3UAnalysis = (entry, recentHistory, weights) => {
   if (interventions.length === 0 && j3uScore >= 9)
     interventions.push({ priority:1, action:"Biofeedback adequado. Manter protocolo atual. Monitorar tendência de peso e cintura no próximo check-in.", type:"princípio J3U — não reagir a ruído" });
 
+  // ── Sugestão de carboidratos J3U ──
+  const carbSuggestion = (() => {
+    const energy = j["j3u_energy"];
+    const hunger = j["j3u_hunger"];
+    const performance = j["j3u_performance"];
+    const sleep = j["j3u_sleep"];
+
+    const prevWeights = recentHistory.filter(h=>h.objective?.weight).slice(0,3).map(h=>parseFloat(h.objective.weight));
+    const currW = parseFloat(entry.objective?.weight);
+    const weeklyLoss = (prevWeights.length>0 && currW) ? (prevWeights[0]-currW) : null;
+
+    // Losing too fast + bad biofeedback → increase carbs
+    if (weeklyLoss !== null && weeklyLoss > 1.5 && j3uScore <= 8)
+      return { dir:"↑", amount:"+75–100g carboidratos/dia (~300–400 kcal)", reason:"Perda acelerada (>1,5%/sem) + biofeedback comprometido. Aumentar base calórica via carboidratos, mantendo os mesmos alimentos da dieta.", type:"documentado — J3U Ep. 6" };
+
+    if (energy === 0 || (energy === 1 && performance <= 1))
+      return { dir:"↑", amount:"+50–75g carboidratos no pré-treino", reason:"Energia baixa + queda de performance. Concentrar carboidratos no pré-treino antes de mexer na base total.", type:"inferência operacional — coerente com J3U" };
+
+    if (hunger === 0 && j3uScore <= 8)
+      return { dir:"↑", amount:"+50–100g carboidratos/dia (~200–400 kcal)", reason:"Fome constante interferindo na rotina. Preferir aumento sutil com alimentos já usados na dieta. Evitar alimentos palatáveis atípicos.", type:"documentado — J3U Ep. 6" };
+
+    if (j3uScore >= 11 && weeklyLoss !== null && weeklyLoss < 0.2 && phase.phase === 2)
+      return { dir:"↓", amount:"−25–50g carboidratos/dia (−100–200 kcal)", reason:"Biofeedback bom + peso estagnado na Fase 2. Redução leve antes de aumentar cardio. Confirmar aderência primeiro.", type:"inferência operacional — coerente com J3U" };
+
+    if (j3uScore >= 12 && weeklyLoss !== null && weeklyLoss > 0.5 && weeklyLoss <= 1.2)
+      return { dir:"→", amount:"Manter carboidratos atuais", reason:"Biofeedback excelente + perda dentro da faixa. Sem alteração necessária.", type:"princípio J3U — não reagir a ruído" };
+
+    return null;
+  })();
+
+  return { j3uScore, answeredCount, classification, phase, conflicts, insights, interventions, carbSuggestion, confidence, confidenceNote };
+
   // ── Confiança ──
   const dataPoints = [
     obj.weight, obj.waist, anchors.length > 0,
@@ -324,7 +381,7 @@ const generateJ3UAnalysis = (entry, recentHistory, weights) => {
     ? "Dados parciais — recomendações com maior margem de incerteza."
     : "Dados insuficientes para recomendação confiável. Preencher mais pilares no próximo check-in.";
 
-  return { j3uScore, answeredCount, classification, phase, conflicts, insights, interventions, confidence, confidenceNote };
+
 };
 
 
@@ -435,10 +492,11 @@ export default function BiofeedbackScore() {
     await supabase.from("user_weights").upsert({ id: user.id, weights: newWeights });
   };
 
-  const totalAnswered = Object.keys(scores).length;
-  const score = computeScore(scores, weights);
+  const fullScoresLive = buildFullScores(j3u, scores);
+  const totalAnswered = Object.keys(fullScoresLive).length;
+  const score = computeScore(fullScoresLive, weights);
   const scoreInfo = score !== null ? getScoreInfo(score) : null;
-  const bottlenecks = getBottlenecks(scores, weights);
+  const bottlenecks = getBottlenecks(fullScoresLive, weights);
   const historyWithScore = history.filter(h => h.score !== null);
   const last4 = historyWithScore.slice(0,4);
   const avg4 = last4.length > 0 ? Math.round(last4.reduce((a,b)=>a+b.score,0)/last4.length) : null;
@@ -459,8 +517,9 @@ export default function BiofeedbackScore() {
     if (!week.trim() || totalAnswered === 0) return;
     const prev = historyWithScore[0] || null;
     const hormonalScore = usesHormones ? computeHormonalScore(hormonal) : null;
+    const fullScores = buildFullScores(j3u, scores);
     const entry = {
-      week, scores:{...scores}, objective:{...objective},
+      week, scores: fullScores, objective:{...objective},
       macros:{...macros}, gut:{...gut},
       hormonal: usesHormones ? {...hormonal} : null,
       hormonalScore,
@@ -468,7 +527,7 @@ export default function BiofeedbackScore() {
       j3u:{...j3u},
       anchors: anchors.filter(a => a.exercise.trim()),
       photo,
-      score: computeScore(scores, weights),
+      score: computeScore(fullScores, weights),
       notes, date: new Date().toLocaleDateString("pt-BR"), report:"",
     };
     entry.report = generateReport(entry, prev, weights);
@@ -1109,6 +1168,18 @@ export default function BiofeedbackScore() {
                     ))}
                   </div>
 
+                  {/* Carboidratos */}
+                  {a.carbSuggestion && (
+                    <div style={{marginBottom:10,padding:"12px 14px",background:a.carbSuggestion.dir==="↑"?"rgba(34,197,94,0.06)":a.carbSuggestion.dir==="↓"?"rgba(239,68,68,0.06)":"rgba(59,130,246,0.06)",borderRadius:8,borderLeft:`3px solid ${a.carbSuggestion.dir==="↑"?"var(--green)":a.carbSuggestion.dir==="↓"?"var(--red)":"var(--brand)"}`}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                        <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:a.carbSuggestion.dir==="↑"?"var(--green)":a.carbSuggestion.dir==="↓"?"var(--red)":"var(--brand)"}}>{a.carbSuggestion.dir}</span>
+                        <div style={{fontSize:13,color:"var(--text-1)",fontWeight:500}}>Carboidratos: {a.carbSuggestion.amount}</div>
+                      </div>
+                      <div style={{fontSize:12,color:"var(--text-2)",lineHeight:1.5,marginBottom:4}}>{a.carbSuggestion.reason}</div>
+                      <div style={{fontSize:10,color:"var(--text-4)",fontStyle:"italic"}}>{a.carbSuggestion.type}</div>
+                    </div>
+                  )}
+
                   {/* Confiança */}
                   <div style={{padding:"8px 12px",background:"rgba(0,0,0,0.2)",borderRadius:6,display:"flex",alignItems:"center",gap:10}}>
                     <div style={{fontSize:11,color:a.confidence==="Alta"?"var(--green)":a.confidence==="Moderada"?"var(--amber)":"var(--red)",fontWeight:500,minWidth:70}}>Confiança: {a.confidence}</div>
@@ -1146,7 +1217,7 @@ export default function BiofeedbackScore() {
             <button className="ghost-btn" style={{borderColor:"rgba(100,40,40,0.4)",color:"#885555",padding:"5px 10px"}} onClick={handleLogout} title="Sair">⏻</button>
           </div>
         </div>
-      </div>
+        </div>
 
       {/* ══ FORM ══ */}
       {view === "form" && (
@@ -1181,7 +1252,7 @@ export default function BiofeedbackScore() {
               return (
                 <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:10,justifyContent:"center"}}>
                   {pos.slice(0,3).map(c=>(
-                  <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(34,197,94,0.1)",color:"var(--green)",border:"1px solid rgba(34,197,94,0.2)"}}>✓ {c.label}</div>
+                    <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(34,197,94,0.1)",color:"var(--green)",border:"1px solid rgba(34,197,94,0.2)"}}>✓ {c.label}</div>
                   ))}
                   {neg.slice(0,2).map(c=>(
                     <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(239,68,68,0.1)",color:"var(--red)",border:"1px solid rgba(239,68,68,0.2)"}}>⚠ {c.label}</div>
@@ -1311,7 +1382,8 @@ export default function BiofeedbackScore() {
             </div>
           )}
 
-          {/* Critérios */}
+          {/* Calibra-exclusive critérios (Dor Articular + Pump) */}
+          <div style={{fontSize:11,color:"var(--text-4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:8,marginTop:4}}>Critérios exclusivos Calibra</div>
           {CATEGORIES.map(cat=>{
             const catColors={"performance":"#2563eb","recovery":"#22c55e","sleep":"#7c3aed","energy":"#eab308","joints":"#f97316","hunger":"#ec4899","pump":"#06b6d4"};
             const cc=catColors[cat.id]||"var(--text-2)";
@@ -1583,7 +1655,7 @@ export default function BiofeedbackScore() {
           <div className="card" style={{border:"1px solid rgba(59,130,246,0.2)",background:"linear-gradient(180deg,#0d1525,#090f1a)"}}>
             <div className="section-title" style={{color:"#60a5fa"}}>🎓 Score J3U — Biofeedback Metodologia Jewett</div>
             <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
-              7 domínios · escala 0–14 · baseado em J3U University (Jewett &amp; Miller)
+              7 domínios · escala 0–14 · J3U University (Jewett &amp; Miller). As respostas aqui alimentam tanto o Score J3U quanto o Score Calibra — sem repetição.
             </div>
 
             {J3U_DOMAINS.map(domain=>(
