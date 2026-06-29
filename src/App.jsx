@@ -190,6 +190,144 @@ const generateReport = (entry, prev, weights) => {
   return `${entry.week}: Score ${entry.score}${vs}.${trend}${bn} ${info.readinessDesc}`;
 };
 
+// ─── J3U METHODOLOGY ─────────────────────────────────────────────────────────
+const J3U_DOMAINS = [
+  { id:"j3u_hunger",    label:"Fome",         icon:"🍽️",
+    opts:[{v:2,l:"Controlável"},{v:1,l:"Alta parte do dia"},{v:0,l:"Constante / interferindo"}] },
+  { id:"j3u_energy",    label:"Energia",       icon:"🔋",
+    opts:[{v:2,l:"Boa"},{v:1,l:"Oscila"},{v:0,l:"Baixa diariamente"}] },
+  { id:"j3u_sleep",     label:"Sono",          icon:"🌙",
+    opts:[{v:2,l:"Reparador"},{v:1,l:"Levemente pior"},{v:0,l:"Insônia / não reparador"}] },
+  { id:"j3u_performance",label:"Performance",  icon:"⚡",
+    opts:[{v:2,l:"Estável nos âncoras"},{v:1,l:"Pequena queda"},{v:0,l:"Queda consistente"}] },
+  { id:"j3u_recovery",  label:"Recuperação",   icon:"🔄",
+    opts:[{v:2,l:"Normal entre treinos"},{v:1,l:"Dor prolongada"},{v:0,l:"Incapaz de recuperar"}] },
+  { id:"j3u_mood",      label:"Humor",         icon:"🧠",
+    opts:[{v:2,l:"Estável"},{v:1,l:"Irritabilidade"},{v:0,l:"Irritabilidade persistente / apatia"}] },
+  { id:"j3u_libido",    label:"Libido",        icon:"❤️",
+    opts:[{v:2,l:"Preservada"},{v:1,l:"Redução discreta"},{v:0,l:"Queda importante"}] },
+];
+
+const computeJ3UScore = (j) => {
+  if (!j || Object.keys(j).length === 0) return null;
+  const answered = J3U_DOMAINS.filter(d => j[d.id] !== undefined);
+  if (answered.length < 4) return null;
+  return answered.reduce((sum, d) => sum + j[d.id], 0);
+};
+
+const getJ3UClassification = (score, answered) => {
+  const max = answered * 2;
+  const pct = score / max;
+  if (score >= 12) return { label:"Excelente", color:"#22c55e", action:"Manter protocolo. Déficit está sendo bem tolerado." };
+  if (score >= 9)  return { label:"Aceitável",  color:"#84cc16", action:"Monitorar. Sem intervenção imediata necessária." };
+  if (score >= 6)  return { label:"Atenção",    color:"#eab308", action:"Identificar domínios críticos. Avaliar ajuste leve." };
+  return             { label:"Intervenção", color:"#ef4444", action:"Score baixo. Seguir ordem de intervenção J3U." };
+};
+
+const estimateJ3UPhase = (entry, recentHistory) => {
+  // Heurística operacional — não declarada explicitamente pela J3U
+  const recent = recentHistory.filter(h => h.score !== null).slice(0, 8);
+  const weeks = recent.length;
+  const j = entry.j3u || {};
+  const score = computeJ3UScore(j);
+  const answeredCount = J3U_DOMAINS.filter(d => j[d.id] !== undefined).length;
+
+  if (weeks < 2) return { phase: null, label: "Dados insuficientes para estimar fase", note: "Necessário ao menos 2 check-ins anteriores." };
+
+  const avgScore = score !== null ? score : null;
+  const weightTrend = (() => {
+    const ws = recent.filter(h => h.objective?.weight).map(h => parseFloat(h.objective.weight));
+    if (ws.length < 2) return null;
+    return ws[0] - ws[ws.length - 1];
+  })();
+
+  if (weeks <= 6) return { phase: 1, label: "Fase 1 — Get Ahead", color: "#3b82f6", note: "Agressividade inicial é segura. Taxa alvo: 1–1,5%/semana. (J3U Ep. 221)" };
+  if (weeks <= 21) return { phase: 2, label: "Fase 2 — Grind It Out", color: "#eab308", note: "Reduzir taxa para 0,5–0,75%/semana. Volume de treino começa a cair. Flatness visual é esperada. (J3U Ep. 221)" };
+  if (weeks <= 25) return { phase: 3, label: "Fase 3 — Hold the Look", color: "#f97316", note: "Foco em fullness vs hardness. Iniciar refeeds estruturados. (J3U Ep. 221)" };
+  return { phase: 4, label: "Fase 4 — Peak Week", color: "#ef4444", note: "Apenas repetir o que foi testado na Fase 3. Sem manipulações extremas. (J3U Ep. 221)" };
+};
+
+const generateJ3UAnalysis = (entry, recentHistory, weights) => {
+  const j = entry.j3u || {};
+  const obj = entry.objective || {};
+  const anchors = entry.anchors || [];
+  const j3uScore = computeJ3UScore(j);
+  const answeredDomains = J3U_DOMAINS.filter(d => j[d.id] !== undefined);
+  const answeredCount = answeredDomains.length;
+
+  if (answeredCount < 4) return null;
+
+  const classification = getJ3UClassification(j3uScore, answeredCount);
+  const phase = estimateJ3UPhase(entry, recentHistory);
+
+  // ── Leitura integrada e detecção de conflitos ──
+  const conflicts = [];
+  const insights = [];
+
+  // Peso + cintura
+  const prevWithObj = recentHistory.find(h => h.objective?.weight && h.objective?.waist);
+  const currWeight = parseFloat(obj.weight);
+  const currWaist = parseFloat(obj.waist);
+  const prevWeight = prevWithObj ? parseFloat(prevWithObj.objective.weight) : null;
+  const prevWaist = prevWithObj ? parseFloat(prevWithObj.objective.waist) : null;
+
+  const weightDelta = (currWeight && prevWeight) ? currWeight - prevWeight : null;
+  const waistDelta = (currWaist && prevWaist) ? currWaist - prevWaist : null;
+
+  if (weightDelta !== null && waistDelta !== null) {
+    if (Math.abs(weightDelta) < 0.3 && waistDelta < -0.5)
+      conflicts.push({ type:"info", text:"Peso estável + cintura caindo → possível recomposição ou retenção hídrica. Não mexer no plano. (inferência operacional)" });
+    else if (weightDelta > 0 && waistDelta < 0)
+      conflicts.push({ type:"info", text:"Peso subindo + cintura caindo → provável retenção hídrica. Investigar sódio, carboidratos, estresse. (inferência operacional)" });
+    else if (weightDelta > 0.5 && waistDelta > 0.5)
+      conflicts.push({ type:"warn", text:"Peso e cintura subindo → verificar aderência antes de qualquer ajuste. (inferência operacional)" });
+    else if (weightDelta < -0.5 && j3uScore !== null && j3uScore <= 5)
+      conflicts.push({ type:"warn", text:"Peso caindo rápido + biofeedback ruim → déficit possivelmente excessivo. Avaliar performance nos âncoras. (inferência operacional)" });
+    else if (Math.abs(weightDelta) < 0.3 && j3uScore !== null && j3uScore >= 9)
+      insights.push("Peso estável + biofeedback bom → possível ruído. Aguardar próximo check-in antes de qualquer ajuste. (inferência operacional)");
+  }
+
+  // Performance âncoras
+  if (entry.scores?.performance <= 2)
+    conflicts.push({ type:"warn", text:"Performance caindo nos âncoras — sinal crítico para a J3U. Prioridade: identificar causa antes de cortar mais calorias." });
+
+  // Biofeedback vs fase
+  if (phase.phase === 2 && j3uScore !== null && j3uScore <= 5)
+    conflicts.push({ type:"warn", text:"Fase 2 com biofeedback ruim — risco de catabolismo muscular. Considerar diet break antes de continuar. (proposta operacional)" });
+
+  // ── Ordem de intervenção J3U ──
+  const interventions = [];
+  if (j3uScore !== null && j3uScore <= 8) {
+    if (j[`j3u_energy`] <= 1 || j[`j3u_mood`] <= 1)
+      interventions.push({ priority:1, action:"Aumentar NEAT: +1.000–2.000 passos/dia antes de mexer em calorias.", type:"documentado — J3U Ep. 6" });
+    if (j[`j3u_hunger`] === 0)
+      interventions.push({ priority:2, action:"Fome constante: avaliar +50–100g carboidratos (+200–400 kcal) com os mesmos alimentos da dieta base. Evitar alimentos palatáveis atípicos.", type:"documentado — J3U Ep. 6" });
+    if (j[`j3u_sleep`] === 0 || j[`j3u_recovery`] === 0)
+      interventions.push({ priority:3, action:"Sono/recuperação ruins persistentes: considerar deload — elevar calorias à manutenção OU reduzir cardio para aproximar passivamente. Escolha depende se o atleta está mais estressado pela fome ou pelo cansaço físico.", type:"documentado — J3U Ep. 6" });
+    if (j[`j3u_libido`] === 0)
+      interventions.push({ priority:4, action:"Libido zerada: sinal de déficit energético importante ou supressão hormonal. Não aumentar déficit. Avaliar exames se persistir.", type:"inferência operacional — coerente com filosofia J3U" });
+  }
+
+  if (interventions.length === 0 && j3uScore >= 9)
+    interventions.push({ priority:1, action:"Biofeedback adequado. Manter protocolo atual. Monitorar tendência de peso e cintura no próximo check-in.", type:"princípio J3U — não reagir a ruído" });
+
+  // ── Confiança ──
+  const dataPoints = [
+    obj.weight, obj.waist, anchors.length > 0,
+    answeredCount >= 7, recentHistory.length >= 2
+  ].filter(Boolean).length;
+
+  const confidence = dataPoints >= 4 ? "Alta" : dataPoints >= 2 ? "Moderada" : "Baixa";
+  const confidenceNote = dataPoints >= 4
+    ? "Múltiplos pilares disponíveis (peso, cintura, âncoras, biofeedback J3U, histórico)."
+    : dataPoints >= 2
+    ? "Dados parciais — recomendações com maior margem de incerteza."
+    : "Dados insuficientes para recomendação confiável. Preencher mais pilares no próximo check-in.";
+
+  return { j3uScore, answeredCount, classification, phase, conflicts, insights, interventions, confidence, confidenceNote };
+};
+
+
 // ─── COMPONENTE PRINCIPAL ─────────────────────────────────────────────────────
 export default function BiofeedbackScore() {
   const [scores, setScores] = useState({});
@@ -202,6 +340,7 @@ export default function BiofeedbackScore() {
   const [usesHormones, setUsesHormones] = useState(null);
   const [anchors, setAnchors] = useState([{exercise:"",weight:"",reps:""}]);
   const [photo, setPhoto] = useState(null);
+  const [j3u, setJ3u] = useState({});
   const [history, setHistory] = useState([]);
   const [weights, setWeights] = useState({...DEFAULT_WEIGHTS});
   const [view, setView] = useState("form");
@@ -326,6 +465,7 @@ export default function BiofeedbackScore() {
       hormonal: usesHormones ? {...hormonal} : null,
       hormonalScore,
       usesHormones: !!usesHormones,
+      j3u:{...j3u},
       anchors: anchors.filter(a => a.exercise.trim()),
       photo,
       score: computeScore(scores, weights),
@@ -333,6 +473,7 @@ export default function BiofeedbackScore() {
     };
     entry.report = generateReport(entry, prev, weights);
     const suggestions = generateSuggestions(entry, historyWithScore, weights);
+    const j3uAnalysis = generateJ3UAnalysis(entry, historyWithScore, weights);
     setHistory(h => [entry, ...h]);
     // Save to Supabase
     if (user) {
@@ -340,8 +481,8 @@ export default function BiofeedbackScore() {
       supabase.from("checkins").insert({ user_id: user.id, week: w, data: rest }).then(() => {});
     }
     setScores({}); setWeek(""); setNotes(""); setObjective({}); setMacros({}); setGut({});
-    setHormonal({}); setUsesHormones(null); setAnchors([{exercise:"",weight:"",reps:""}]); setPhoto(null);
-    setModal({suggestions, report:entry.report, score:entry.score, week:entry.week, hormonalScore});
+    setHormonal({}); setUsesHormones(null); setAnchors([{exercise:"",weight:"",reps:""}]); setPhoto(null); setJ3u({});
+    setModal({suggestions, report:entry.report, score:entry.score, week:entry.week, hormonalScore, j3uAnalysis});
   };
 
   const handleDeleteEntry = async (idx) => {
@@ -908,6 +1049,75 @@ export default function BiofeedbackScore() {
               <div style={{fontSize:12,color:"var(--text-3)",padding:"12px 14px",background:"var(--surface-0)",borderRadius:6}}>✅ Biofeedback positivo — mantenha o protocolo.</div>
             )}
 
+            {/* ── J3U Analysis ── */}
+            {modal.j3uAnalysis && (()=>{
+              const a = modal.j3uAnalysis;
+              return (
+                <div style={{marginTop:16,borderTop:"1px solid rgba(59,130,246,0.15)",paddingTop:16}}>
+                  <div style={{fontSize:10,color:"#60a5fa",letterSpacing:".14em",textTransform:"uppercase",marginBottom:12}}>🎓 Análise J3U</div>
+
+                  {/* Score J3U */}
+                  <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:12,padding:"12px 14px",background:"rgba(0,0,0,0.3)",borderRadius:8,border:`1px solid ${a.classification.color}30`}}>
+                    <div style={{textAlign:"center",minWidth:56}}>
+                      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:36,color:a.classification.color,lineHeight:1}}>{a.j3uScore}</div>
+                      <div style={{fontSize:9,color:"var(--text-4)",letterSpacing:".08em"}}>/{a.answeredCount*2}</div>
+                    </div>
+                    <div>
+                      <div style={{fontSize:13,color:a.classification.color,fontWeight:500,marginBottom:3}}>{a.classification.label}</div>
+                      <div style={{fontSize:12,color:"var(--text-3)"}}>{a.classification.action}</div>
+                    </div>
+                  </div>
+
+                  {/* Fase estimada */}
+                  {a.phase.phase && (
+                    <div style={{marginBottom:10,padding:"10px 14px",background:"rgba(0,0,0,0.2)",borderRadius:6,borderLeft:`3px solid ${a.phase.color||"#3b82f6"}`}}>
+                      <div style={{fontSize:11,color:a.phase.color||"#3b82f6",fontWeight:500,marginBottom:3}}>{a.phase.label}</div>
+                      <div style={{fontSize:11,color:"var(--text-3)",lineHeight:1.5}}>{a.phase.note}</div>
+                    </div>
+                  )}
+                  {!a.phase.phase && (
+                    <div style={{marginBottom:10,fontSize:11,color:"var(--text-4)",fontStyle:"italic"}}>{a.phase.label}</div>
+                  )}
+
+                  {/* Conflitos e insights */}
+                  {(a.conflicts.length>0||a.insights.length>0) && (
+                    <div style={{marginBottom:10}}>
+                      <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>Leitura integrada</div>
+                      {a.conflicts.map((c,i)=>(
+                        <div key={i} style={{display:"flex",gap:8,marginBottom:6,padding:"8px 12px",background:c.type==="warn"?"rgba(239,68,68,0.06)":"rgba(59,130,246,0.06)",borderRadius:6,borderLeft:`2px solid ${c.type==="warn"?"var(--red)":"var(--brand)"}`}}>
+                          <span style={{fontSize:13,flexShrink:0}}>{c.type==="warn"?"⚠":"ℹ"}</span>
+                          <div style={{fontSize:12,color:"var(--text-2)",lineHeight:1.5}}>{c.text}</div>
+                        </div>
+                      ))}
+                      {a.insights.map((ins,i)=>(
+                        <div key={i} style={{display:"flex",gap:8,marginBottom:6,padding:"8px 12px",background:"rgba(34,197,94,0.06)",borderRadius:6,borderLeft:"2px solid var(--green)"}}>
+                          <span style={{fontSize:13,flexShrink:0}}>✓</span>
+                          <div style={{fontSize:12,color:"var(--text-2)",lineHeight:1.5}}>{ins}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Intervenções */}
+                  <div style={{marginBottom:10}}>
+                    <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>Ordem de intervenção</div>
+                    {a.interventions.map((int,i)=>(
+                      <div key={i} style={{marginBottom:8,padding:"10px 12px",background:"rgba(0,0,0,0.2)",borderRadius:6,border:"1px solid rgba(255,255,255,0.05)"}}>
+                        <div style={{fontSize:12,color:"var(--text-1)",lineHeight:1.5,marginBottom:4}}>{int.action}</div>
+                        <div style={{fontSize:10,color:"var(--text-4)",fontStyle:"italic"}}>{int.type}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Confiança */}
+                  <div style={{padding:"8px 12px",background:"rgba(0,0,0,0.2)",borderRadius:6,display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{fontSize:11,color:a.confidence==="Alta"?"var(--green)":a.confidence==="Moderada"?"var(--amber)":"var(--red)",fontWeight:500,minWidth:70}}>Confiança: {a.confidence}</div>
+                    <div style={{fontSize:11,color:"var(--text-3)",lineHeight:1.4}}>{a.confidenceNote}</div>
+                  </div>
+                </div>
+              );
+            })()}
+
             <div style={{display:"flex",justifyContent:"center"}}>
               <button className="close-btn" onClick={()=>{setModal(null);setView("history");}}>Ver histórico</button>
             </div>
@@ -971,7 +1181,7 @@ export default function BiofeedbackScore() {
               return (
                 <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:10,justifyContent:"center"}}>
                   {pos.slice(0,3).map(c=>(
-                    <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(34,197,94,0.1)",color:"var(--green)",border:"1px solid rgba(34,197,94,0.2)"}}>✓ {c.label}</div>
+                  <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(34,197,94,0.1)",color:"var(--green)",border:"1px solid rgba(34,197,94,0.2)"}}>✓ {c.label}</div>
                   ))}
                   {neg.slice(0,2).map(c=>(
                     <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(239,68,68,0.1)",color:"var(--red)",border:"1px solid rgba(239,68,68,0.2)"}}>⚠ {c.label}</div>
@@ -1369,6 +1579,64 @@ export default function BiofeedbackScore() {
             )}
           </div>
 
+          {/* ── J3U Score Block ── */}
+          <div className="card" style={{border:"1px solid rgba(59,130,246,0.2)",background:"linear-gradient(180deg,#0d1525,#090f1a)"}}>
+            <div className="section-title" style={{color:"#60a5fa"}}>🎓 Score J3U — Biofeedback Metodologia Jewett</div>
+            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
+              7 domínios · escala 0–14 · baseado em J3U University (Jewett &amp; Miller)
+            </div>
+
+            {J3U_DOMAINS.map(domain=>(
+              <div key={domain.id} style={{marginBottom:12}}>
+                <div style={{fontSize:13,color:"var(--text-2)",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+                  <span>{domain.icon}</span> {domain.label}
+                  {j3u[domain.id]!==undefined && (
+                    <span style={{marginLeft:"auto",fontSize:10,color:j3u[domain.id]===2?"var(--green)":j3u[domain.id]===1?"var(--amber)":"var(--red)",background:j3u[domain.id]===2?"rgba(34,197,94,0.1)":j3u[domain.id]===1?"rgba(234,179,8,0.1)":"rgba(239,68,68,0.1)",padding:"1px 8px",borderRadius:999,border:`1px solid ${j3u[domain.id]===2?"rgba(34,197,94,0.25)":j3u[domain.id]===1?"rgba(234,179,8,0.25)":"rgba(239,68,68,0.25)"}`}}>
+                      {j3u[domain.id]===2?"✓ Adequado":j3u[domain.id]===1?"⚠ Atenção":"✗ Ruim"}
+                    </span>
+                  )}
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {domain.opts.map(opt=>(
+                    <button key={opt.v} className={`opt-btn ${j3u[domain.id]===opt.v?"selected":""}`}
+                      style={j3u[domain.id]===opt.v?{
+                        borderColor:opt.v===2?"#22c55e":opt.v===1?"#eab308":"#ef4444",
+                        color:"#fff",
+                        background:opt.v===2?"rgba(34,197,94,0.18)":opt.v===1?"rgba(234,179,8,0.18)":"rgba(239,68,68,0.18)",
+                        boxShadow:opt.v===2?"0 0 0 1px rgba(34,197,94,0.4),0 0 16px rgba(34,197,94,0.15)":opt.v===1?"0 0 0 1px rgba(234,179,8,0.4),0 0 16px rgba(234,179,8,0.15)":"0 0 0 1px rgba(239,68,68,0.4),0 0 16px rgba(239,68,68,0.15)",
+                        transform:"translateY(-1px)"
+                      }:{}}
+                      onClick={()=>setJ3u(s=>({...s,[domain.id]:opt.v}))}>
+                      {j3u[domain.id]===opt.v?"✓ ":""}{opt.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* J3U Score preview */}
+            {(()=>{
+              const s = computeJ3UScore(j3u);
+              const answered = J3U_DOMAINS.filter(d=>j3u[d.id]!==undefined).length;
+              if (answered < 4) return (
+                <div style={{fontSize:12,color:"var(--text-4)",fontStyle:"italic",marginTop:8}}>Responda pelo menos 4 domínios para ver o score J3U.</div>
+              );
+              const cls = getJ3UClassification(s, answered);
+              return (
+                <div style={{marginTop:12,padding:"14px 16px",background:"rgba(0,0,0,0.3)",borderRadius:8,borderLeft:`3px solid ${cls.color}`,display:"flex",alignItems:"center",gap:16}}>
+                  <div style={{textAlign:"center"}}>
+                    <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,color:cls.color,lineHeight:1,textShadow:`0 0 24px ${cls.color}50`}}>{s}</div>
+                    <div style={{fontSize:9,color:"var(--text-4)",letterSpacing:".1em",marginTop:2}}>/ {answered*2}</div>
+                  </div>
+                  <div>
+                    <div style={{fontSize:13,color:cls.color,fontWeight:500,marginBottom:4}}>{cls.label}</div>
+                    <div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.5}}>{cls.action}</div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Observações */}
           <textarea placeholder="Observações: ajuste de calorias, intercorrências, deload..." value={notes} onChange={e=>setNotes(e.target.value)} style={{width:"100%",marginTop:4,minHeight:64,resize:"vertical"}}/>
 
@@ -1441,6 +1709,16 @@ export default function BiofeedbackScore() {
                             💊 {entry.hormonalScore.status==="high"?"E2↑":entry.hormonalScore.status==="low"?"E2↓":"E2✓"}
                           </div>
                         )}
+                        {entry.j3u && computeJ3UScore(entry.j3u) !== null && (()=>{
+                          const s = computeJ3UScore(entry.j3u);
+                          const ans = J3U_DOMAINS.filter(d=>entry.j3u[d.id]!==undefined).length;
+                          const cls = getJ3UClassification(s, ans);
+                          return (
+                            <div style={{padding:"3px 8px",borderRadius:3,background:`${cls.color}15`,border:`1px solid ${cls.color}40`,fontSize:11,color:cls.color}}>
+                              🎓 J3U {s}/{ans*2}
+                            </div>
+                          );
+                        })()}
                         <button className="del-btn" onClick={()=>handleDeleteEntry(i)}>✕</button>
                       </div>
                     </div>
