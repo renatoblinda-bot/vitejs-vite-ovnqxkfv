@@ -418,6 +418,25 @@ export default function BiofeedbackScore() {
   const [posePhotos, setPosePhotos] = useState({});
   const [measureDate, setMeasureDate] = useState(new Date().toLocaleDateString("pt-BR"));
   const loaded = useRef(false);
+  const [displayScore, setDisplayScore] = useState(null);
+  const animRef = useRef(null);
+
+  // Animate score counter
+  const animateScore = (target) => {
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+    if (target === null) { setDisplayScore(null); return; }
+    const start = displayScore || 0;
+    const duration = 800;
+    const startTime = performance.now();
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayScore(Math.round(start + (target - start) * eased));
+      if (progress < 1) animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  };
 
   // ── Auth listener ──
   useEffect(() => {
@@ -497,6 +516,9 @@ export default function BiofeedbackScore() {
   const score = computeScore(fullScoresLive, weights);
   const scoreInfo = score !== null ? getScoreInfo(score) : null;
   const bottlenecks = getBottlenecks(fullScoresLive, weights);
+
+  // Animate score on change
+  useEffect(() => { animateScore(score); }, [score]);
   const historyWithScore = history.filter(h => h.score !== null);
   const last4 = historyWithScore.slice(0,4);
   const avg4 = last4.length > 0 ? Math.round(last4.reduce((a,b)=>a+b.score,0)/last4.length) : null;
@@ -541,7 +563,7 @@ export default function BiofeedbackScore() {
     }
     setScores({}); setWeek(""); setNotes(""); setObjective({}); setMacros({}); setGut({});
     setHormonal({}); setUsesHormones(null); setAnchors([{exercise:"",weight:"",reps:""}]); setPhoto(null); setJ3u({});
-    setModal({suggestions, report:entry.report, score:entry.score, week:entry.week, hormonalScore, j3uAnalysis});
+    setModal({suggestions, report:entry.report, score:entry.score, week:entry.week, hormonalScore, j3uAnalysis, scores:entry.scores, prevScores:prev?.scores||{}});
   };
 
   const handleDeleteEntry = async (idx) => {
@@ -997,6 +1019,23 @@ export default function BiofeedbackScore() {
           .tab-btn{padding:6px 10px;font-size:10px}
           .hide-mobile{display:none}
         }
+
+        /* ── Desktop 2-col improvements ── */
+        @media(min-width:720px){
+          .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+          .card-hero{padding:32px 28px}
+        }
+
+        /* ── Accordion ── */
+        details summary::-webkit-details-marker{display:none}
+        details[open] summary span:first-child{transform:rotate(90deg);display:inline-block;transition:transform .2s}
+
+        /* ── Score glow animation ── */
+        @keyframes scoreGlow{
+          0%,100%{text-shadow:0 0 40px currentColor}
+          50%{text-shadow:0 0 80px currentColor, 0 0 120px currentColor}
+        }
+        .score-glow{animation:scoreGlow 3s ease-in-out infinite}
       `}</style>
 
       {/* ── Auth loading ── */}
@@ -1093,13 +1132,30 @@ export default function BiofeedbackScore() {
 
             {modal.suggestions.length > 0 ? (
               <>
-                <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>Sugestões para as próximas semanas</div>
+                {/* Conversational summary */}
+                <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"14px 16px",marginBottom:12,border:"1px solid rgba(255,255,255,0.05)"}}>
+                  <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Resumo da semana</div>
+                  {Object.entries(modal.scores||{}).slice(0,5).map(([id,v])=>{
+                    const cat = ALL_CATEGORIES.find(c=>c.id===id);
+                    if (!cat) return null;
+                    const prev = (modal.prevScores||{})[id];
+                    const dir = prev!==undefined?(v>prev?"melhorou":v<prev?"caiu":null):null;
+                    const col = v>=4?"var(--green)":v===3?"var(--amber)":"var(--red)";
+                    if (!dir && v>=4) return <div key={id} style={{fontSize:13,color:"var(--text-2)",marginBottom:5,display:"flex",alignItems:"center",gap:6}}><span style={{color:"var(--green)"}}>✓</span> {cat.label} adequado.</div>;
+                    if (dir==="melhorou") return <div key={id} style={{fontSize:13,color:"var(--text-2)",marginBottom:5,display:"flex",alignItems:"center",gap:6}}><span style={{color:"var(--green)"}}>↑</span> {cat.label} melhorou.</div>;
+                    if (dir==="caiu") return <div key={id} style={{fontSize:13,color:"var(--text-2)",marginBottom:5,display:"flex",alignItems:"center",gap:6}}><span style={{color:"var(--red)"}}>↓</span> {cat.label} caiu.</div>;
+                    if (v<=2) return <div key={id} style={{fontSize:13,color:"var(--text-2)",marginBottom:5,display:"flex",alignItems:"center",gap:6}}><span style={{color:"var(--red)"}}>⚠</span> {cat.label} precisa de atenção.</div>;
+                    return null;
+                  })}
+                </div>
+
+                <div style={{fontSize:10,color:"var(--text-3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Recomendações</div>
                 {modal.suggestions.map((s,i)=>(
-                  <div key={i} style={{display:"flex",gap:12,marginBottom:10,padding:"14px 16px",background:"var(--surface-0)",borderRadius:8,borderLeft:`3px solid ${s.priority?"var(--red)":"var(--brand)"}`,border:`1px solid ${s.priority?"rgba(239,68,68,0.2)":"var(--border)"}`,borderLeftWidth:3}}>
-                    <span style={{fontSize:16,flexShrink:0}}>{s.icon}</span>
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:8,padding:"12px 14px",background:"var(--surface-0)",borderRadius:8,borderLeft:`3px solid ${s.priority?"var(--red)":"var(--brand)"}`,border:`1px solid ${s.priority?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.04)"}`,borderLeftWidth:3}}>
+                    <span style={{fontSize:15,flexShrink:0}}>{s.icon}</span>
                     <div>
-                      <div style={{fontSize:11,color:s.priority?"#ef4444":"var(--text-2)",textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{s.area}</div>
-                      <div style={{fontSize:13,color:"#bbb",lineHeight:1.7}}>{s.text}</div>
+                      <div style={{fontSize:10,color:s.priority?"var(--red)":"var(--text-3)",textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{s.area}</div>
+                      <div style={{fontSize:12,color:"var(--text-2)",lineHeight:1.6}}>{s.text}</div>
                     </div>
                   </div>
                 ))}
@@ -1217,59 +1273,94 @@ export default function BiofeedbackScore() {
             <button className="ghost-btn" style={{borderColor:"rgba(100,40,40,0.4)",color:"#885555",padding:"5px 10px"}} onClick={handleLogout} title="Sair">⏻</button>
           </div>
         </div>
-        </div>
+      </div>
 
       {/* ══ FORM ══ */}
       {view === "form" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 80px"}}>
 
           {/* Score hero card */}
-          <div className="card-hero" style={{textAlign:"center"}}>
-            <div style={{fontSize:11,color:"var(--text-3)",letterSpacing:".2em",textTransform:"uppercase",marginBottom:12}}>PRONTIDÃO</div>
-
-            {/* Big score */}
-            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:score!==null?88:64,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)",letterSpacing:".02em",textShadow:score!==null?`0 0 60px ${scoreInfo.color}40`:"none",transition:"all .4s cubic-bezier(0.4,0,0.2,1)"}}>
-              {score!==null?score:"--"}
+          {/* ── HERO CARD — Whoop/Oura style ── */}
+          <div className="card-hero">
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".2em",textTransform:"uppercase"}}>PRONTIDÃO</div>
+              {historyWithScore.length>0 && score!==null && (()=>{
+                const prev = historyWithScore[0]?.score;
+                const delta = prev ? score - prev : null;
+                if (delta===null) return null;
+                return (
+                  <div style={{fontSize:11,color:delta>0?"var(--green)":delta<0?"var(--red)":"var(--text-3)",display:"flex",alignItems:"center",gap:4,background:delta>0?"rgba(34,197,94,0.08)":delta<0?"rgba(239,68,68,0.08)":"transparent",padding:"3px 10px",borderRadius:999,border:`1px solid ${delta>0?"rgba(34,197,94,0.2)":delta<0?"rgba(239,68,68,0.2)":"transparent"}`}}>
+                    {delta>0?`↑ +${delta}`:delta<0?`↓ ${delta}`:"-"} pts
+                  </div>
+                );
+              })()}
             </div>
 
-            {/* Status label */}
-            <div style={{fontSize:13,letterSpacing:".15em",textTransform:"uppercase",color:score!==null?scoreInfo.color:"var(--text-4)",marginTop:8,fontWeight:500}}>
-              {score!==null?scoreInfo.label:"Preencha os critérios"}
-            </div>
-
-            {/* Readiness pill */}
-            {score!==null && (
-              <div style={{display:"inline-flex",alignItems:"center",gap:6,marginTop:10,padding:"5px 14px",borderRadius:999,background:scoreInfo.readiness==="verde"?"rgba(34,197,94,0.1)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.1)":"rgba(239,68,68,0.1)",border:`1px solid ${scoreInfo.readiness==="verde"?"rgba(34,197,94,0.3)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.3)":"rgba(239,68,68,0.3)"}`}}>
-                <div style={{width:6,height:6,borderRadius:"50%",background:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",boxShadow:`0 0 6px ${scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}`}}/>
-                <span style={{fontSize:12,color:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",letterSpacing:".08em"}}>{scoreInfo.readinessLabel}</span>
-              </div>
-            )}
-
-            {/* Contributing / bottleneck summary */}
-            {score!==null && totalAnswered >= 3 && (()=>{
-              const pos = CATEGORIES.filter(c=>scores[c.id]>=4);
-              const neg = CATEGORIES.filter(c=>scores[c.id]!==undefined&&scores[c.id]<=2);
-              return (
-                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:10,justifyContent:"center"}}>
-                  {pos.slice(0,3).map(c=>(
-                    <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(34,197,94,0.1)",color:"var(--green)",border:"1px solid rgba(34,197,94,0.2)"}}>✓ {c.label}</div>
-                  ))}
-                  {neg.slice(0,2).map(c=>(
-                    <div key={c.id} style={{fontSize:10,padding:"2px 9px",borderRadius:999,background:"rgba(239,68,68,0.1)",color:"var(--red)",border:"1px solid rgba(239,68,68,0.2)"}}>⚠ {c.label}</div>
-                  ))}
+            <div style={{display:"flex",alignItems:"center",gap:24}}>
+              {/* Score number */}
+              <div style={{minWidth:120}}>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:96,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)",textShadow:score!==null?`0 0 80px ${scoreInfo.color}35`:"none",letterSpacing:".01em"}}>
+                  {displayScore!==null?displayScore:"--"}
                 </div>
-              );
-            })()}
+                <div style={{fontSize:12,letterSpacing:".15em",textTransform:"uppercase",color:score!==null?scoreInfo.color:"var(--text-4)",marginTop:2,fontWeight:600}}>
+                  {score!==null?scoreInfo.label:"Avaliar"}
+                </div>
+              </div>
 
-            {/* Segmented progress */}
-            <div style={{display:"flex",gap:4,marginTop:16}}>
-              {Array.from({length:7}).map((_,i)=>(
-                <div key={i} style={{flex:1,height:3,borderRadius:99,background:i<totalAnswered?"linear-gradient(90deg,var(--brand),#60a5fa)":"rgba(255,255,255,0.06)",boxShadow:i<totalAnswered?"0 0 6px rgba(59,130,246,0.4)":"none",transition:`all .3s ${i*0.05}s`}}/>
-              ))}
+              {/* Right side: readiness + indicators */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:8}}>
+                {score!==null ? (
+                  <>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 12px",borderRadius:999,width:"fit-content",background:scoreInfo.readiness==="verde"?"rgba(34,197,94,0.1)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.1)":"rgba(239,68,68,0.1)",border:`1px solid ${scoreInfo.readiness==="verde"?"rgba(34,197,94,0.25)":scoreInfo.readiness==="amarelo"?"rgba(234,179,8,0.25)":"rgba(239,68,68,0.25)"}`}}>
+                      <div style={{width:5,height:5,borderRadius:"50%",background:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)"}}/>
+                      <span style={{fontSize:11,color:scoreInfo.readiness==="verde"?"var(--green)":scoreInfo.readiness==="amarelo"?"var(--amber)":"var(--red)",letterSpacing:".06em"}}>{scoreInfo.readinessLabel}</span>
+                    </div>
+                    {/* Category indicators */}
+                    {totalAnswered>=3 && (()=>{
+                      const indicators = Object.entries(fullScoresLive)
+                        .filter(([,v])=>v!==undefined)
+                        .map(([id,v])=>{
+                          const cat = ALL_CATEGORIES.find(c=>c.id===id);
+                          if(!cat) return null;
+                          const prev = historyWithScore[0]?.scores?.[id];
+                          const dir = prev!==undefined ? (v>prev?'↑':v<prev?'↓':'→') : null;
+                          return {cat, v, dir};
+                        })
+                        .filter(Boolean)
+                        .sort((a,b)=>a.v-b.v)
+                        .slice(0,4);
+                      return (
+                        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                          {indicators.map(({cat,v,dir})=>{
+                            const col = v>=4?"var(--green)":v===3?"var(--amber)":"var(--red)";
+                            return (
+                              <div key={cat.id} style={{fontSize:10,padding:"2px 8px",borderRadius:999,background:`${col}12`,color:col,border:`1px solid ${col}25`,display:"flex",alignItems:"center",gap:3}}>
+                                {cat.icon} {cat.label.split(" ")[0]} {dir&&<span style={{opacity:.7}}>{dir}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </>
+                ) : (
+                  <div style={{fontSize:12,color:"var(--text-4)",lineHeight:1.6}}>Responda os critérios abaixo para ver seu score de prontidão</div>
+                )}
+              </div>
             </div>
-            <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
-              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".1em"}}>{totalAnswered}/7 CRITÉRIOS</div>
-              {score!==null && <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>SCORE CALIBRA</div>}
+
+            {/* Segmented progress bar */}
+            <div style={{marginTop:16}}>
+              <div style={{display:"flex",gap:3,marginBottom:6}}>
+                {Array.from({length:9}).map((_,i)=>{
+                  const filled = score!==null ? Math.round((score/100)*9) : totalAnswered;
+                  return <div key={i} style={{flex:1,height:3,borderRadius:99,background:i<filled?"linear-gradient(90deg,var(--brand),#60a5fa)":"rgba(255,255,255,0.05)",boxShadow:i<filled?"0 0 4px rgba(59,130,246,0.35)":"none",transition:`all .3s ${i*0.04}s`}}/>;
+                })}
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between"}}>
+                <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".08em"}}>{totalAnswered} de {7+J3U_DOMAINS.length} respondidos</div>
+                {score!==null && <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".06em"}}>{score}% prontidão</div>}
+              </div>
             </div>
           </div>
 
@@ -1382,35 +1473,40 @@ export default function BiofeedbackScore() {
             </div>
           )}
 
-          {/* Calibra-exclusive critérios (Dor Articular + Pump) */}
-          <div style={{fontSize:11,color:"var(--text-4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:8,marginTop:4}}>Critérios exclusivos Calibra</div>
+          {/* ── Calibra-exclusive: Dor Articular + Pump ── */}
+          <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".14em",textTransform:"uppercase",marginBottom:8,marginTop:4,display:"flex",alignItems:"center",gap:8}}>
+            Critérios exclusivos Calibra
+            <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(255,255,255,0.05),transparent)"}}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8,marginBottom:8}}>
           {CATEGORIES.map(cat=>{
-            const catColors={"performance":"#2563eb","recovery":"#22c55e","sleep":"#7c3aed","energy":"#eab308","joints":"#f97316","hunger":"#ec4899","pump":"#06b6d4"};
-            const cc=catColors[cat.id]||"var(--text-2)";
+            const catColors={"joints":"#f97316","pump":"#06b6d4"};
+            const cc=catColors[cat.id]||"var(--brand)";
             const selected=scores[cat.id];
             const selectedOpt=selected?cat.options.find(o=>o.value===selected):null;
             return (
               <div key={cat.id} style={{
-                background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",
-                border:`1px solid ${selected?`${selectedOpt?.color}30`:"var(--border)"}`,
+                background:"linear-gradient(180deg,#101827,#0c1423)",
+                border:`1px solid ${selected?`${selectedOpt?.color}30`:"rgba(255,255,255,0.06)"}`,
                 borderLeft:`3px solid ${selected?selectedOpt?.color:cc}`,
-                borderRadius:"var(--radius)",padding:"16px 18px",marginBottom:8,
+                borderRadius:"var(--radius)",padding:"14px 16px",
                 transition:"all .2s",
+                boxShadow:"0 6px 20px rgba(0,0,0,0.25)",
               }}>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-                  <div className="cat-icon" style={{background:`${cc}18`,border:`1px solid ${cc}30`}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                  <div className="cat-icon" style={{background:`${cc}18`,border:`1px solid ${cc}30`,width:32,height:32}}>
                     {cat.icon}
                   </div>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:13,letterSpacing:".08em",textTransform:"uppercase",color:selected?selectedOpt?.color:"var(--text-1)",fontWeight:700,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                      <span className="cat-label">{cat.label}</span>
-                      <span style={{fontSize:9,color:"var(--text-4)",textTransform:"none",letterSpacing:0,fontWeight:400,background:"var(--surface-3)",padding:"1px 6px",borderRadius:3}}>×{weights[cat.id]}%</span>
-                      {selected && <span style={{fontSize:10,color:"var(--green)",marginLeft:"auto",display:"flex",alignItems:"center",gap:4,background:"rgba(34,197,94,0.1)",padding:"2px 8px",borderRadius:999,border:"1px solid rgba(34,197,94,0.25)"}}>✓ Respondido</span>}
+                    <div style={{fontSize:12,letterSpacing:".08em",textTransform:"uppercase",color:selected?selectedOpt?.color:"var(--text-1)",fontWeight:700,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                      <span>{cat.label}</span>
+                      <span style={{fontSize:9,color:"var(--text-4)",textTransform:"none",letterSpacing:0,fontWeight:400,background:"rgba(255,255,255,0.05)",padding:"1px 5px",borderRadius:3}}>×{weights[cat.id]}%</span>
+                      {selected && <span style={{fontSize:9,color:"var(--green)",marginLeft:"auto",background:"rgba(34,197,94,0.1)",padding:"1px 7px",borderRadius:999,border:"1px solid rgba(34,197,94,0.2)"}}>✓</span>}
                     </div>
-                    <div style={{fontSize:13,color:"var(--text-2)",marginTop:4,lineHeight:1.5}}>{cat.description}</div>
+                    <div style={{fontSize:12,color:"var(--text-3)",marginTop:2,lineHeight:1.4}}>{cat.description}</div>
                   </div>
                 </div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                   {cat.options.map(opt=>(
                     <button key={opt.value} className={`opt-btn ${scores[cat.id]===opt.value?"selected":""}`}
                       style={scores[cat.id]===opt.value?{borderColor:opt.color,color:"#fff",background:`${opt.color}22`,boxShadow:`0 0 0 1px ${opt.color}55, 0 0 20px ${opt.color}25`,transform:"translateY(-1px)"}:{}}
@@ -1422,20 +1518,35 @@ export default function BiofeedbackScore() {
               </div>
             );
           })}
+          </div>
 
           {/* Performance Anchor Sets */}
           <div className="card">
             <div className="section-title">⚡ Performance Anchor Sets</div>
-            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:12}}>Registre exercício principal + carga + reps para comparar semana a semana</div>
-            {anchors.map((a,i)=>(
-              <div key={i} className="anchor-row">
-                <input type="text" placeholder="Exercício (ex: Supino)" value={a.exercise} onChange={e=>{const n=[...anchors];n[i]={...n[i],exercise:e.target.value};setAnchors(n);}}/>
-                <input type="number" placeholder="kg" value={a.weight} onChange={e=>{const n=[...anchors];n[i]={...n[i],weight:e.target.value};setAnchors(n);}}/>
-                <input type="number" placeholder="reps" value={a.reps} onChange={e=>{const n=[...anchors];n[i]={...n[i],reps:e.target.value};setAnchors(n);}}/>
-                <button className="del-btn" onClick={()=>setAnchors(anchors.filter((_,j)=>j!==i))}>✕</button>
-              </div>
-            ))}
-            <button className="ghost-btn" style={{marginTop:4}} onClick={()=>setAnchors([...anchors,{exercise:"",weight:"",reps:""}])}>+ Exercício</button>
+            {/* Table header */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 72px 64px 64px 32px",gap:6,marginBottom:6,padding:"0 4px"}}>
+              {["Exercício","Peso","Reps","Δ Vol",""].map(h=>(
+                <div key={h} style={{fontSize:9,color:"var(--text-4)",letterSpacing:".1em",textTransform:"uppercase"}}>{h}</div>
+              ))}
+            </div>
+            {anchors.map((a,i)=>{
+              const prevAnchor = historyWithScore[0]?.anchors?.find(p=>p.exercise?.toLowerCase()===a.exercise?.toLowerCase());
+              const volCurr = a.weight && a.reps ? parseFloat(a.weight)*parseFloat(a.reps) : null;
+              const volPrev = prevAnchor?.weight && prevAnchor?.reps ? parseFloat(prevAnchor.weight)*parseFloat(prevAnchor.reps) : null;
+              const delta = volCurr!==null && volPrev!==null ? volCurr - volPrev : null;
+              return (
+                <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 72px 64px 64px 32px",gap:6,marginBottom:6,alignItems:"center"}}>
+                  <input type="text" placeholder="ex: Supino" value={a.exercise} onChange={e=>{const n=[...anchors];n[i]={...n[i],exercise:e.target.value};setAnchors(n);}} style={{fontSize:13}}/>
+                  <input type="number" placeholder="kg" value={a.weight} onChange={e=>{const n=[...anchors];n[i]={...n[i],weight:e.target.value};setAnchors(n);}} style={{textAlign:"center"}}/>
+                  <input type="number" placeholder="reps" value={a.reps} onChange={e=>{const n=[...anchors];n[i]={...n[i],reps:e.target.value};setAnchors(n);}} style={{textAlign:"center"}}/>
+                  <div style={{textAlign:"center",fontFamily:"'Bebas Neue',sans-serif",fontSize:16,color:delta===null?"var(--text-4)":delta>0?"var(--green)":delta<0?"var(--red)":"var(--text-3)"}}>
+                    {delta===null?"—":delta>0?`+${delta}`:delta}
+                  </div>
+                  <button className="del-btn" onClick={()=>setAnchors(anchors.filter((_,j)=>j!==i))}>✕</button>
+                </div>
+              );
+            })}
+            <button className="ghost-btn" style={{marginTop:6}} onClick={()=>setAnchors([...anchors,{exercise:"",weight:"",reps:""}])}>+ Exercício</button>
 
             {/* Comparação automática com semana anterior */}
             {historyWithScore.length > 0 && anchors.some(a=>a.exercise.trim()) && (() => {
@@ -1470,16 +1581,23 @@ export default function BiofeedbackScore() {
           {/* Macros */}
           <div className="card">
             <div className="section-title">🔢 Macros (média diária)</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {[
-                {id:"calories",label:"Calorias",unit:"kcal",icon:"🔥",placeholder:"ex: 2400"},
-                {id:"protein",label:"Proteína",unit:"g",icon:"🥩",placeholder:"ex: 180"},
-                {id:"carbs",label:"Carboidratos",unit:"g",icon:"🍚",placeholder:"ex: 250"},
-                {id:"fat",label:"Gorduras",unit:"g",icon:"🥑",placeholder:"ex: 70"},
+                {id:"calories",label:"KCAL",icon:"🔥",color:"#f97316"},
+                {id:"protein",label:"PROTEÍNA",icon:"🥩",color:"#22c55e"},
+                {id:"carbs",label:"CARBS",icon:"🍚",color:"#3b82f6"},
+                {id:"fat",label:"GORDURA",icon:"🥑",color:"#eab308"},
               ].map(f=>(
-                <div key={f.id} className="macro-card">
-                  <label>{f.icon} {f.label} <span className="unit">{f.unit}</span></label>
-                  <input type="number" step="1" placeholder="—" value={macros[f.id]||""} onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))}/>
+                <div key={f.id} style={{background:"rgba(0,0,0,0.3)",border:`1px solid ${f.color}20`,borderRadius:10,padding:"12px 14px",position:"relative",overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:8,right:10,fontSize:20,opacity:.15}}>{f.icon}</div>
+                  <div style={{fontSize:9,color:"var(--text-4)",letterSpacing:".12em",marginBottom:6}}>{f.icon} {f.label}</div>
+                  <input
+                    type="number" step="1" placeholder="—"
+                    value={macros[f.id]||""}
+                    onChange={e=>setMacros(m=>({...m,[f.id]:e.target.value}))}
+                    style={{background:"transparent",border:"none",padding:0,fontSize:28,fontFamily:"'Bebas Neue',sans-serif",color:macros[f.id]?f.color:"var(--text-4)",letterSpacing:".02em",width:"100%",boxShadow:"none"}}
+                  />
+                  {macros[f.id] && <div style={{fontSize:10,color:"var(--text-4)",marginTop:2,letterSpacing:".1em"}}>{f.label==="KCAL"?"kcal":"g"}</div>}
                 </div>
               ))}
             </div>
@@ -1652,14 +1770,26 @@ export default function BiofeedbackScore() {
           </div>
 
           {/* ── J3U Score Block ── */}
-          <div className="card" style={{border:"1px solid rgba(59,130,246,0.2)",background:"linear-gradient(180deg,#0d1525,#090f1a)"}}>
-            <div className="section-title" style={{color:"#60a5fa"}}>🎓 Score J3U — Biofeedback Metodologia Jewett</div>
-            <div style={{fontSize:12,color:"var(--text-3)",marginBottom:14,lineHeight:1.6}}>
-              7 domínios · escala 0–14 · J3U University (Jewett &amp; Miller). As respostas aqui alimentam tanto o Score J3U quanto o Score Calibra — sem repetição.
+          <div style={{background:"linear-gradient(180deg,#080f20,#050a16)",border:"1px solid rgba(96,165,250,0.18)",borderRadius:"var(--radius)",padding:"16px 18px",marginBottom:8,boxShadow:"0 0 40px rgba(59,130,246,0.05), 0 8px 24px rgba(0,0,0,0.3)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+              <div style={{width:32,height:32,borderRadius:8,background:"linear-gradient(135deg,rgba(96,165,250,0.2),rgba(59,130,246,0.1))",border:"1px solid rgba(96,165,250,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>🎓</div>
+              <div>
+                <div style={{fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:"#60a5fa",fontWeight:600}}>Score J3U</div>
+                <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".06em"}}>Metodologia Jewett · Miller</div>
+              </div>
             </div>
+            <details style={{marginBottom:14,cursor:"pointer"}}>
+              <summary style={{fontSize:11,color:"var(--brand)",letterSpacing:".06em",listStyle:"none",display:"flex",alignItems:"center",gap:6,userSelect:"none"}}>
+                <span style={{fontSize:12}}>ⓘ</span> Sobre a metodologia J3U
+              </summary>
+              <div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.6,marginTop:8,padding:"10px 12px",background:"rgba(59,130,246,0.05)",borderRadius:6,borderLeft:"2px solid rgba(59,130,246,0.2)"}}>
+                7 domínios · escala 0–14 · J3U University (Jewett &amp; Miller, J3U Ep. 221/224). As respostas aqui alimentam tanto o Score J3U quanto o Score Calibra — sem repetição. Limiares numéricos exatos não foram publicados formalmente pela J3U — os utilizados aqui são propostas operacionais.
+              </div>
+            </details>
 
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10,marginBottom:4}}>
             {J3U_DOMAINS.map(domain=>(
-              <div key={domain.id} style={{marginBottom:12}}>
+              <div key={domain.id} style={{marginBottom:8,background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"10px 12px"}}>
                 <div style={{fontSize:13,color:"var(--text-2)",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
                   <span>{domain.icon}</span> {domain.label}
                   {j3u[domain.id]!==undefined && (
@@ -1685,6 +1815,8 @@ export default function BiofeedbackScore() {
                 </div>
               </div>
             ))}
+
+            </div>
 
             {/* J3U Score preview */}
             {(()=>{
@@ -1726,7 +1858,7 @@ export default function BiofeedbackScore() {
           ) : (
             <>
               {historyWithScore.length >= 2 && (
-                <div style={{background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:"20px",marginBottom:16}}>
+                <div style={{background:"linear-gradient(180deg,var(--surface-2),var(--surface-1))",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:"16px 18px",marginBottom:16}}>
                   <div className="section-title">Últimas {Math.min(4,last4.length)} semanas</div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
                     {[{label:"Média",value:avg4,suffix:""},{label:"Melhor",value:best,suffix:""},{label:"Pior",value:worst,suffix:""},{label:"Tendência",value:trend4!==null?(trend4>0?`+${trend4}`:trend4):null,suffix:"pts",color:trend4>0?"#22c55e":trend4<0?"#ef4444":"var(--text-2)"}].map(s=>(
@@ -1758,6 +1890,7 @@ export default function BiofeedbackScore() {
                 </div>
               )}
 
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))",gap:10}}>
               {history.map((entry,i)=>{
                 const info=entry.score!==null?getScoreInfo(entry.score):null;
                 const prevEntry=historyWithScore[historyWithScore.indexOf(entry)+1]||null;
@@ -1821,6 +1954,7 @@ export default function BiofeedbackScore() {
                   </div>
                 );
               })}
+              </div>
             </>
           )}
         </div>
