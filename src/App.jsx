@@ -514,9 +514,11 @@ export default function BiofeedbackScore() {
   const fullScoresLive = buildFullScores(j3u, scores);
 const totalAnswered = Object.keys(fullScoresLive).length;
 const score = computeScore(fullScoresLive, weights);
+const scoreInfo = score !== null ? getScoreInfo(score) : null;
+
+// Linhas adicionadas (delta)
 const historyWithScore = history.filter(h => h.score !== null);
 const delta = historyWithScore.length > 0 && score !== null ? score - historyWithScore[0].score : null;
-const scoreInfo = score !== null ? getScoreInfo(score) : null;
 
 // Nova linha adicionada:
 const historyWithScore = history.filter(h => h.score !== null);
