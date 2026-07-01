@@ -1393,42 +1393,32 @@ const delta = historyWithScore.length > 0 && score !== null ? score - historyWit
             </div>
           </div>
 
-          {/* ── Tendência histórica mini sparkline ── */}
-          {historyWithScore.length >= 2 && (()=>{
-            const pts = [...historyWithScore].reverse().slice(-6);
-            const vals = pts.map(p=>p.score);
-            const min = Math.min(...vals)-5, max = Math.max(...vals)+5;
-            const toX = i=>(i/(pts.length-1))*100;
-            const toY = s=>28-((s-min)/(max-min))*28;
-            const pathD = pts.map((p,i)=>`${i===0?"M":"L"} ${toX(i)} ${toY(p.score)}`).join(" ");
-            const last = pts[pts.length-1].score;
-            const prev = pts[pts.length-2]?.score;
-            const trend = last - prev;
-            return (
-              <div style={{background:"linear-gradient(180deg,#101827,#0c1423)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:"var(--radius)",padding:"12px 16px",marginBottom:8,display:"flex",alignItems:"center",gap:16}}>
-                <div>
-                  <div style={{fontSize:9,color:"var(--text-4)",letterSpacing:".14em",textTransform:"uppercase",marginBottom:4}}>Tendência</div>
-                  <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    {pts.map((p,i)=>(
-                      <span key={i} style={{fontSize:11,color:getScoreInfo(p.score).color,fontFamily:"'Bebas Neue',sans-serif"}}>{p.score}{i<pts.length-1?<span style={{color:"var(--text-4)",fontSize:9,margin:"0 1px"}}>→</span>:""}</span>
-                    ))}
-                    <span style={{fontSize:11,color:trend>0?"var(--green)":trend<0?"var(--red)":"var(--text-3)",marginLeft:4}}>{trend>0?`▲+${trend}`:trend<0?`▼${trend}`:"─"}</span>
-                  </div>
-                </div>
-                <div style={{flex:1,minWidth:80}}>
-                  <svg width="100%" viewBox="-2 -4 104 36" preserveAspectRatio="none" style={{height:32}}>
-                    <defs>
-                      <linearGradient id="sg" x1="0" y1="0" x2="1" y2="0">
-                        {pts.map((p,i)=><stop key={i} offset={`${(i/(pts.length-1))*100}%`} stopColor={getScoreInfo(p.score).color}/>)}
-                      </linearGradient>
-                    </defs>
-                    <path d={pathD} fill="none" stroke="url(#sg)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
-                    <circle cx={toX(pts.length-1)} cy={toY(pts[pts.length-1].score)} r="3" fill={getScoreInfo(pts[pts.length-1].score).color}/>
-                  </svg>
-                </div>
-              </div>
-            );
-          })()}
+    {/* ── Tendência histórica mini sparkline ── */}
+{historyWithScore.length >= 2 && (() => {
+  const pts = [...historyWithScore].reverse().slice(-6);
+  const vals = pts.map(p => p.score);
+  const min = Math.min(...vals) - 5;
+  const max = Math.max(...vals) + 5;
+  const toX = i => (i / (pts.length - 1)) * 100;
+  const toY = s => 28 - ((s - min) / (max - min)) * 28;
+  const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${toX(i)} ${toY(p.score)}`).join(" ");
+  const last = pts[pts.length - 1].score;
+  const prev = pts[pts.length - 2]?.score;
+  const trend = last - prev;
+
+  return (
+    <div style={{marginTop:12,padding:"8px 0",borderTop:"1px solid var(--border)"}}>
+      <div style={{fontSize:10,color:"var(--text-4)",marginBottom:6}}>Tendência últimas 6 semanas</div>
+      <svg width="100%" height="40" style={{display:"block"}}>
+        <path d={pathD} fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--text-3)",marginTop:4}}>
+        <div>{pts[0].week}</div>
+        <div>{pts[pts.length-1].week}</div>
+      </div>
+    </div>
+  );
+})()}
 
           {/* ── Status atual baseado nas respostas ── */}
           {totalAnswered >= 3 && (()=>{
