@@ -1393,32 +1393,16 @@ const delta = historyWithScore.length > 0 && score !== null ? score - historyWit
             </div>
           </div>
 
-    {/* ── Tendência histórica mini sparkline ── */}
-{historyWithScore.length >= 2 && (() => {
-  const pts = [...historyWithScore].reverse().slice(-6);
-  const vals = pts.map(p => p.score);
-  const min = Math.min(...vals) - 5;
-  const max = Math.max(...vals) + 5;
-  const toX = i => (i / (pts.length - 1)) * 100;
-  const toY = s => 28 - ((s - min) / (max - min)) * 28;
-  const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${toX(i)} ${toY(p.score)}`).join(" ");
-  const last = pts[pts.length - 1].score;
-  const prev = pts[pts.length - 2]?.score;
-  const trend = last - prev;
-
-  return (
-    <div style={{marginTop:12,padding:"8px 0",borderTop:"1px solid var(--border)"}}>
-      <div style={{fontSize:10,color:"var(--text-4)",marginBottom:6}}>Tendência últimas 6 semanas</div>
-      <svg width="100%" height="40" style={{display:"block"}}>
-        <path d={pathD} fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-      <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--text-3)",marginTop:4}}>
-        <div>{pts[0].week}</div>
-        <div>{pts[pts.length-1].week}</div>
-      </div>
+{/* ── Tendência histórica mini sparkline ── */}
+{historyWithScore.length >= 2 && (
+  <div style={{marginTop:12,padding:"8px 0",borderTop:"1px solid var(--border)"}}>
+    <div style={{fontSize:10,color:"var(--text-4)",marginBottom:6}}>Tendência últimas 6 semanas</div>
+    <div style={{fontSize:11,color:"var(--text-2)"}}>
+      Último: <strong>{historyWithScore[0].score}</strong> pts 
+      {historyWithScore.length >= 2 && ` (Δ ${historyWithScore[0].score - historyWithScore[1].score} pts)`}
     </div>
-  );
-})()}
+  </div>
+)}
 
           {/* ── Status atual baseado nas respostas ── */}
           {totalAnswered >= 3 && (()=>{
