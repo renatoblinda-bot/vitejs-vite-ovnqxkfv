@@ -1279,10 +1279,8 @@ const delta = historyWithScore.length > 0 && score !== null ? score - historyWit
         </div>
       </div>
 
-      {/* ══ FORM ══ */}
-      {view === "form" && (
-        <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 80px"}}>
-
+      {/* Sparkline comentado temporariamente */}
+{/* {historyWithScore.length >= 2 && ( ... )} */}
           {/* Score hero card */}
           {/* ── HERO CARD — Whoop/Oura style ── */}
          {/* HERO MELHORADO - COMPACT + TREND */}
