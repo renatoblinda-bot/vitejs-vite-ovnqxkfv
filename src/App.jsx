@@ -512,17 +512,10 @@ export default function BiofeedbackScore() {
   };
 
   const fullScoresLive = buildFullScores(j3u, scores);
-const totalAnswered = Object.keys(fullScoresLive).length;
-const score = computeScore(fullScoresLive, weights);
-const scoreInfo = score !== null ? getScoreInfo(score) : null;
-
-// Linhas adicionadas (delta)
-const historyWithScore = history.filter(h => h.score !== null);
-const delta = historyWithScore.length > 0 && score !== null ? score - historyWithScore[0].score : null;
-
-// Nova linha adicionada:
-const historyWithScore = history.filter(h => h.score !== null);
-const delta = historyWithScore.length > 0 && score !== null ? score - historyWithScore[0].score : null;
+  const totalAnswered = Object.keys(fullScoresLive).length;
+  const score = computeScore(fullScoresLive, weights);
+  const scoreInfo = score !== null ? getScoreInfo(score) : null;
+  const bottlenecks = getBottlenecks(fullScoresLive, weights);
 
   // Animate score on change
   useEffect(() => { animateScore(score); }, [score]);
@@ -1286,85 +1279,22 @@ const delta = historyWithScore.length > 0 && score !== null ? score - historyWit
       {view === "form" && (
         <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 80px"}}>
 
-      {/* HERO MELHORADO */}
-<div className="card-hero" style={{padding:"20px 24px 18px", marginBottom:16}}>
-  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-    <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".2em",textTransform:"uppercase"}}>PRONTIDÃO</div>
-    {delta !== null && (
-      <div style={{fontSize:11,color:delta>=0?"var(--green)":"var(--red)"}}>
-        {delta >= 0 ? `▲ +${delta}` : `▼ ${delta}`} pts
-      </div>
-    )}
-  </div>
-
-  <div style={{display:"flex",alignItems:"center",gap:24}}>
-    <div style={{minWidth:110}}>
-      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:82,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)"}}>
-        {displayScore !== null ? displayScore : "--"}
-      </div>
-      <div style={{fontSize:13,color:scoreInfo?.color || "var(--text-4)"}}>
-        {score !== null ? scoreInfo.label : "Avalie abaixo"}
-      </div>
-    </div>
-
-    {score !== null && (
-      <div style={{flex:1}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:999,background:scoreInfo.bg}}>
-          <span style={{color:scoreInfo.color}}>●</span>
-          <span style={{color:scoreInfo.color,fontWeight:500}}>{scoreInfo.readinessLabel}</span>
-        </div>
-      </div>
-    )}
-  </div>
-
-  <div style={{marginTop:18}}>
-    <div style={{display:"flex",gap:3,height:5,borderRadius:999,overflow:"hidden",background:"rgba(255,255,255,0.08)"}}>
-      {Array.from({length:10}).map((_,i) => (
-        <div key={i} style={{flex:1,background:score && i < Math.round(score/10) ? "linear-gradient(90deg,var(--brand),#60a5fa)" : "transparent",transition:"all 0.5s ease"}} />
-      ))}
-    </div>
-  </div>
-</div>
-
-  <div style={{display:"flex",alignItems:"center",gap:24}}>
-    <div style={{minWidth:110}}>
-      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:82,lineHeight:1,color:score!==null?scoreInfo.color:"var(--text-4)"}}>
-        {displayScore !== null ? displayScore : "--"}
-      </div>
-      <div style={{fontSize:13,color:scoreInfo?.color || "var(--text-4)"}}>
-        {score !== null ? scoreInfo.label : "Avalie abaixo"}
-      </div>
-    </div>
-
-    {score !== null && (
-      <div style={{flex:1}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:999,background:scoreInfo.bg}}>
-          <span style={{color:scoreInfo.color}}>●</span>
-          <span style={{color:scoreInfo.color,fontWeight:500}}>{scoreInfo.readinessLabel}</span>
-        </div>
-      </div>
-    )}
-  </div>
-
-  <div style={{marginTop:18}}>
-    <div style={{display:"flex",gap:3,height:5,borderRadius:999,overflow:"hidden",background:"rgba(255,255,255,0.08)"}}>
-      {Array.from({length:10}).map((_,i) => (
-        <div key={i} style={{flex:1,background:score && i < Math.round(score/10) ? "linear-gradient(90deg,var(--brand),#60a5fa)" : "transparent",transition:"all 0.5s ease"}} />
-      ))}
-    </div>
-  </div>
-</div>
-
-PRONTIDÃO
-{delta !== null && (
-=0?"var(--green)":"var(--red)"}}> {delta >= 0 ? `▲ +${delta}` : `▼ ${delta}`} pts
-)}
- {displayScore !== null ? displayScore : "--"}
-{score !== null ? scoreInfo.label : "Avalie abaixo"}
-{score !== null && (
-● {scoreInfo.readinessLabel}
-)}
-
+          {/* Score hero card */}
+          {/* ── HERO CARD — Whoop/Oura style ── */}
+          <div className="card-hero">
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div style={{fontSize:10,color:"var(--text-4)",letterSpacing:".2em",textTransform:"uppercase"}}>PRONTIDÃO</div>
+              {historyWithScore.length>0 && score!==null && (()=>{
+                const prev = historyWithScore[0]?.score;
+                const delta = prev ? score - prev : null;
+                if (delta===null) return null;
+                return (
+                  <div style={{fontSize:11,color:delta>0?"var(--green)":delta<0?"var(--red)":"var(--text-3)",display:"flex",alignItems:"center",gap:4,background:delta>0?"rgba(34,197,94,0.08)":delta<0?"rgba(239,68,68,0.08)":"transparent",padding:"3px 10px",borderRadius:999,border:`1px solid ${delta>0?"rgba(34,197,94,0.2)":delta<0?"rgba(239,68,68,0.2)":"transparent"}`}}>
+                    {delta>0?`↑ +${delta}`:delta<0?`↓ ${delta}`:"-"} pts
+                  </div>
+                );
+              })()}
+            </div>
 
             <div style={{display:"flex",alignItems:"center",gap:24}}>
               {/* Score number */}
